@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "scripthost"],
@@ -12,7 +13,8 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "baseUrl": "./",
   },
   "include": ["./src"]
 }

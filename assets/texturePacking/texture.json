@@ -1,0 +1,2728 @@
+{
+	"textures": [
+		{
+			"image": "texture",
+			"format": "RGBA8888",
+			"size": {
+				"w": 1198,
+				"h": 1275
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "PNG/buildingTiles_092.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_037.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 0,
+						"y": 127,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_030.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 133,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_036.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 133,
+						"y": 133,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_042.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 0,
+						"y": 254,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_001.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 260,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_085.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 260,
+						"y": 133,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_022.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 0,
+						"y": 381,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_099.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 133,
+						"y": 266,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_100.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 260,
+						"y": 266,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_106.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 387,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_107.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 387,
+						"y": 133,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_114.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 387,
+						"y": 266,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_115.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 0,
+						"y": 508,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_122.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 133,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 133,
+						"h": 127
+					},
+					"frame": {
+						"x": 133,
+						"y": 399,
+						"w": 133,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_026.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 260,
+						"y": 399,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_027.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 130
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 130
+					},
+					"frame": {
+						"x": 514,
+						"y": 0,
+						"w": 132,
+						"h": 130
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_028.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 514,
+						"y": 132,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_029.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 514,
+						"y": 264,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_004.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 514,
+						"y": 396,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_033.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 128
+					},
+					"frame": {
+						"x": 0,
+						"y": 635,
+						"w": 132,
+						"h": 128
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_034.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 387,
+						"y": 399,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_035.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 130
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 130
+					},
+					"frame": {
+						"x": 514,
+						"y": 528,
+						"w": 132,
+						"h": 130
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_009.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 132,
+						"y": 635,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_003.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 264,
+						"y": 531,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_040.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 130
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 130
+					},
+					"frame": {
+						"x": 644,
+						"y": 0,
+						"w": 132,
+						"h": 130
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_041.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 641,
+						"y": 132,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_010.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 641,
+						"y": 259,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_046.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 130
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 130
+					},
+					"frame": {
+						"x": 644,
+						"y": 386,
+						"w": 132,
+						"h": 130
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_002.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 644,
+						"y": 518,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_011.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 128
+					},
+					"frame": {
+						"x": 0,
+						"y": 763,
+						"w": 132,
+						"h": 128
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_012.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 132,
+						"y": 762,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_014.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 644,
+						"y": 650,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_093.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 264,
+						"y": 663,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_017.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 391,
+						"y": 660,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_018.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 774,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_101.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 774,
+						"y": 132,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_019.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 128
+					},
+					"frame": {
+						"x": 771,
+						"y": 518,
+						"w": 132,
+						"h": 128
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_020.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 774,
+						"y": 264,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_108.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 771,
+						"y": 650,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_109.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 0,
+						"y": 891,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_113.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 132,
+						"y": 889,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_021.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 264,
+						"y": 795,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_125.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 391,
+						"y": 792,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_116.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 518,
+						"y": 782,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_117.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 645,
+						"y": 782,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_025.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 128
+					},
+					"frame": {
+						"x": 772,
+						"y": 782,
+						"w": 132,
+						"h": 128
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_123.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 898,
+						"y": 650,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_124.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 132,
+						"h": 127
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					},
+					"frame": {
+						"x": 901,
+						"y": 0,
+						"w": 132,
+						"h": 127
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_095.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 55
+					},
+					"frame": {
+						"x": 133,
+						"y": 532,
+						"w": 100,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_051.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 518,
+						"y": 914,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_053.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 603,
+						"y": 914,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_054.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 688,
+						"y": 914,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_102.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 55
+					},
+					"frame": {
+						"x": 188,
+						"y": 532,
+						"w": 100,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_056.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 773,
+						"y": 914,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_044.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 858,
+						"y": 914,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_067.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 60
+					},
+					"frame": {
+						"x": 774,
+						"y": 396,
+						"w": 100,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_072.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 60
+					},
+					"frame": {
+						"x": 518,
+						"y": 660,
+						"w": 100,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_110.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 55
+					},
+					"frame": {
+						"x": 578,
+						"y": 660,
+						"w": 100,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_079.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 62
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 62
+					},
+					"frame": {
+						"x": 834,
+						"y": 396,
+						"w": 100,
+						"h": 62
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_080.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 60
+					},
+					"frame": {
+						"x": 896,
+						"y": 396,
+						"w": 100,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_038.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 943,
+						"y": 782,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_086.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 55
+					},
+					"frame": {
+						"x": 956,
+						"y": 132,
+						"w": 100,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_087.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 62
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 62
+					},
+					"frame": {
+						"x": 956,
+						"y": 232,
+						"w": 100,
+						"h": 62
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_047.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 943,
+						"y": 882,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_049.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 85
+					},
+					"frame": {
+						"x": 264,
+						"y": 927,
+						"w": 100,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_094.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 100,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 100,
+						"h": 55
+					},
+					"frame": {
+						"x": 901,
+						"y": 132,
+						"w": 100,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_064.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 901,
+						"y": 332,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_068.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 956,
+						"y": 392,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_069.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 956,
+						"y": 491,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_070.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 391,
+						"y": 531,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_071.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 62
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 62
+					},
+					"frame": {
+						"x": 391,
+						"y": 592,
+						"w": 99,
+						"h": 62
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_000.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 364,
+						"y": 927,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_073.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 899,
+						"y": 590,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_074.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 0,
+						"y": 1018,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_075.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 99,
+						"y": 1018,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_076.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 63
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 63
+					},
+					"frame": {
+						"x": 198,
+						"y": 1016,
+						"w": 99,
+						"h": 63
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_077.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 62
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 62
+					},
+					"frame": {
+						"x": 297,
+						"y": 1014,
+						"w": 99,
+						"h": 62
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_127.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 901,
+						"y": 232,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_005.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 463,
+						"y": 924,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_006.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 396,
+						"y": 1023,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_081.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 517,
+						"y": 1014,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_082.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 616,
+						"y": 1014,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_083.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 715,
+						"y": 1014,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_084.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 63
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 63
+					},
+					"frame": {
+						"x": 814,
+						"y": 1014,
+						"w": 99,
+						"h": 63
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_043.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1028,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_007.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1028,
+						"y": 99,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_045.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1028,
+						"y": 198,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_088.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 913,
+						"y": 1014,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_089.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 1000,
+						"y": 332,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_090.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 63
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 63
+					},
+					"frame": {
+						"x": 1012,
+						"y": 982,
+						"w": 99,
+						"h": 63
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_091.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 1028,
+						"y": 392,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_031.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1028,
+						"y": 491,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_032.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1028,
+						"y": 590,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_048.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1028,
+						"y": 689,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_013.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 1028,
+						"y": 788,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_096.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 99,
+						"y": 1078,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_097.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 297,
+						"y": 1076,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_098.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 63
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 63
+					},
+					"frame": {
+						"x": 396,
+						"y": 1077,
+						"w": 99,
+						"h": 63
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_050.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1012,
+						"y": 1045,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_008.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1099,
+						"y": 297,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_052.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1089,
+						"y": 392,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_023.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1113,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_103.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 55
+					},
+					"frame": {
+						"x": 0,
+						"y": 1079,
+						"w": 99,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_104.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 63
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 63
+					},
+					"frame": {
+						"x": 913,
+						"y": 1075,
+						"w": 99,
+						"h": 63
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_105.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 198,
+						"y": 1079,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_024.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1113,
+						"y": 491,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_055.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1113,
+						"y": 99,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_015.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 1113,
+						"y": 590,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_057.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 1113,
+						"y": 198,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_058.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 495,
+						"y": 1077,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_111.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 55
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 55
+					},
+					"frame": {
+						"x": 594,
+						"y": 1077,
+						"w": 99,
+						"h": 55
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_112.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 63
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 63
+					},
+					"frame": {
+						"x": 693,
+						"y": 1077,
+						"w": 99,
+						"h": 63
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_059.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 792,
+						"y": 1077,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_060.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 1082,
+						"y": 788,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_061.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 1113,
+						"y": 689,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_062.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 1082,
+						"y": 848,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_063.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 1028,
+						"y": 908,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_118.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 1127,
+						"y": 908,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_119.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 1111,
+						"y": 1007,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_120.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 56
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 56
+					},
+					"frame": {
+						"x": 0,
+						"y": 1134,
+						"w": 99,
+						"h": 56
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_121.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 297,
+						"y": 1137,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_016.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 594,
+						"y": 1132,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_065.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 61
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 61
+					},
+					"frame": {
+						"x": 99,
+						"y": 1139,
+						"w": 99,
+						"h": 61
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_066.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 60
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 60
+					},
+					"frame": {
+						"x": 495,
+						"y": 1137,
+						"w": 99,
+						"h": 60
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_039.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 85
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 85
+					},
+					"frame": {
+						"x": 0,
+						"y": 1190,
+						"w": 99,
+						"h": 85
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_126.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 198,
+						"y": 1140,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_128.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 99,
+						"h": 54
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 99,
+						"h": 54
+					},
+					"frame": {
+						"x": 396,
+						"y": 1140,
+						"w": 99,
+						"h": 54
+					}
+				},
+				{
+					"filename": "PNG/buildingTiles_078.png",
+					"rotated": true,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 13,
+						"h": 24
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 13,
+						"h": 24
+					},
+					"frame": {
+						"x": 490,
+						"y": 531,
+						"w": 13,
+						"h": 24
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "http://free-tex-packer.com",
+		"version": "0.6.7"
+	}
+}

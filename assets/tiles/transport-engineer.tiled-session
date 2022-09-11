@@ -1,0 +1,65 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "#building": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "#buildingTiles_sheet": {
+            "dynamicWrapping": false
+        },
+        "buildings.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "shooter/shooter.tsx": {
+            "dynamicWrapping": false
+        },
+        "untitled.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1003,
+                "y": 570
+            }
+        },
+        "untitled.tmx#shooter": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "C:/Users/Sarit Sotangkur/Documents/TransportEngineer/assets/tiles/shooter",
+    "map.height": 20,
+    "map.lastUsedFormat": "tmx",
+    "map.orientation": null,
+    "map.renderOrder": null,
+    "map.tileHeight": 128,
+    "map.tileWidth": 128,
+    "map.width": 20,
+    "openFiles": [
+    ],
+    "project": "transport-engineer.tiled-project",
+    "recentFiles": [
+        "untitled.tmx",
+        "buildings.tsx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 128,
+        "width": 128
+    },
+    "tileset.type": 0
+}
