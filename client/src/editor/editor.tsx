@@ -1,14 +1,16 @@
 import 'phaser';
-import { EntityEditorScene } from './scenes/entityEditorScene'
 import { ModifiedGameConfig, PhaserAdapter } from 'src/reactComponents/phaserAdapter';
 import React from 'react';
+import { BootScene } from './scenes/sceneOrchestrator';
+import { EntityEditorScene } from './scenes/entityEditorScene';
+import { PauseScene } from 'src/scenes/pauseScene';
 
 const editorConfig: ModifiedGameConfig = {
   title: 'TransportEngineer',
   url: 'https://github.com/ssotangkur/TransportEngineer',
   version: '2.0',
   type: Phaser.AUTO,
-  scene: [EntityEditorScene],
+  scene: [BootScene, EntityEditorScene, PauseScene],
   input: {
     keyboard: true
   },

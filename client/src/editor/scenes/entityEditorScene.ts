@@ -3,17 +3,19 @@ import particleUrl from '/assets/particle.png';
 import gaspUrl from '/assets/gasp.mp3';
 import { testWorld } from 'src/entities/world';
 import { grey, red } from 'src/utils/colors';
+import { Scenes } from './sceneOrchestrator';
+import { OrchestratableScene } from './orchestratableScene';
 
-export class EntityEditorScene extends Phaser.Scene {
+export const editorSceneName = 'EditorScene';
+
+export class EntityEditorScene extends OrchestratableScene {
   private startKey!: Phaser.Input.Keyboard.Key;
   private sprites: {s: Phaser.GameObjects.Image, r: number }[] = [];
   private world = testWorld;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
-    super({
-      key: 'MenuScene'
-    });
+    super(Scenes.EDITOR);
   }
 
   preload(): void {
@@ -48,9 +50,9 @@ export class EntityEditorScene extends Phaser.Scene {
   }
 
   update(): void {
+    super.update();
     if (this.startKey.isDown) {
       this.sound.play('gasp');
-      this.scene.start(this);
     }
 
     if (this.cursors?.down.isDown) {

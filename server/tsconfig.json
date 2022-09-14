@@ -3,7 +3,7 @@
     "jsx": "react",
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM", "scripthost"],
+    "lib": ["ESNext", "scripthost"],
     "moduleResolution": "Node",
     "strict": true,
     "sourceMap": true,
@@ -16,5 +16,5 @@
     "noImplicitReturns": true,
     "baseUrl": "./",
   },
-  "include": ["./src"]
+  "include": ["src/**/*"]
 }

@@ -3,8 +3,10 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "untitled.tmx",
     "expandedProjectPaths": [
+        ".",
+        "shooter"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -20,18 +22,20 @@
         },
         "buildings.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 1,
+            "scaleInDock": 0.25,
             "scaleInEditor": 1
         },
         "shooter/shooter.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
         },
         "untitled.tmx": {
-            "scale": 1,
+            "scale": 0.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1003,
-                "y": 570
+                "x": 474,
+                "y": 1437
             }
         },
         "untitled.tmx#shooter": {
@@ -49,11 +53,15 @@
     "map.tileWidth": 128,
     "map.width": 20,
     "openFiles": [
+        "buildings.tsx",
+        "shooter/shooter.tsx",
+        "untitled.tmx"
     ],
     "project": "transport-engineer.tiled-project",
     "recentFiles": [
-        "untitled.tmx",
-        "buildings.tsx"
+        "buildings.tsx",
+        "shooter/shooter.tsx",
+        "untitled.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.lastUsedFormat": "tsx",

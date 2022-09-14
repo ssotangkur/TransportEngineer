@@ -21,12 +21,19 @@ const ContainerDiv = styled.div`
   overflow: hidden;
 `;
 
-export const PhaserAdapter = ({config}: {config: ModifiedGameConfig}) => {
+export type PhaserAdapterProps = {
+  config: ModifiedGameConfig,
+  onGameCreated?: (game: Phaser.Game) => void,
+};
+
+export const PhaserAdapter = ({config, onGameCreated}: PhaserAdapterProps) => {
   const container = React.useRef<HTMLDivElement>(null);
  
   useLayoutEffect(() => {
     if (container?.current) {
-      (window as any)._game = new Phaser.Game(mergeGameConfig(config, container.current));
+      const game = new Phaser.Game(mergeGameConfig(config, container.current));
+      (window as any)._game = game;
+      onGameCreated?.(game);
     }
 
     return () => {
