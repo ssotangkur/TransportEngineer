@@ -1,9 +1,9 @@
-import express from "express"
+import express from "express";
+import { apiRoute } from "src/routes/apiRoute";
 const PORT = 3001;
-const app = express();
+export const app = express();
 
-app.get("/api/v1", (_, res) => {
-  res.send("hello !!!! world");
-});
+app.use(express.json());
+app.use('/', apiRoute);
 
 app.listen(PORT, () => console.log(`start listening on port : ${PORT}`));

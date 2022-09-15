@@ -2,7 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "CommonJS",
     "lib": ["ESNext", "scripthost"],
     "moduleResolution": "Node",
     "strict": true,
