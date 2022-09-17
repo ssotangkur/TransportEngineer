@@ -1,1 +1,10 @@
-{"hello":"world"}
+[
+  {
+    "name":"EntityType1",
+    "components": []
+  },
+  {
+    "name":"EntityType2",
+    "components": []
+  }
+]

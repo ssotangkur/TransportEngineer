@@ -4,12 +4,11 @@
  * Every EntityType defines what ComponentType it supports
  */
 
+import { ComponentType } from "./componentType";
 
-export type ComponentType = {
+
+
+export interface EntityType {
   name: string,
-}
-
-export type EntityType = {
-  name: string,
-
+  components: ComponentType[],
 }
