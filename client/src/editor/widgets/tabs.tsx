@@ -34,7 +34,8 @@ const TabElement = styled.div<{active?: boolean}>`
   padding-top: .25rem;
   padding-right: .25rem;
   border: 1px solid grey;
-  border-bottom-color: ${props => props.active ? 'white' : 'solid grey'}; 
+   // color the bottom border to match the background, covering over the tab row border
+  border-bottom-color: ${props => props.active ? 'white' : 'solid grey'};
   background-color: ${props => props.active ? 'white' : 'lightgrey'};
   margin-right: 0.5rem;
   z-index: 1;

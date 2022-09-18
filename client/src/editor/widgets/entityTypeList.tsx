@@ -1,11 +1,8 @@
 import React from "react"
-import { EntityType } from "src/entities/entityType"
+import { catalog } from "src/entities/catalog"
+import { Events } from "src/events/events"
 import styled from "styled-components"
 import { Scrollable } from "./scrollable"
-
-export type EntityTypeListProps = {
-  entityTypes: EntityType[],
-}
 
 const ColumnContainer = styled.div`
   display: flex;
@@ -19,12 +16,21 @@ const EntityRow = styled.div`
   border: 1px solid black;
 `
 
-export const EntityTypeList = ({entityTypes}: EntityTypeListProps) => {
+export const EntityTypeList = () => {
+
+  const entityTypes = catalog;
 
   return (
     <Scrollable>
       <ColumnContainer>
-        {entityTypes.map((entityType) => <EntityRow key={entityType.name}>{entityType.name}</EntityRow>)}
+        {entityTypes.map((entityType) => 
+          <EntityRow 
+            key={entityType.name}
+            onClick={() => Events.emit('EntityTypeList:EntityClicked', entityType)}
+          >
+            {entityType.name}
+          </EntityRow>
+        )}
       </ColumnContainer>
     </Scrollable>
   )
