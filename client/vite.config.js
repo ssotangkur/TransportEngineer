@@ -1,6 +1,5 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import mix from 'vite-plugin-mix'
 
 export default defineConfig({
   // Define `base` because this deploys to user.github.io/repo-name/
@@ -13,20 +12,20 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         editor: resolve(__dirname, 'src/editor/editor.html'),
-      }
-    }
+      },
+    },
   },
+  publicDir: 'data',
   resolve: {
     alias: {
       src: resolve(__dirname, 'src'),
-      data: resolve(__dirname, 'data'),
     },
   },
   server: {
     // vite server configs, for details see [vite doc](https://vitejs.dev/config/#server-host)
     port: 3000,
     proxy: {
-      "/api/v1": "http://localhost:3001/",
+      '/api/v1': 'http://localhost:3001/',
     },
   },
-});
+})

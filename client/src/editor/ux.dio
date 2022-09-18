@@ -1,0 +1,66 @@
+<mxfile host="65bd71144e">
+    <diagram id="8nHh5sPmsjakxflDmp_Q" name="Page-1">
+        <mxGraphModel dx="870" dy="843" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1600" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#999999;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="80" width="730" height="680" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Editor Page" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="50" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Content Pane" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="100" width="500" height="640" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="SideBar" style="swimlane;" parent="1" vertex="1">
+                    <mxGeometry x="650" y="80" width="200" height="680" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Add EntityType" style="rounded=1;whiteSpace=wrap;html=1;" parent="6" vertex="1">
+                    <mxGeometry x="120" y="200" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6" vertex="1">
+                    <mxGeometry x="70" y="510" width="120" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Name:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6" vertex="1">
+                    <mxGeometry x="10" y="505" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;" parent="6" vertex="1">
+                    <mxGeometry x="10" y="250" width="180" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="" style="html=1;shadow=0;dashed=0;shape=mxgraph.bootstrap.rrect;rSize=5;strokeColor=#DFDFDF;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="110" width="180" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="Cras justo odio" style="html=1;shadow=0;dashed=0;shape=mxgraph.bootstrap.topButton;rSize=5;strokeColor=none;fillColor=#0085FC;fontColor=#ffffff;perimeter=none;whiteSpace=wrap;resizeWidth=1;align=left;spacing=10;" parent="22" vertex="1">
+                    <mxGeometry width="180" height="30" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="Dapibus ac facilisis in" style="strokeColor=inherit;fillColor=inherit;gradientColor=inherit;fontColor=inherit;html=1;shadow=0;dashed=0;perimeter=none;whiteSpace=wrap;resizeWidth=1;align=left;spacing=10;" parent="22" vertex="1">
+                    <mxGeometry width="180" height="30" relative="1" as="geometry">
+                        <mxPoint y="30" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="25" value="Morbi leo risus" style="strokeColor=inherit;fillColor=inherit;gradientColor=inherit;fontColor=inherit;html=1;shadow=0;dashed=0;perimeter=none;whiteSpace=wrap;resizeWidth=1;align=left;spacing=10;" parent="22" vertex="1">
+                    <mxGeometry width="180" height="30" relative="1" as="geometry">
+                        <mxPoint y="60" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="26" value="Porta ac consectetur ac" style="strokeColor=inherit;fillColor=inherit;gradientColor=inherit;fontColor=inherit;html=1;shadow=0;dashed=0;perimeter=none;whiteSpace=wrap;resizeWidth=1;align=left;spacing=10;" parent="22" vertex="1">
+                    <mxGeometry width="180" height="30" relative="1" as="geometry">
+                        <mxPoint y="90" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="27" value="Vestibulum at eros" style="strokeColor=inherit;fillColor=inherit;gradientColor=inherit;fontColor=inherit;html=1;shadow=0;dashed=0;shape=mxgraph.bootstrap.bottomButton;rSize=5;perimeter=none;whiteSpace=wrap;resizeWidth=1;resizeHeight=0;align=left;spacing=10;" parent="22" vertex="1">
+                    <mxGeometry y="1" width="180" height="30" relative="1" as="geometry">
+                        <mxPoint y="-30" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="17" value="X" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#333333;" parent="1" vertex="1">
+                    <mxGeometry x="811" y="147" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="X" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#333333;" parent="1" vertex="1">
+                    <mxGeometry x="810" y="175" width="20" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,22 @@
+{
+  "name": "common",
+  "version": "1.0.0",
+  "description": "Types and code common to other workspaces",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssotangkur/TransportEngineer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ssotangkur/TransportEngineer/issues"
+  },
+  "homepage": "https://github.com/ssotangkur/TransportEngineer#readme",
+  "dependencies": {
+    "phaser": "^3.55.2"
+  }
+}

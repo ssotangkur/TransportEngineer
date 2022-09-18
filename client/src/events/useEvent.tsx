@@ -3,13 +3,13 @@
  */
 
 import { useEffect, useState } from 'react'
-import { EventCallbacks, EventName, Events } from './events'
+import { EventCallbacks, Events } from './events'
 
 export const useEvent = <E extends keyof EventCallbacks>(
   eventName: E,
   callback?: EventCallbacks[E],
 ) => {
-  const [payload, setPayload] = useState<Parameters<EventCallbacks[EventName]>>()
+  const [payload, setPayload] = useState<Parameters<EventCallbacks[E]>>()
 
   useEffect(() => {
     const handler = (...args: any) => {

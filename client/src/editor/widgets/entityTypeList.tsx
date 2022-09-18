@@ -1,8 +1,9 @@
-import React from "react"
-import { catalog } from "src/entities/catalog"
-import { Events } from "src/events/events"
-import styled from "styled-components"
-import { Scrollable } from "./scrollable"
+import React, { useState } from 'react'
+import { EntityType } from 'common/src/entities/entityType'
+import { useCatalog } from 'src/entities/useCatalog'
+import { Events } from 'src/events/events'
+import styled from 'styled-components'
+import { Scrollable } from './scrollable'
 
 const ColumnContainer = styled.div`
   display: flex;
@@ -10,27 +11,37 @@ const ColumnContainer = styled.div`
   flex-grow: 1;
 `
 
-const EntityRow = styled.div`
+const EntityRow = styled.div<{ selected?: boolean }>`
   display: flex;
   flex-direction: row;
   border: 1px solid black;
+  ${(props) => props.selected && 'background-color: blue'};
+  ${(props) => props.selected && 'color: white'};
 `
 
 export const EntityTypeList = () => {
+  const entityTypes = useCatalog()
+  const [selectedEntityType, setSelectedEntityType] = useState<EntityType>()
 
-  const entityTypes = catalog;
+  if (!entityTypes) return <div>Loading...</div>
+
+  const onClick = (entityType: EntityType) => {
+    setSelectedEntityType(entityType)
+    Events.emit('EntityTypeList:EntitySelected', entityType)
+  }
 
   return (
     <Scrollable>
       <ColumnContainer>
-        {entityTypes.map((entityType) => 
-          <EntityRow 
+        {entityTypes.map((entityType) => (
+          <EntityRow
             key={entityType.name}
-            onClick={() => Events.emit('EntityTypeList:EntityClicked', entityType)}
+            onClick={() => onClick(entityType)}
+            selected={selectedEntityType === entityType}
           >
             {entityType.name}
           </EntityRow>
-        )}
+        ))}
       </ColumnContainer>
     </Scrollable>
   )

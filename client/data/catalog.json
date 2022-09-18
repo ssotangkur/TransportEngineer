@@ -1,10 +1,53 @@
 [
   {
-    "name":"EntityType1",
-    "components": []
+    "name": "EntityType1",
+    "components": [
+      {
+        "name": "position",
+        "props": [
+          {
+            "name": "position",
+            "type": "vec2",
+            "initial": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "size",
+        "props": [
+          {
+            "name": "width",
+            "type": "number",
+            "initial": 0
+          },
+          {
+            "name": "height",
+            "type": "number",
+            "initial": 0
+          }
+        ]
+      }
+    ]
   },
   {
-    "name":"EntityType2",
-    "components": []
+    "name": "EntityType2",
+    "components": [
+      {
+        "name": "position",
+        "props": [
+          {
+            "name": "position",
+            "type": "vec2",
+            "initial": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    ]
   }
 ]

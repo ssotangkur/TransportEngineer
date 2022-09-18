@@ -3,27 +3,19 @@
     "jsx": "react",
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM", "scripthost"],
+    "lib": ["ESNext", "scripthost"],
     "moduleResolution": "Node",
     "strict": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "types": ["vite/client"],
-    "noEmit": true,
+    "noEmit": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "composite": true
   },
-  "include": [
-    "src/**/*",
-    "../common/src/entities/entityType.ts",
-    "../common/src/entities/componentType.ts"
-  ],
-  "references": [
-    {
-      "path": "../common/tsconfig.json"
-    }
-  ]
+  "include": ["src/**/*"]
 }
