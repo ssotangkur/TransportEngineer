@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { EntityType } from 'common/src/entities/entityType'
 import { useCatalog } from 'src/entities/useCatalog'
 import { Events } from 'src/events/events'
@@ -23,12 +23,19 @@ export const EntityTypeList = () => {
   const entityTypes = useCatalog()
   const [selectedEntityType, setSelectedEntityType] = useState<EntityType>()
 
-  if (!entityTypes) return <div>Loading...</div>
-
-  const onClick = (entityType: EntityType) => {
+  const select = (entityType: EntityType) => {
     setSelectedEntityType(entityType)
     Events.emit('EntityTypeList:EntitySelected', entityType)
   }
+
+  // Auto select first one when loaded
+  useEffect(() => {
+    if (!selectedEntityType && entityTypes?.length) {
+      select(entityTypes[0])
+    }
+  }, [entityTypes])
+
+  if (!entityTypes || !selectedEntityType) return <div>Loading...</div>
 
   return (
     <Scrollable>
@@ -36,8 +43,8 @@ export const EntityTypeList = () => {
         {entityTypes.map((entityType) => (
           <EntityRow
             key={entityType.name}
-            onClick={() => onClick(entityType)}
-            selected={selectedEntityType === entityType}
+            onClick={() => select(entityType)}
+            selected={selectedEntityType.name === entityType.name}
           >
             {entityType.name}
           </EntityRow>

@@ -23,7 +23,7 @@ export const ComponentTypeForEntityTypeList = () => {
   return (
     <Container>
       <div>Components:</div>
-      {entity?.[0]?.components?.map((c) => <ListItem>{c.name}</ListItem>) ?? null}
+      {entity?.[0]?.components?.map((c) => <ListItem key={c.name}>{c.name}</ListItem>) ?? null}
     </Container>
   )
 }

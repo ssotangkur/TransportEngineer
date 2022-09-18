@@ -71,7 +71,7 @@ export const ComponentTypeChooser = () => {
   return (
     <Container>
       {allComponentTypes.map((ct) => (
-        <Row>
+        <Row key={ct.name}>
           <div>{ct.name}</div>
           <AddRemoveButton componentType={ct} entityType={entityType} />
         </Row>
