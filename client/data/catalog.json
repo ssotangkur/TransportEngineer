@@ -47,6 +47,21 @@
             }
           }
         ]
+      },
+      {
+        "name": "size",
+        "props": [
+          {
+            "name": "width",
+            "type": "number",
+            "initial": 0
+          },
+          {
+            "name": "height",
+            "type": "number",
+            "initial": 0
+          }
+        ]
       }
     ]
   }

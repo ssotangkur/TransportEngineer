@@ -1,7 +1,9 @@
 import express from "express";
 import { promises } from "fs";
 import { EntityType } from "common/src/entities/entityType";
-import { AddComponentTypeToEntityTypeRequest } from "common/src/api/catalogApi";
+import { ServerImpl } from "common/src/api/types";
+import type { CatalogApis } from "common/src/routes/catalog/catalog";
+import { subCatImpl } from "./subcatalog";
 
 export const catalogRoute = express.Router();
 
@@ -35,25 +37,85 @@ catalogRoute.post("/", async (req: express.Request, resp) => {
   resp.send();
 });
 
-catalogRoute.post(
-  "/addComponentTypeToEntityType",
-  async (req: express.Request, resp) => {
-    console.log(req.body);
-    const { entityType, componentType } =
-      req.body as AddComponentTypeToEntityTypeRequest;
-
-    console.log({ entityType, componentType });
-
+export const catalogImpl: ServerImpl<CatalogApis> = {
+  async postAddComponentTypeToEntityType({ componentType, entityType }) {
+    console.log(
+      `AddComponentTypeToEntityType: ComponentType:${componentType.name} EntityType:${entityType.name}`
+    );
     const catalog = await getCatalogJson();
-
     catalog.forEach((e) => {
       if (e.name === entityType.name) {
         e.components.push(componentType);
         e.components.sort((a, b) => a.name.localeCompare(b.name));
       }
     });
-
     await writeCatalogJson(catalog);
-    resp.send();
-  }
-);
+    return "foo";
+  },
+  async postRemoveComponentTypeFromEntityType() {
+    return "foo";
+  },
+  async post() {
+    return;
+  },
+  async get() {
+    return getCatalogJson();
+  },
+  async delete() {
+    return "foo";
+  },
+
+  routes: {
+    subcatalog: subCatImpl,
+  },
+};
+
+// catalogRoute.post(
+//   "/addComponentTypeToEntityType",
+//   async (req: express.Request, resp) => {
+//     console.log(req.body);
+//     const { entityType, componentType } =
+//       req.body as AddComponentTypeToEntityTypeApi["requestType"];
+
+//     console.log({ entityType, componentType });
+
+//     const catalog = await getCatalogJson();
+
+//     catalog.forEach((e) => {
+//       if (e.name === entityType.name) {
+//         e.components.push(componentType);
+//         e.components.sort((a, b) => a.name.localeCompare(b.name));
+//       }
+//     });
+
+//     await writeCatalogJson(catalog);
+//     resp.send();
+//   }
+// );
+
+// catalogRoute.post(
+//   "/removeComponentTypeFromEntityType",
+//   async (req: express.Request, resp) => {
+//     console.log(req.body);
+//     const { entityType, componentType } =
+//       req.body as RemoveComponentTypeFromEntityTypeApi["requestType"];
+
+//     console.log({ entityType, componentType });
+
+//     const catalog = await getCatalogJson();
+
+//     catalog.forEach((e) => {
+//       if (e.name === entityType.name) {
+//         e.components = e.components.filter((ct) => {
+//           if (ct.name === componentType.name) {
+//             return false;
+//           }
+//           return true;
+//         });
+//       }
+//     });
+
+//     await writeCatalogJson(catalog);
+//     resp.send();
+//   }
+// );
