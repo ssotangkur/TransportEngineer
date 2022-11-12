@@ -1,6 +1,6 @@
 import express from "express";
 import { promises } from "fs";
-import { EntityType } from "common/src/entities/entityType";
+import { EntityType } from "common";
 import { ServerImpl } from "common/src/api/types";
 import type { CatalogApis } from "common/src/routes/catalog/catalog";
 import { subCatImpl } from "./subcatalog";

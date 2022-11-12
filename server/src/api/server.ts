@@ -3,10 +3,10 @@ import { RootApis } from "common/src/routes/root";
 import express, { Router } from "express";
 import { catalogImpl } from "src/routes/catalog";
 
-export type Api<ReqType, RespType> = {
-  request: ReqType;
-  response: RespType;
-};
+// export type Api<ReqType, RespType> = {
+//   request: ReqType;
+//   response: RespType;
+// };
 
 const rootRoute: ServerImpl<RootApis> = {
   routes: {

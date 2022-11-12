@@ -19,10 +19,9 @@
       "common": ["../common/src"]
     }
   },
-  "include": ["src/**/*"]
-  // "references": [
-  //   {
-  //     "path": "../common/tsconfig.json"
-  //   }
-  // ]
+  "include": ["src/**/*"],
+  "ts-node": {
+    // https://typestrong.org/ts-node/docs/paths#why-is-this-not-built-in-to-ts-node
+    "require": ["tsconfig-paths/register"]
+  }
 }

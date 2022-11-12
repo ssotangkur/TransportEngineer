@@ -1,4 +1,4 @@
-import { Api } from "common/src/api/types";
+import { Api } from "../api/types";
 import { CatalogApis } from "./catalog/catalog";
 
 export interface RootApis {

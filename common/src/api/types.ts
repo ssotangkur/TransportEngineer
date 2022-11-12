@@ -1,5 +1,5 @@
-import { ComponentType } from "common/src/entities/componentType";
-import { EntityType } from "common/src/entities/entityType";
+import { ComponentType } from "../entities/componentType";
+import { EntityType } from "../entities/entityType";
 
 export const METHODS = ["POST", "GET", "PUT", "DELETE"] as const;
 export type Method = typeof METHODS[number];

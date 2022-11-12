@@ -1,9 +1,5 @@
-import {
-  Api,
-  EntityTypeComponentType,
-  ErrorMessage,
-} from "common/src/api/types";
-import { EntityType } from "common/src/entities/entityType";
+import { Api, EntityTypeComponentType, ErrorMessage } from "../../api/types";
+import { EntityType } from "../../entities/entityType";
 import { SubCatalogApis } from "./subCatalog";
 
 export interface CatalogApis {
