@@ -8,11 +8,15 @@ import { Scrollable } from './scrollable'
 
 const Container = styled(Scrollable)`
   flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem;
 `
 
 const Row = styled.div`
   display: flex;
   flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
 `
 
 const AddButton = styled.button`
@@ -46,7 +50,22 @@ const AddRemoveButton = ({
   if (containsComponentType(entityType, componentType)) {
     return (
       <RemoveButton
-        onClick={() => Events.emit('removeComponentTypeToEntityType', componentType, entityType)}
+        onClick={() => {
+          console.log('Emitting Event removeComponentTypeFromEntityType')
+          Events.emit('removeComponentTypeFromEntityType', componentType, entityType)
+          const request = {
+            componentType,
+            entityType,
+          }
+
+          void fetch('/api/v1/catalog/RemoveComponentTypeFromEntityType', {
+            method: 'POST',
+            body: JSON.stringify(request),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+        }}
       >
         Remove
       </RemoveButton>

@@ -3,14 +3,14 @@ import { EntityType } from 'common/src/entities/entityType'
 import { createEventEmitter } from './eventEmitter'
 
 export interface EventCallbacks {
-  reload: () => void
+  reloadCatalog: () => void
   fullScreen: () => void
   unpause: () => void
   pause: () => void
   boot: () => void
   'EntityTypeList:EntitySelected': (entityType: EntityType) => void
   addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => void
-  removeComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => void
+  removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => void
 }
 
 export type EventName = keyof EventCallbacks

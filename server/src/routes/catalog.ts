@@ -52,7 +52,18 @@ export const catalogImpl: ServerImpl<CatalogApis> = {
     await writeCatalogJson(catalog);
     return "foo";
   },
-  async postRemoveComponentTypeFromEntityType() {
+  async postRemoveComponentTypeFromEntityType({ componentType, entityType }) {
+    console.log(
+      `RemoveComponentTypeFromEntityType: ComponentType:${componentType.name} EntityType:${entityType.name}`
+    );
+    const catalog = await getCatalogJson();
+    catalog.forEach((e) => {
+      if (e.name === entityType.name) {
+        e.components = e.components.filter((c) => c.name != componentType.name);
+        e.components.sort((a, b) => a.name.localeCompare(b.name));
+      }
+    });
+    await writeCatalogJson(catalog);
     return "foo";
   },
   async post() {

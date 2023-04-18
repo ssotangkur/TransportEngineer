@@ -5,6 +5,8 @@ import { Scrollable } from './scrollable'
 
 const Container = styled(Scrollable)`
   flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem;
 `
 
 const ListItem = styled.div`

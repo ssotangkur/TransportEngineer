@@ -6,6 +6,6 @@ export interface RootApis {
     catalog: CatalogApis;
   };
   "": {
-    GET: Api<void, string>;
+    GET: Api<undefined, string>;
   };
 }

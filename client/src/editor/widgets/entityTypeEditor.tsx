@@ -1,8 +1,7 @@
 import React from 'react'
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex'
-import { ComponentTypeChooser } from './componentTypeChooser'
-import { ComponentTypeForEntityTypeList } from './componentTypeForEntityTypeList'
 import { EntityTypeList } from './entityTypeList'
+import { EntityTypeDetails } from './entityTypeDetails'
 
 export const EntityTypeEditor = () => {
   return (
@@ -12,8 +11,7 @@ export const EntityTypeEditor = () => {
       </ReflexElement>
       <ReflexSplitter />
       <ReflexElement flex={1} className='noscroll'>
-        <ComponentTypeForEntityTypeList />
-        <ComponentTypeChooser />
+        <EntityTypeDetails />
       </ReflexElement>
     </ReflexContainer>
   )
