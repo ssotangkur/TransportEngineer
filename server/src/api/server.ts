@@ -28,7 +28,6 @@ const splitMethod = (methodName: string): [Method, string] => {
 };
 
 export const makeRouter = <T>(impl: ServerImpl<T>): Router => {
-  console.log("test");
   const router = express.Router();
   for (const [key, val] of Object.entries(impl)) {
     if (key === "routes") {
