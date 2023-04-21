@@ -3,6 +3,19 @@
     "name": "EntityType1",
     "components": [
       {
+        "name": "position",
+        "props": [
+          {
+            "name": "position",
+            "type": "vec2",
+            "initial": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      },
+      {
         "name": "size",
         "props": [
           {
