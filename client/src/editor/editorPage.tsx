@@ -8,6 +8,7 @@ import 'phaser'
 import { Tab, Tabs } from './widgets/tabs'
 import { EntityTypeEditor } from './widgets/entityTypeEditor'
 import { ActionButtons } from './widgets/actionButtons'
+import { useOnWSEvent } from 'src/api/useWebSocket'
 
 const FullPageDiv = styled.div`
   display: flex;
@@ -17,6 +18,11 @@ const FullPageDiv = styled.div`
 `
 
 export const EditorPage = () => {
+  useOnWSEvent('catalog', (...args) => {
+    console.log('useOnWEEvent to subscribe to catalog')
+    console.log(args)
+  })
+
   return (
     <FullPageDiv>
       <ReflexContainer orientation='vertical' style={{ height: '100%' }}>

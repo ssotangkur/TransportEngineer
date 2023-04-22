@@ -3,6 +3,7 @@ import { rootRouter } from "src/api/server";
 import listEndpoints from "express-list-endpoints";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { getCatalogJson } from "./routes/catalog";
 
 const PORT = 3001;
 export const app = express();
@@ -13,7 +14,6 @@ const io = new Server(httpServer, {
 });
 
 app.use(express.json());
-// app.use("/api/v1", apiRoute); // This needs to match vite.config.js proxy path
 app.use("/api/v1", rootRouter); // This needs to match vite.config.js proxy path
 
 console.log(listEndpoints(app));
@@ -21,9 +21,17 @@ console.log(listEndpoints(app));
 // app.listen(PORT, () => console.log(`start listening on port : ${PORT}`));
 
 io.on("connection", (socket) => {
-  console.log("Connection");
-  socket.on("hello", (...args) => {
-    console.log("hello" + args);
+  console.log(`Client ${socket.id} has connected.`);
+  socket.on("subscribeTo", async (message) => {
+    console.log(`Client ${socket.id} subscribing to ${message}`);
+    // socket.emit(message);
+    if (message === "catalog") {
+      console.log("Emitting catalog");
+      const catalog = await getCatalogJson();
+      socket.emit("catalog", catalog);
+    }
   });
+  socket.emit("connectionAck", { socketId: socket.id });
+  socket.emit("catalog", getCatalogJson);
 });
 httpServer.listen(PORT, () => console.log(`start listening on port : ${PORT}`));

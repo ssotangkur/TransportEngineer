@@ -12,7 +12,7 @@ const catalogFile = "../client/data/catalog.json";
 const readFileAsync = promises.readFile;
 const writeFileAsync = promises.writeFile;
 
-const getCatalogJson = async () => {
+export const getCatalogJson = async () => {
   const buffer = await readFileAsync(catalogFile, "utf8");
   return JSON.parse(buffer) as EntityType[];
 };
