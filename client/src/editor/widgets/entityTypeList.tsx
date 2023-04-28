@@ -32,12 +32,15 @@ export const EntityTypeList = () => {
 
   // Auto select first one when loaded
   useEffect(() => {
-    if (!selectedEntityType && entityTypes?.length) {
-      select(entityTypes[0])
+    if (
+      catalog?.length &&
+      (!selectedEntityType || (selectedEntityType && !catalog.includes(selectedEntityType)))
+    ) {
+      select(catalog[0])
     }
-  }, [entityTypes])
+  }, [catalog])
 
-  if (!entityTypes || !selectedEntityType) return <div>Loading...</div>
+  if (!catalog || !selectedEntityType) return <div>Loading...</div>
 
   return (
     <Scrollable>
