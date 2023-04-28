@@ -4,6 +4,7 @@ import { EntityType } from "common";
 import { ServerImpl } from "common/src/api/types";
 import type { CatalogApis } from "common/src/routes/catalog/catalog";
 import { subCatImpl } from "./subcatalog";
+import { ComponentType } from "common/src/entities/componentType";
 
 export const catalogRoute = express.Router();
 
@@ -36,6 +37,41 @@ catalogRoute.post("/", async (req: express.Request, resp) => {
   }
   resp.send();
 });
+
+export const addComponentTypeToEntityType = async (
+  componentType: ComponentType,
+  entityType: EntityType
+) => {
+  console.log(
+    `addComponentTypeToEntityType: ComponentType:${componentType.name} EntityType:${entityType.name}`
+  );
+  const catalog = await getCatalogJson();
+  catalog.forEach((e) => {
+    if (e.name === entityType.name) {
+      e.components.push(componentType);
+      e.components.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  });
+  await writeCatalogJson(catalog);
+};
+
+export const removeComponentTypeFromEntityType = async (
+  componentType: ComponentType,
+  entityType: EntityType
+) => {
+  console.log(
+    `RemoveComponentTypeFromEntityType: ComponentType:${componentType.name} EntityType:${entityType.name}`
+  );
+  const catalog = await getCatalogJson();
+  catalog.forEach((e) => {
+    if (e.name === entityType.name) {
+      e.components = e.components.filter((c) => c.name != componentType.name);
+      e.components.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  });
+  await writeCatalogJson(catalog);
+  return "foo";
+};
 
 export const catalogImpl: ServerImpl<CatalogApis> = {
   async postAddComponentTypeToEntityType({ componentType, entityType }) {

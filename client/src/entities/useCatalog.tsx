@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { getCatalog } from './catalog'
+import { useState } from 'react'
 import { EntityType } from '../../../common/src/entities/entityType'
 import { useOnWSEvent } from 'src/api/useWebSocket'
 

@@ -2,8 +2,18 @@ import express from "express";
 import { rootRouter } from "src/api/server";
 import listEndpoints from "express-list-endpoints";
 import { createServer } from "http";
-import { Server } from "socket.io";
-import { getCatalogJson } from "./routes/catalog";
+import { Namespace, Server } from "socket.io";
+import {
+  addComponentTypeToEntityType,
+  getCatalogJson,
+  removeComponentTypeFromEntityType,
+} from "./routes/catalog";
+import { ComponentType } from "common/src/entities/componentType";
+import { EntityType } from "common";
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "common/src/api/webSocketTypes";
 
 const PORT = 3001;
 export const app = express();
@@ -34,4 +44,41 @@ io.on("connection", (socket) => {
   socket.emit("connectionAck", { socketId: socket.id });
   socket.emit("catalog", getCatalogJson);
 });
+
+const catalogServer: Namespace<ClientToServerEvents, ServerToClientEvents> =
+  io.of("/catalog");
+
+catalogServer.on("connection", (socket) => {
+  const emitCatalog = async () => {
+    console.log("Emitting catalog");
+    const catalog = await getCatalogJson();
+    socket.emit("catalog", catalog);
+    // socket.broadcast.emit("catalog", catalog);
+  };
+
+  const handleAddComponentTypeToEntityType = async (
+    componentType: ComponentType,
+    entityType: EntityType
+  ) => {
+    await addComponentTypeToEntityType(componentType, entityType);
+    await emitCatalog();
+  };
+
+  const handleRemoveComponentTypeFromEntityType = async (
+    componentType: ComponentType,
+    entityType: EntityType
+  ) => {
+    await removeComponentTypeFromEntityType(componentType, entityType);
+    await emitCatalog();
+  };
+
+  socket.on("getCatalog", emitCatalog);
+  socket.on("addComponentTypeToEntityType", handleAddComponentTypeToEntityType);
+  socket.on(
+    "removeComponentTypeFromEntityType",
+    handleRemoveComponentTypeFromEntityType
+  );
+  emitCatalog();
+});
+
 httpServer.listen(PORT, () => console.log(`start listening on port : ${PORT}`));

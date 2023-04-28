@@ -5,6 +5,7 @@ import { Events } from 'src/events/events'
 import { useEvent } from 'src/events/useEvent'
 import styled from 'styled-components'
 import { Scrollable } from './scrollable'
+import { useCatalog } from 'src/api/useWebSocket'
 
 const Container = styled(Scrollable)`
   flex-direction: column;
@@ -47,24 +48,27 @@ const AddRemoveButton = ({
   componentType: ComponentType
   entityType: EntityType
 }) => {
+  const { addComponentTypeToEntityType, removeComponentTypeFromEntityType } = useCatalog()
+
   if (containsComponentType(entityType, componentType)) {
     return (
       <RemoveButton
         onClick={() => {
           console.log('Emitting Event removeComponentTypeFromEntityType')
           Events.emit('removeComponentTypeFromEntityType', componentType, entityType)
-          const request = {
-            componentType,
-            entityType,
-          }
+          // const request = {
+          //   componentType,
+          //   entityType,
+          // }
 
-          void fetch('/api/v1/catalog/RemoveComponentTypeFromEntityType', {
-            method: 'POST',
-            body: JSON.stringify(request),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          })
+          // void fetch('/api/v1/catalog/RemoveComponentTypeFromEntityType', {
+          //   method: 'POST',
+          //   body: JSON.stringify(request),
+          //   headers: {
+          //     'Content-Type': 'application/json',
+          //   },
+          // })
+          removeComponentTypeFromEntityType(componentType, entityType)
         }}
       >
         Remove
@@ -73,7 +77,10 @@ const AddRemoveButton = ({
   }
   return (
     <AddButton
-      onClick={() => Events.emit('addComponentTypeToEntityType', componentType, entityType)}
+      onClick={() => {
+        Events.emit('addComponentTypeToEntityType', componentType, entityType)
+        addComponentTypeToEntityType(componentType, entityType)
+      }}
     >
       Add
     </AddButton>

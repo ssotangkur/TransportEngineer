@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { EntityType } from 'common/src/entities/entityType'
-import { useCatalog } from 'src/entities/useCatalog'
+// import { useCatalog } from 'src/entities/useCatalog'
+import { useCatalog } from 'src/api/useWebSocket'
 import { Events } from 'src/events/events'
 import styled from 'styled-components'
 import { Scrollable } from './scrollable'
@@ -20,7 +21,8 @@ const EntityRow = styled.div<{ selected?: boolean }>`
 `
 
 export const EntityTypeList = () => {
-  const entityTypes = useCatalog()
+  const { catalog } = useCatalog()
+  const entityTypes = catalog
   const [selectedEntityType, setSelectedEntityType] = useState<EntityType>()
 
   const select = (entityType: EntityType) => {

@@ -15,34 +15,34 @@ export const getCatalog = async (): Promise<EntityType[]> => {
 
 Events.on('addComponentTypeToEntityType', (componentType, entityType) => {
   console.debug('addComponentTypeToEntityType')
-  const request = {
-    componentType,
-    entityType,
-  }
+  // const request = {
+  //   componentType,
+  //   entityType,
+  // }
 
-  void fetch('/api/v1/catalog/AddComponentTypeToEntityType', {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  // void fetch('/api/v1/catalog/AddComponentTypeToEntityType', {
+  //   method: 'POST',
+  //   body: JSON.stringify(request),
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  // })
   // Fire and forget
 })
 
 Events.on('removeComponentTypeFromEntityType', (componentType, entityType) => {
   console.debug('removeComponentTypeFromEntityType')
-  const request = {
-    componentType,
-    entityType,
-  }
+  // const request = {
+  //   componentType,
+  //   entityType,
+  // }
 
-  void fetch('/api/v1/catalog/RemoveComponentTypeFromEntityType', {
-    method: 'POST',
-    body: JSON.stringify(request),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  // void fetch('/api/v1/catalog/RemoveComponentTypeFromEntityType', {
+  //   method: 'POST',
+  //   body: JSON.stringify(request),
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  // })
   // Fire and forget
 })
