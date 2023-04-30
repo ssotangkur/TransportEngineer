@@ -4,6 +4,7 @@ import type { Socket } from 'socket.io-client'
 import type { ClientToServerEvents, ServerToClientEvents } from 'common/src/api/webSocketTypes'
 import { EntityType } from 'common/src/entities/entityType'
 import { ComponentType } from 'common/src/entities/componentType'
+import { getTracePrinter } from 'src/utils/tracePrinter'
 
 export const SOCKET_IO_CONTEXT_PATH = '/ws'
 const SOCKET_OPTIONS: Partial<ManagerOptions & SocketOptions> = {
@@ -11,54 +12,49 @@ const SOCKET_OPTIONS: Partial<ManagerOptions & SocketOptions> = {
   transports: ['websocket'],
 }
 
-type CatalogFunctions = {
-  getCatalog: () => void
-  addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => void
-  removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => void
+/**
+ * The socket should be a singleton.
+ */
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+  'ws://localhost:3000/catalog',
+  SOCKET_OPTIONS,
+)
+
+const catalogFunctions: ClientToServerEvents = {
+  getCatalog: () => {
+    socket.emit('getCatalog')
+  },
+  addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => {
+    socket.emit('addComponentTypeToEntityType', componentType, entityType)
+  },
+  removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => {
+    socket.emit('removeComponentTypeFromEntityType', componentType, entityType)
+  },
 }
 
-const defaultCatalogFunctions: CatalogFunctions = {
-  getCatalog: () => {},
-  addComponentTypeToEntityType: (_componentType: ComponentType, _entityType: EntityType) => {},
-  removeComponentTypeFromEntityType: (_componentType: ComponentType, _entityType: EntityType) => {},
+export const useCatalogFunctions = () => {
+  return catalogFunctions
 }
-
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('/catalog', SOCKET_OPTIONS)
 
 export const useCatalog = () => {
   const [catalog, setCatalog] = useState<EntityType[]>([])
-  const [catalogFunctions, setCatalogFunctions] =
-    useState<CatalogFunctions>(defaultCatalogFunctions)
+
+  const printTrace = getTracePrinter()
 
   useEffect(() => {
     socket.on('catalog', (svr_catalog) => {
-      console.log('Got Catalog')
+      console.groupCollapsed('Got Catalog')
+      printTrace()
+      console.groupEnd()
       setCatalog(svr_catalog)
     })
-
-    setCatalogFunctions({
-      getCatalog: () => {
-        socket.emit('getCatalog')
-      },
-      addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => {
-        socket.emit('addComponentTypeToEntityType', componentType, entityType)
-      },
-      removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => {
-        socket.emit('removeComponentTypeFromEntityType', componentType, entityType)
-      },
-    })
+    catalogFunctions.getCatalog()
 
     // Unsubscribe
     return () => {
       socket.off('catalog', setCatalog)
-      // socket.disconnect()
     }
   }, [])
 
-  return {
-    catalog: catalog,
-    getCatalog: catalogFunctions.getCatalog,
-    addComponentTypeToEntityType: catalogFunctions.addComponentTypeToEntityType,
-    removeComponentTypeFromEntityType: catalogFunctions.removeComponentTypeFromEntityType,
-  }
+  return catalog
 }

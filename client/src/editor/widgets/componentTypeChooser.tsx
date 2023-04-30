@@ -5,7 +5,7 @@ import { Events } from 'src/events/events'
 import { useEvent } from 'src/events/useEvent'
 import styled from 'styled-components'
 import { Scrollable } from './scrollable'
-import { useCatalog } from 'src/api/useWebSocket'
+import { useCatalog, useCatalogFunctions } from 'src/api/useWebSocket'
 
 const Container = styled(Scrollable)`
   flex-direction: column;
@@ -48,7 +48,7 @@ const AddRemoveButton = ({
   componentType: ComponentType
   entityType: EntityType
 }) => {
-  const { addComponentTypeToEntityType, removeComponentTypeFromEntityType } = useCatalog()
+  const { addComponentTypeToEntityType, removeComponentTypeFromEntityType } = useCatalogFunctions()
 
   if (containsComponentType(entityType, componentType)) {
     return (

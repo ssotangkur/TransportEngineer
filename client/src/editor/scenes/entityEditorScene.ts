@@ -1,5 +1,8 @@
 import 'phaser'
 import particleUrl from '/assets/particle.png'
+// Tilesheets need to be extruded to avoid bleeding around the edges issue
+import tilesheetUrl from '/assets/tiles/tilesheet_complete_2X_extruded.png'
+// import tilemapUrl from '/assets/tiles/untitled.tmx'
 import gaspUrl from '/assets/gasp.mp3'
 import { testWorld } from 'src/entities/world'
 import { grey, red } from 'src/utils/colors'
@@ -14,6 +17,8 @@ export class EntityEditorScene extends OrchestratableScene {
   private world = testWorld
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
 
+  private controls: Phaser.Cameras.Controls.FixedKeyControl | undefined
+
   constructor() {
     super(Scenes.EDITOR)
   }
@@ -21,64 +26,82 @@ export class EntityEditorScene extends OrchestratableScene {
   preload(): void {
     this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
     this.startKey.isDown = false
-    this.load.image('particle', particleUrl)
+    this.load.image('tiles', tilesheetUrl)
+    this.load.tilemapTiledJSON('map', '/assets/tiles/te.json')
     this.load.audio('gasp', gaspUrl)
   }
 
   create(): void {
-    this.add.text(0, 0, 'Press S to restart scene', {
-      fontSize: '60px',
-      fontFamily: 'Helvetica',
+    // this.add.image(0, 0, 'tilesheet')
+    const map = this.make.tilemap({ key: 'map' })
+    const tileset = map.addTilesetImage('tileset', 'tiles')
+    map.createLayer('Tile Layer 1', tileset)
+
+    // Phaser supports multiple cameras, but you can access the default camera like this:
+    const camera = this.cameras.main
+
+    // Set up the arrows to control the camera
+    const cursors = this.input.keyboard.createCursorKeys()
+    this.controls = new Phaser.Cameras.Controls.FixedKeyControl({
+      camera: camera,
+      left: cursors.left,
+      right: cursors.right,
+      up: cursors.up,
+      down: cursors.down,
+      speed: 0.5,
     })
 
-    this.cameras.main.setBounds(0, 0, this.world.width, this.world.height)
-    this.cursors = this.input.keyboard.createCursorKeys()
+    // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
+    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 
-    this.add.image(100, 100, 'particle')
-    this.add.grid(
-      this.world.width / 2,
-      this.world.height / 2,
-      this.world.width,
-      this.world.height,
-      undefined,
-      undefined,
-      grey,
-      undefined,
-      red,
-    )
+    // this.add.text(0, 0, 'Press S to restart scene', {
+    //   fontSize: '60px',
+    //   fontFamily: 'Helvetica',
+    // })
 
-    for (let i = 0; i < 300; i++) {
-      const x = Phaser.Math.Between(-64, 800)
-      const y = Phaser.Math.Between(-64, 600)
+    // this.cameras.main.setBounds(0, 0, this.world.width, this.world.height)
+    // this.cursors = this.input.keyboard.createCursorKeys()
 
-      const image = this.add.image(x, y, 'particle')
-      image.setBlendMode(Phaser.BlendModes.ADD)
-      this.sprites.push({ s: image, r: 2 + Math.random() * 6 })
-    }
+    // this.add.image(100, 100, 'particle')
+    // this.add.grid(
+    //   this.world.width / 2,
+    //   this.world.height / 2,
+    //   this.world.width,
+    //   this.world.height,
+    //   undefined,
+    //   undefined,
+    //   grey,
+    //   undefined,
+    //   red,
+    // )
+
+    // for (let i = 0; i < 300; i++) {
+    //   const x = Phaser.Math.Between(-64, 800)
+    //   const y = Phaser.Math.Between(-64, 600)
+
+    //   const image = this.add.image(x, y, 'particle')
+    //   image.setBlendMode(Phaser.BlendModes.ADD)
+    //   this.sprites.push({ s: image, r: 2 + Math.random() * 6 })
+    // }
   }
 
-  update(): void {
-    super.update()
+  update(time: number, delta: number): void {
+    super.update(time, delta)
     if (this.startKey.isDown) {
       this.sound.play('gasp')
     }
 
-    if (this.cursors?.down.isDown) {
-      this.cameras.main.scrollY += 5
-    }
+    // Apply the controls to the camera each update tick of the game
+    this.controls?.update(delta)
 
-    if (this.cursors?.up.isDown) {
-      this.cameras.main.scrollY -= 5
-    }
+    // for (let i = 0; i < this.sprites.length; i++) {
+    //   const sprite = this.sprites[i].s
 
-    for (let i = 0; i < this.sprites.length; i++) {
-      const sprite = this.sprites[i].s
+    //   sprite.y -= this.sprites[i].r
 
-      sprite.y -= this.sprites[i].r
-
-      if (sprite.y < -256) {
-        sprite.y = 1000
-      }
-    }
+    //   if (sprite.y < -256) {
+    //     sprite.y = 1000
+    //   }
+    // }
   }
 }

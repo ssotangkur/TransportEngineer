@@ -21,8 +21,7 @@ const EntityRow = styled.div<{ selected?: boolean }>`
 `
 
 export const EntityTypeList = () => {
-  const { catalog } = useCatalog()
-  const entityTypes = catalog
+  const catalog = useCatalog()
   const [selectedEntityType, setSelectedEntityType] = useState<EntityType>()
 
   const select = (entityType: EntityType) => {
@@ -45,7 +44,7 @@ export const EntityTypeList = () => {
   return (
     <Scrollable>
       <ColumnContainer>
-        {entityTypes.map((entityType) => (
+        {catalog.map((entityType) => (
           <EntityRow
             key={entityType.name}
             onClick={() => select(entityType)}
