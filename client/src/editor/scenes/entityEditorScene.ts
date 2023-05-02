@@ -49,6 +49,44 @@ export class EntityEditorScene extends OrchestratableScene {
       up: cursors.up,
       down: cursors.down,
       speed: 0.5,
+      zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
+      zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
+      zoomSpeed: 0.002,
+    })
+
+    this.input.on(
+      'wheel',
+      (
+        pointer: Phaser.Input.Pointer,
+        gameObjects: any,
+        deltaX: number,
+        deltaY: number,
+        deltaZ: number,
+      ) => {
+        if (deltaY > 0) {
+          var newZoom = camera.zoom - 0.1
+          if (newZoom > 0.1) {
+            camera.zoom = newZoom
+          }
+        }
+
+        if (deltaY < 0) {
+          var newZoom = camera.zoom + 0.1
+          if (newZoom < 1.3) {
+            camera.zoom = newZoom
+          }
+        }
+
+        // this.camera.centerOn(pointer.worldX, pointer.worldY);
+        // this.camera.pan(pointer.worldX, pointer.worldY, 2000, "Power2");
+      },
+    )
+
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.isDown) return
+
+      camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom
+      camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
