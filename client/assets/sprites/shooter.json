@@ -1,0 +1,498 @@
+{"frames": [
+
+{
+	"filename": "hitman1_gun.png",
+	"frame": {"x":132,"y":0,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "hitman1_hold.png",
+	"frame": {"x":210,"y":0,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "hitman1_machine.png",
+	"frame": {"x":288,"y":0,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "hitman1_reload.png",
+	"frame": {"x":366,"y":0,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "hitman1_silencer.png",
+	"frame": {"x":0,"y":44,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "hitman1_stand.png",
+	"frame": {"x":78,"y":44,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBlue_gun.png",
+	"frame": {"x":156,"y":44,"w":70,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":44},
+	"sourceSize": {"w":70,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBlue_hold.png",
+	"frame": {"x":226,"y":44,"w":40,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":44},
+	"sourceSize": {"w":40,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBlue_machine.png",
+	"frame": {"x":266,"y":44,"w":70,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":44},
+	"sourceSize": {"w":70,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBlue_reload.png",
+	"frame": {"x":336,"y":44,"w":46,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":44},
+	"sourceSize": {"w":46,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBlue_silencer.png",
+	"frame": {"x":382,"y":44,"w":80,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":44},
+	"sourceSize": {"w":80,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBlue_stand.png",
+	"frame": {"x":0,"y":0,"w":32,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":42},
+	"sourceSize": {"w":32,"h":42},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBrown_gun.png",
+	"frame": {"x":0,"y":88,"w":66,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":44},
+	"sourceSize": {"w":66,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBrown_hold.png",
+	"frame": {"x":66,"y":88,"w":40,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":44},
+	"sourceSize": {"w":40,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBrown_machine.png",
+	"frame": {"x":106,"y":88,"w":70,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":44},
+	"sourceSize": {"w":70,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBrown_reload.png",
+	"frame": {"x":176,"y":88,"w":48,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":44},
+	"sourceSize": {"w":48,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBrown_silencer.png",
+	"frame": {"x":224,"y":88,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manBrown_stand.png",
+	"frame": {"x":32,"y":0,"w":32,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":42},
+	"sourceSize": {"w":32,"h":42},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manOld_gun.png",
+	"frame": {"x":380,"y":308,"w":68,"h":46},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":46},
+	"sourceSize": {"w":68,"h":46},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manOld_hold.png",
+	"frame": {"x":302,"y":88,"w":40,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":44},
+	"sourceSize": {"w":40,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manOld_machine.png",
+	"frame": {"x":342,"y":88,"w":66,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":66,"h":44},
+	"sourceSize": {"w":66,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manOld_reload.png",
+	"frame": {"x":408,"y":88,"w":48,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":44},
+	"sourceSize": {"w":48,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manOld_silencer.png",
+	"frame": {"x":0,"y":132,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "manOld_stand.png",
+	"frame": {"x":64,"y":0,"w":32,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":42},
+	"sourceSize": {"w":32,"h":42},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "robot1_gun.png",
+	"frame": {"x":78,"y":132,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "robot1_hold.png",
+	"frame": {"x":156,"y":132,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "robot1_machine.png",
+	"frame": {"x":234,"y":132,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "robot1_reload.png",
+	"frame": {"x":312,"y":132,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "robot1_silencer.png",
+	"frame": {"x":390,"y":132,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "robot1_stand.png",
+	"frame": {"x":0,"y":176,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "soldier1_gun.png",
+	"frame": {"x":78,"y":176,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "soldier1_hold.png",
+	"frame": {"x":156,"y":176,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "soldier1_machine.png",
+	"frame": {"x":234,"y":176,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "soldier1_reload.png",
+	"frame": {"x":312,"y":176,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "soldier1_silencer.png",
+	"frame": {"x":390,"y":176,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "soldier1_stand.png",
+	"frame": {"x":0,"y":220,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "survivor1_gun.png",
+	"frame": {"x":78,"y":220,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "survivor1_hold.png",
+	"frame": {"x":156,"y":220,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "survivor1_machine.png",
+	"frame": {"x":234,"y":220,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "survivor1_reload.png",
+	"frame": {"x":312,"y":220,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "survivor1_silencer.png",
+	"frame": {"x":390,"y":220,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "survivor1_stand.png",
+	"frame": {"x":0,"y":264,"w":78,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":44},
+	"sourceSize": {"w":78,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "womanGreen_gun.png",
+	"frame": {"x":78,"y":264,"w":68,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":44},
+	"sourceSize": {"w":68,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "womanGreen_hold.png",
+	"frame": {"x":146,"y":264,"w":40,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":40,"h":44},
+	"sourceSize": {"w":40,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "womanGreen_machine.png",
+	"frame": {"x":186,"y":264,"w":68,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":44},
+	"sourceSize": {"w":68,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "womanGreen_reload.png",
+	"frame": {"x":254,"y":264,"w":48,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":44},
+	"sourceSize": {"w":48,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "womanGreen_silencer.png",
+	"frame": {"x":302,"y":264,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "womanGreen_stand.png",
+	"frame": {"x":96,"y":0,"w":36,"h":42},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":42},
+	"sourceSize": {"w":36,"h":42},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "zoimbie1_gun.png",
+	"frame": {"x":378,"y":264,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "zoimbie1_hold.png",
+	"frame": {"x":0,"y":308,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "zoimbie1_machine.png",
+	"frame": {"x":76,"y":308,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "zoimbie1_reload.png",
+	"frame": {"x":152,"y":308,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "zoimbie1_silencer.png",
+	"frame": {"x":228,"y":308,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "zoimbie1_stand.png",
+	"frame": {"x":304,"y":308,"w":76,"h":44},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":44},
+	"sourceSize": {"w":76,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "shooter.png",
+	"format": "RGBA8888",
+	"size": {"w":468,"h":354},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:bd5cf06653d8a1429864699e0772116e:963d54912ff93caf430f4a15e2cf1135:d19d62a77c0e786d9878eaf230ffbeed$"
+}
+}

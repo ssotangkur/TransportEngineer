@@ -11,7 +11,7 @@ const TILE_SPACING = EXTRUSION_PX * 2
  * tilesheetUrl should point to the extruded image, not the original
  */
 export class MapSystem {
-  private map?: Phaser.Tilemaps.Tilemap
+  public map?: Phaser.Tilemaps.Tilemap
 
   constructor(
     private scene: Phaser.Scene,

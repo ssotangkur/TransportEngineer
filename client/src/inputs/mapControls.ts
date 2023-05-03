@@ -56,7 +56,13 @@ export class MapControl {
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
-    this.camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
+    // let { width, height } = scene.sys.game.scale.gameSize
+    // this.camera.setBounds(
+    //   -width,
+    //   -height,
+    //   this.map.widthInPixels + 20 * width,
+    //   this.map.heightInPixels + 20 * height,
+    // )
   }
 
   update(_time: number, delta: number): void {

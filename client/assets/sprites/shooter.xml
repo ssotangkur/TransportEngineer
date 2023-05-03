@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:e559479007da44ecaf9f0ef9c95b0e7d:963d54912ff93caf430f4a15e2cf1135:684deaaf558ad857f1117a1902fd3e60$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="shooter.png" width="468" height="354">
+    <sprite n="hitman1_gun.png" x="132" y="0" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="hitman1_hold.png" x="210" y="0" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="hitman1_machine.png" x="288" y="0" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="hitman1_reload.png" x="366" y="0" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="hitman1_silencer.png" x="0" y="44" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="hitman1_stand.png" x="78" y="44" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBlue_gun.png" x="156" y="44" w="70" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBlue_hold.png" x="226" y="44" w="40" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBlue_machine.png" x="266" y="44" w="70" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBlue_reload.png" x="336" y="44" w="46" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBlue_silencer.png" x="382" y="44" w="80" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBlue_stand.png" x="0" y="0" w="32" h="42" pX="0.5" pY="0.5"/>
+    <sprite n="manBrown_gun.png" x="0" y="88" w="66" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBrown_hold.png" x="66" y="88" w="40" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBrown_machine.png" x="106" y="88" w="70" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBrown_reload.png" x="176" y="88" w="48" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBrown_silencer.png" x="224" y="88" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manBrown_stand.png" x="32" y="0" w="32" h="42" pX="0.5" pY="0.5"/>
+    <sprite n="manOld_gun.png" x="380" y="308" w="68" h="46" pX="0.5" pY="0.5"/>
+    <sprite n="manOld_hold.png" x="302" y="88" w="40" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manOld_machine.png" x="342" y="88" w="66" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manOld_reload.png" x="408" y="88" w="48" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manOld_silencer.png" x="0" y="132" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="manOld_stand.png" x="64" y="0" w="32" h="42" pX="0.5" pY="0.5"/>
+    <sprite n="robot1_gun.png" x="78" y="132" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="robot1_hold.png" x="156" y="132" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="robot1_machine.png" x="234" y="132" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="robot1_reload.png" x="312" y="132" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="robot1_silencer.png" x="390" y="132" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="robot1_stand.png" x="0" y="176" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="soldier1_gun.png" x="78" y="176" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="soldier1_hold.png" x="156" y="176" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="soldier1_machine.png" x="234" y="176" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="soldier1_reload.png" x="312" y="176" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="soldier1_silencer.png" x="390" y="176" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="soldier1_stand.png" x="0" y="220" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="survivor1_gun.png" x="78" y="220" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="survivor1_hold.png" x="156" y="220" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="survivor1_machine.png" x="234" y="220" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="survivor1_reload.png" x="312" y="220" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="survivor1_silencer.png" x="390" y="220" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="survivor1_stand.png" x="0" y="264" w="78" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="womanGreen_gun.png" x="78" y="264" w="68" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="womanGreen_hold.png" x="146" y="264" w="40" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="womanGreen_machine.png" x="186" y="264" w="68" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="womanGreen_reload.png" x="254" y="264" w="48" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="womanGreen_silencer.png" x="302" y="264" w="76" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="womanGreen_stand.png" x="96" y="0" w="36" h="42" pX="0.5" pY="0.5"/>
+    <sprite n="zoimbie1_gun.png" x="378" y="264" w="76" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="zoimbie1_hold.png" x="0" y="308" w="76" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="zoimbie1_machine.png" x="76" y="308" w="76" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="zoimbie1_reload.png" x="152" y="308" w="76" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="zoimbie1_silencer.png" x="228" y="308" w="76" h="44" pX="0.5" pY="0.5"/>
+    <sprite n="zoimbie1_stand.png" x="304" y="308" w="76" h="44" pX="0.5" pY="0.5"/>
+</TextureAtlas>
