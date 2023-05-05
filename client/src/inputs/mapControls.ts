@@ -1,4 +1,4 @@
-import { MapSystem } from 'src/maps/mapSystem'
+import { MapSystem } from 'src/systems/mapSystem'
 
 export class MapControl {
   private camera: Phaser.Cameras.Scene2D.Camera

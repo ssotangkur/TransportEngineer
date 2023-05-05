@@ -5,10 +5,18 @@ import gaspUrl from '/assets/gasp.mp3'
 import { Scenes } from './sceneOrchestrator'
 import { OrchestratableScene } from './orchestratableScene'
 import { MapControl } from 'src/inputs/mapControls'
-import { MapSystem } from 'src/maps/mapSystem'
+import { MapSystem } from 'src/systems/mapSystem'
+import { createWorld } from 'bitecs'
+import { SpriteSystem } from 'src/systems/spriteSystem'
+import { ShooterSpawnSystem } from './shooterSpawnSystem'
 
 export const editorSceneName = 'EditorScene'
-export const SPRITE_SPEED = 0.25
+export const SPRITE_SPEED = 0.5
+
+type EditorSceneWorld = {
+  time: number
+  delta: number
+}
 
 export class EntityEditorScene extends OrchestratableScene {
   private startKey!: Phaser.Input.Keyboard.Key
@@ -16,10 +24,18 @@ export class EntityEditorScene extends OrchestratableScene {
   private mapSystem: MapSystem
   private sprite?: Phaser.GameObjects.Sprite
   private worldTarget = new Phaser.Math.Vector2()
+  private world: EditorSceneWorld
+
+  private spriteSystem
+  private spawnSystem
 
   constructor() {
     super(Scenes.EDITOR)
     this.mapSystem = new MapSystem(this, tilesheetUrl, '/assets/tiles/te.json')
+    this.world = createWorld({ time: 0, delta: 0 })
+
+    this.spawnSystem = new ShooterSpawnSystem(this, this.world)
+    this.spriteSystem = new SpriteSystem(this, this.spawnSystem.world)
   }
 
   preload(): void {
@@ -30,7 +46,9 @@ export class EntityEditorScene extends OrchestratableScene {
 
     this.load.audio('gasp', gaspUrl)
 
-    this.load.atlas('sprites', 'assets/sprites/shooter.png', 'assets/sprites/shooter.json')
+    // this.load.atlas('sprites', 'assets/sprites/shooter.png', 'assets/sprites/shooter.json')
+    this.spawnSystem.preload()
+    this.spriteSystem.preload()
   }
 
   create(): void {
@@ -38,7 +56,7 @@ export class EntityEditorScene extends OrchestratableScene {
     this.mapSystem.create()
     this.mapControl = new MapControl(this, this.mapSystem)
 
-    this.sprite = this.add.sprite(100, 300, 'sprites', 'hitman1_gun.png')
+    this.sprite = this.add.sprite(100, 300, 'sprites', 'soldier1_gun.png')
 
     // remember where the target is
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
@@ -46,10 +64,8 @@ export class EntityEditorScene extends OrchestratableScene {
       this.worldTarget.set(pointer.worldX, pointer.worldY)
     })
 
-    // this.add.text(0, 0, 'Press S to restart scene', {
-    //   fontSize: '60px',
-    //   fontFamily: 'Helvetica',
-    // })
+    this.spawnSystem.create()
+    this.spriteSystem.create()
   }
 
   update(time: number, delta: number): void {
@@ -63,5 +79,8 @@ export class EntityEditorScene extends OrchestratableScene {
     const speedVec = this.worldTarget.clone().subtract(this.sprite!).normalize().scale(SPRITE_SPEED)
     this.sprite!.x += speedVec.x
     this.sprite!.y += speedVec.y
+
+    this.spawnSystem.update(time, delta)
+    this.spriteSystem.update(time, delta)
   }
 }
