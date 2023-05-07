@@ -1,6 +1,21 @@
+import { BaseSystem } from './baseSystem'
+
 const EXTRUSION_PX = 8
 const TILE_MARGIN = EXTRUSION_PX
 const TILE_SPACING = EXTRUSION_PX * 2
+
+export type MapInfoWorld = {
+  mapInfoWorld: {
+    tilesheetUrl: string
+    tilemapJsonPath: string
+  }
+}
+
+export type MapWorld = {
+  mapSystem: {
+    map?: Phaser.Tilemaps.Tilemap
+  }
+}
 
 /**
  * Tilesheet image should be "Extruded" using the TILE_MARGIN and TILE_SPACING above.
@@ -10,23 +25,26 @@ const TILE_SPACING = EXTRUSION_PX * 2
  *
  * tilesheetUrl should point to the extruded image, not the original
  */
-export class MapSystem {
-  public map?: Phaser.Tilemaps.Tilemap
-
-  constructor(
-    private scene: Phaser.Scene,
-    private tilesheetUrl: string,
-    private tilemapJsonPath: string,
-  ) {}
+export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
+  MapInfoWorld,
+  WorldIn,
+  MapWorld
+> {
+  createWorld(_worldIn: WorldIn) {
+    const mapWorld: MapWorld = {
+      mapSystem: {},
+    }
+    return mapWorld
+  }
 
   public preload() {
-    this.scene.load.image('tiles', this.tilesheetUrl)
-    this.scene.load.tilemapTiledJSON('map', this.tilemapJsonPath)
+    this.scene.load.image('tiles', this.world.mapInfoWorld.tilesheetUrl)
+    this.scene.load.tilemapTiledJSON('map', this.world.mapInfoWorld.tilemapJsonPath)
   }
 
   public create() {
-    this.map = this.scene.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage(
+    this.world.mapSystem.map = this.scene.make.tilemap({ key: 'map' })
+    const tileset = this.world.mapSystem.map.addTilesetImage(
       'tileset',
       'tiles',
       undefined,
@@ -34,14 +52,14 @@ export class MapSystem {
       TILE_MARGIN,
       TILE_SPACING,
     )
-    this.map.createLayer('Tile Layer 1', tileset)
+    this.world.mapSystem.map.createLayer('Tile Layer 1', tileset)
   }
 
   public get heightInPixels() {
-    return this.map?.heightInPixels ?? 0
+    return this.world.mapSystem.map?.heightInPixels ?? 0
   }
 
   public get widthInPixels() {
-    return this.map?.widthInPixels ?? 0
+    return this.world.mapSystem.map?.widthInPixels ?? 0
   }
 }

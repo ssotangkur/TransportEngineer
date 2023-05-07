@@ -3,19 +3,21 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "te.tmx",
     "expandedProjectPaths": [
+        ".",
+        "buildings"
     ],
     "fileStates": {
         "": {
             "scaleInDock": 1
         },
         "te.json": {
-            "scale": 0.2382421875,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1939.2031480570586,
-                "y": 1269.7163469421216
+                "x": 3751,
+                "y": 6492.5
             }
         },
         "te.json#tileset": {
@@ -26,8 +28,8 @@
             "scale": 0.21869791666666663,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2098.7854251012154,
-                "y": 372.6601571802812
+                "x": 2972.1362229102174,
+                "y": 1108.8354370088123
             }
         },
         "te.tmx#te": {
@@ -45,9 +47,12 @@
     "map.tileHeight": 128,
     "map.tileWidth": 128,
     "openFiles": [
+        "te.json",
+        "te.tmx"
     ],
     "project": "te.tiled-project",
     "recentFiles": [
+        "te.json",
         "te.tmx"
     ],
     "tileset.embedInMap": true,

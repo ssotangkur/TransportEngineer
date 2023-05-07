@@ -3,8 +3,8 @@
  <editorsettings>
   <export target="te.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" name="tileset" tilewidth="128" tileheight="128" spacing="2" margin="1" tilecount="540" columns="27">
-  <image source="tilesheet_complete_2X_extruded.png" width="3510" height="2600"/>
+ <tileset firstgid="1" name="tileset" tilewidth="128" tileheight="128" spacing="2" margin="1" tilecount="638" columns="29">
+  <image source="tilesheet_complete_2X_extruded.png" width="3888" height="2880"/>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="30" height="20">
   <data encoding="csv">

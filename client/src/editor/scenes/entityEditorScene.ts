@@ -4,58 +4,71 @@ import tilesheetUrl from '/assets/tiles/tilesheet_complete_2X_extruded.png'
 import gaspUrl from '/assets/gasp.mp3'
 import { Scenes } from './sceneOrchestrator'
 import { OrchestratableScene } from './orchestratableScene'
-import { MapControl } from 'src/inputs/mapControls'
-import { MapSystem } from 'src/systems/mapSystem'
+import { MapControl } from 'src/systems/mapControlSystem'
+import { MapInfoWorld, MapSystem } from 'src/systems/mapSystem'
 import { createWorld } from 'bitecs'
-import { SpriteSystem } from 'src/systems/spriteSystem'
-import { ShooterSpawnSystem } from './shooterSpawnSystem'
+import { SpriteAngleSystem, SpriteSystem } from 'src/systems/spriteSystem'
+import { ShooterSpawnSystem } from '../../systems/shooterSpawnSystem'
+import { SystemBuilderClass } from 'src/systems/baseSystem'
+import {
+  PlayerFollowCursorSystem,
+  PlayerMovementSystem,
+  PlayerSpawnSystem,
+} from 'src/systems/playerSystem'
+import { TileToWorldTranslationSystem } from 'src/systems/coordinateTranslationSystem'
+import { DebugSystem } from 'src/systems/debugSystem'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
 
-type EditorSceneWorld = {
-  time: number
-  delta: number
-}
-
 export class EntityEditorScene extends OrchestratableScene {
   private startKey!: Phaser.Input.Keyboard.Key
-  private mapControl?: MapControl
-  private mapSystem: MapSystem
   private sprite?: Phaser.GameObjects.Sprite
   private worldTarget = new Phaser.Math.Vector2()
-  private world: EditorSceneWorld
+  private world
 
-  private spriteSystem
-  private spawnSystem
+  // private mapSystem
+  // private spriteSystem
+  // private spawnSystem
+
+  private systems
 
   constructor() {
     super(Scenes.EDITOR)
-    this.mapSystem = new MapSystem(this, tilesheetUrl, '/assets/tiles/te.json')
-    this.world = createWorld({ time: 0, delta: 0 })
 
-    this.spawnSystem = new ShooterSpawnSystem(this, this.world)
-    this.spriteSystem = new SpriteSystem(this, this.spawnSystem.world)
+    this.world = createWorld({
+      time: 0,
+      delta: 0,
+      mapInfoWorld: {
+        tilesheetUrl,
+        tilemapJsonPath: '/assets/tiles/te.json',
+      },
+    })
+
+    this.systems = new SystemBuilderClass(this, this.world)
+      .build(MapSystem)
+      .build(MapControl)
+      .build(ShooterSpawnSystem)
+      .build(PlayerSpawnSystem)
+      .build(PlayerFollowCursorSystem)
+      .build(PlayerMovementSystem)
+      .build(TileToWorldTranslationSystem)
+      .build(SpriteSystem)
+      .build(SpriteAngleSystem)
+      // .build(DebugSystem)
+      .instances()
   }
 
   preload(): void {
-    this.mapSystem.preload()
-
     this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
     this.startKey.isDown = false
 
     this.load.audio('gasp', gaspUrl)
 
-    // this.load.atlas('sprites', 'assets/sprites/shooter.png', 'assets/sprites/shooter.json')
-    this.spawnSystem.preload()
-    this.spriteSystem.preload()
+    this.systems.forEach((system) => system.preload())
   }
 
   create(): void {
-    // this.add.image(0, 0, 'tilesheet')
-    this.mapSystem.create()
-    this.mapControl = new MapControl(this, this.mapSystem)
-
     this.sprite = this.add.sprite(100, 300, 'sprites', 'soldier1_gun.png')
 
     // remember where the target is
@@ -64,15 +77,15 @@ export class EntityEditorScene extends OrchestratableScene {
       this.worldTarget.set(pointer.worldX, pointer.worldY)
     })
 
-    this.spawnSystem.create()
-    this.spriteSystem.create()
+    // this.spawnSystem.create()
+    // this.spriteSystem.create()
+    this.systems.forEach((system) => system.create())
   }
 
   update(time: number, delta: number): void {
     super.update(time, delta)
 
     // Apply the controls to the camera each update tick of the game
-    this.mapControl?.update(time, delta)
 
     this.worldTarget.clone()
 
@@ -80,7 +93,8 @@ export class EntityEditorScene extends OrchestratableScene {
     this.sprite!.x += speedVec.x
     this.sprite!.y += speedVec.y
 
-    this.spawnSystem.update(time, delta)
-    this.spriteSystem.update(time, delta)
+    // this.spawnSystem.update(time, delta)
+    // this.spriteSystem.update(time, delta)
+    this.systems.forEach((system) => system.update(time, delta))
   }
 }
