@@ -1,12 +1,15 @@
 import { BaseSystem } from './baseSystem'
 import {
   IWorld,
+  Types,
   addComponent,
   addEntity,
+  defineComponent,
   defineQuery,
   enterQuery,
   exitQuery,
   removeComponent,
+  removeEntity,
 } from 'bitecs'
 import { MapWorld } from './mapSystem'
 import { PlayerComponent } from 'src/components/playerComponent'
@@ -18,7 +21,11 @@ import {
   TilePositionComponent,
   TileTargetComponent,
 } from 'src/components/positionComponent'
-import { CursorPositionWorld } from './mapControlSystem'
+import { CursorPositionWorld, DoubleClickWorld } from './mapControlSystem'
+
+const playerQuery = defineQuery([PlayerComponent])
+
+const playerTargetQuery = defineQuery([PlayerComponent, TileTargetComponent])
 
 export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
   MapWorld,
@@ -34,6 +41,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
     addComponent(this.world, PlayerComponent, eid)
     addComponent(this.world, SpriteComponent, eid)
     SpriteComponent.spriteId[eid] = SPRITE_NAME_TO_ID_MAP.get('soldier1_gun.png') ?? 0
+    SpriteComponent.spriteKey[eid] = 0
     addComponent(this.world, TilePositionComponent, eid)
     TilePositionComponent.x[eid] = 3.5
     TilePositionComponent.y[eid] = 5.5
@@ -54,8 +62,8 @@ const playerMovementQuery = defineQuery([
   AngleComponent,
 ])
 
-export class PlayerMovementSystem<WorldIn extends IWorld> extends BaseSystem<
-  IWorld,
+export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> extends BaseSystem<
+  DoubleClickWorld & MapWorld,
   WorldIn,
   IWorld
 > {
@@ -63,7 +71,21 @@ export class PlayerMovementSystem<WorldIn extends IWorld> extends BaseSystem<
   private pos = new Phaser.Math.Vector2(0, 0)
   private target = new Phaser.Math.Vector2(0, 0)
 
-  createWorld(_worldIn: WorldIn): IWorld {
+  createWorld(worldIn: WorldIn): IWorld {
+    // On double-click, create Movement for Player
+    worldIn.doubleClick.onDoubleClick((pointer) => {
+      console.debug('double-click')
+      this.forEidIn(playerQuery, (eid) => {
+        if (!worldIn.mapSystem.map) {
+          return
+        }
+        // bitECE makes this idempotent
+        addComponent(worldIn, TileTargetComponent, eid)
+
+        TileTargetComponent.x[eid] = worldIn.mapSystem.map.worldToTileX(pointer.worldX, false)
+        TileTargetComponent.y[eid] = worldIn.mapSystem.map.worldToTileY(pointer.worldY, false)
+      })
+    })
     return {}
   }
 
@@ -76,14 +98,24 @@ export class PlayerMovementSystem<WorldIn extends IWorld> extends BaseSystem<
       this.target.y = TileTargetComponent.y[eid]
       const speed = SpeedComponent.speed[eid]
 
-      const speedVec = this.target
-        .subtract(this.pos)
-        .normalize()
-        .scale(speed * delta * 0.001)
+      const deltaVec = this.target.subtract(this.pos)
+      const deltaLenSq = deltaVec.lengthSq()
+      const speedVec = deltaVec.normalize().scale(speed * delta * 0.001)
+
+      // Set angle to match movement vector
+      AngleComponent.radians[eid] = deltaVec.angle()
+
+      // If our movement is greater that the distance to our target just update the position
+      // with the target instead
+      if (speedVec.lengthSq() > deltaLenSq) {
+        TilePositionComponent.x[eid] = TileTargetComponent.x[eid]
+        TilePositionComponent.y[eid] = TileTargetComponent.y[eid]
+        // Remove our target since we don't need it anymore
+        removeComponent(this.world, TileTargetComponent, eid)
+        return
+      }
+
       this.pos.add(speedVec)
-
-      AngleComponent.radians[eid] = speedVec.angle()
-
       TilePositionComponent.x[eid] = this.pos.x
       TilePositionComponent.y[eid] = this.pos.y
     })
@@ -91,39 +123,80 @@ export class PlayerMovementSystem<WorldIn extends IWorld> extends BaseSystem<
   }
 }
 
-const playerQuery = defineQuery([PlayerComponent])
-const playerEnterQuery = enterQuery(playerQuery)
-const playerExitQuery = exitQuery(playerQuery)
-const playerTargetQuery = defineQuery([PlayerComponent, TilePositionComponent])
+/**
+ * For a Target waypoint entity, we need a way to refer back to the entity this depends on.
+ */
+export const TargetReferenceComponent = defineComponent({ referenceEntity: Types.eid })
+const targetReferenceQuery = defineQuery([TargetReferenceComponent])
 
 /**
  * Create a target for a player when they enter
  * Updates their target to the cursor
  */
-export class PlayerFollowCursorSystem<
-  WorldIn extends MapWorld & CursorPositionWorld,
-> extends BaseSystem<MapWorld & CursorPositionWorld, WorldIn, IWorld> {
-  createWorld(_worldIn: MapWorld & CursorPositionWorld): IWorld {
+export class ShowPlayerWaypointSystem<WorldIn extends MapWorld> extends BaseSystem<
+  MapWorld,
+  WorldIn,
+  IWorld
+> {
+  // Define enter/exit queries locally do they don't accidentally get reused by something else
+  private playerTargetEnter = enterQuery(playerTargetQuery)
+  private playerTargetExit = exitQuery(playerTargetQuery)
+
+  createWorld(_worldIn: MapWorld): IWorld {
     return {}
   }
 
   update(_time: number, _delta: number) {
-    const newPlayerEids = playerEnterQuery(this.world)
-    newPlayerEids.forEach((eid) => {
-      // Add target comp for new players
-      addComponent(this.world, TileTargetComponent, eid)
+    // When player gets a target, the target itself needs it's own entity which we create here
+    // We then need a component to reference the original entity so we know when to remove it.
+    this.forEidIn(this.playerTargetEnter, (refEid) => {
+      const eid = addEntity(this.world)
+      addComponent(this.world, TargetReferenceComponent, eid)
+      TargetReferenceComponent.referenceEntity[eid] = refEid
+
+      addComponent(this.world, SpriteComponent, eid)
+      SpriteComponent.spriteId[eid] = 47
+      SpriteComponent.spriteKey[eid] = 1
+      addComponent(this.world, TilePositionComponent, eid)
+      TilePositionComponent.x[eid] = TileTargetComponent.x[refEid]
+      TilePositionComponent.y[eid] = TileTargetComponent.y[refEid]
+
+      console.log('New target entity ' + eid)
     })
 
-    const playersWithTargets = playerTargetQuery(this.world)
-    playersWithTargets.forEach((eid) => {
-      TileTargetComponent.x[eid] = this.world.cursorPosition.tileX ?? 0
-      TileTargetComponent.y[eid] = this.world.cursorPosition.tileY ?? 0
+    // Update the targetEntity's position always
+    this.forEidIn(targetReferenceQuery, (eid) => {
+      const refEid = TargetReferenceComponent.referenceEntity[eid]
+      TilePositionComponent.x[eid] = TileTargetComponent.x[refEid]
+      TilePositionComponent.y[eid] = TileTargetComponent.y[refEid]
     })
 
-    const exitPlayerEids = playerExitQuery(this.world)
-    exitPlayerEids.forEach((eid) => {
-      // Remove target comp for exiting players
-      removeComponent(this.world, TileTargetComponent, eid)
-    })
+    // console.log('num target entities=' + targetReferenceQuery(this.world).length)
+
+    // this.forEidIn(targetReferenceQuery, (targetEid) => {
+    //   const playerEid = TargetReferenceComponent.referenceEntity[targetEid]
+    //   hasComponent(this.world, TileTargetComponent, playerEid)
+    // })
+
+    // Since targets will hang with the player for a while
+    // we wait till they lose the target to do something.
+    // When the player loses the target, we find all entities and see
+    // if they match the refEid, if they do we can remove the eid that
+    // holds the refEid
+    const playersLosingTargets = this.playerTargetExit(this.world)
+    if (playersLosingTargets.length > 0) {
+      const refEntities = new Map(
+        targetReferenceQuery(this.world).map((targetEid) => [
+          TargetReferenceComponent.referenceEntity[targetEid],
+          targetEid,
+        ]),
+      )
+      playersLosingTargets.forEach((playerEid) => {
+        const targetEid = refEntities.get(playerEid)
+        if (!targetEid) return
+        removeEntity(this.world, targetEid)
+        console.log('Remove target entity ' + targetEid)
+      })
+    }
   }
 }

@@ -1,4 +1,12 @@
-import { IWorld, addComponent, defineQuery, enterQuery, exitQuery, removeComponent } from 'bitecs'
+import {
+  IWorld,
+  addComponent,
+  defineQuery,
+  enterQuery,
+  exitQuery,
+  hasComponent,
+  removeComponent,
+} from 'bitecs'
 import { BaseSystem } from './baseSystem'
 import { MapWorld } from './mapSystem'
 import {
@@ -42,7 +50,9 @@ export class TileToWorldTranslationSystem<WorldIn extends MapWorld> extends Base
 
     const posExitEids = tilePositionExit(this.world)
     posExitEids.forEach((eid) => {
-      removeComponent(this.world, WorldPositionComponent, eid)
+      if (hasComponent(this.world, WorldPositionComponent, eid)) {
+        removeComponent(this.world, WorldPositionComponent, eid)
+      }
     })
 
     const targetEnterEids = tileTargetEnter(this.world)

@@ -43,6 +43,7 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
         WorldPositionComponent.y[eid] = 1000 * Math.random()
         addComponent(this.world, SpriteComponent, eid)
         SpriteComponent.spriteId[eid] = 10
+        SpriteComponent.spriteKey[eid] = 0
 
         // increment spawnCount
         this.world.shooterSpawnSystem.spawnCount++

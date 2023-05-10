@@ -8,10 +8,13 @@ export type SpriteWorld = {
   sprites: Map<number, Phaser.GameObjects.Sprite>
 }
 
-const SHOOTER_IMAGE_PATH = 'assets/sprites/shooter.png'
-const SHOOTER_JSON_PATH = 'assets/sprites/shooter.json'
-
-const SPRITES_ID = 'sprites'
+export type SpriteSheetInfo = {
+  imagePath: string
+  jsonPath: string
+  key: string
+  idToName: (id: number) => string
+  nameToId: (name: string) => number
+}
 
 export const SPRITE_CHARACTERS = [
   'hitman1',
@@ -36,16 +39,52 @@ SPRITE_CHARACTERS.forEach((character) => {
   })
 })
 
-export const SPRITE_NAME_TO_ID_MAP = new Map<SpriteName, number>()
+export const SPRITE_NAME_TO_ID_MAP = new Map<string, number>()
 Array.from(SPRITE_ID_TO_NAME_MAP.entries()).forEach(([id, spriteName]) => {
   SPRITE_NAME_TO_ID_MAP.set(spriteName, id)
 })
 
+function pad(numToPad: number, size: number) {
+  let num = numToPad.toString()
+  while (num.length < size) num = '0' + num
+  return num
+}
+
+const CROSSHAIR_INFO: SpriteSheetInfo = {
+  imagePath: 'assets/sprites/crosshair/crosshairsheet.png',
+  jsonPath: 'assets/sprites/crosshair/crosshair.json',
+  key: 'crosshair',
+  idToName: (id) => {
+    return `crosshair${pad(id, 3)}.png`
+  },
+  nameToId: (name) => {
+    return parseInt(name.slice(9, 12), 10)
+  },
+}
+
+const SHOOTER_INFO: SpriteSheetInfo = {
+  imagePath: 'assets/sprites/shooter/shooter.png',
+  jsonPath: 'assets/sprites/shooter/shooter.json',
+  key: 'shooter',
+  idToName: (id) => {
+    return SPRITE_ID_TO_NAME_MAP.get(id) ?? ''
+  },
+  nameToId: (name) => {
+    return SPRITE_NAME_TO_ID_MAP.get(name) ?? 0
+  },
+}
+
+const SHEET_INFOS: SpriteSheetInfo[] = [SHOOTER_INFO, CROSSHAIR_INFO]
+
+export const SPRITE_KEYS = SHEET_INFOS.map((info) => info.key)
+
 const spriteQuery = defineQuery([SpriteComponent, WorldPositionComponent])
-const spriteEnterQuery = enterQuery(spriteQuery)
-const spriteExitQuery = exitQuery(spriteQuery)
 
 export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldIn, SpriteWorld> {
+  // Define enter/exit queries locally so we don't accidentally share them
+  private spriteEnterQuery = enterQuery(spriteQuery)
+  private spriteExitQuery = exitQuery(spriteQuery)
+
   createWorld(_worldIn: WorldIn) {
     const spriteWorld: SpriteWorld = {
       sprites: new Map(),
@@ -54,16 +93,20 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
   }
 
   preload(): void {
-    this.scene.load.atlas(SPRITES_ID, SHOOTER_IMAGE_PATH, SHOOTER_JSON_PATH)
+    SHEET_INFOS.forEach((info) => {
+      this.scene.load.atlas(info.key, info.imagePath, info.jsonPath)
+    })
   }
 
   update(_time: number, _delta: number) {
     // Add sprites that have entered into the scene
-    const enteringEids = spriteEnterQuery(this.world)
+    const enteringEids = this.spriteEnterQuery(this.world)
     enteringEids.forEach((eid) => {
       const spriteId = SpriteComponent.spriteId[eid]
-      const spriteName = SPRITE_ID_TO_NAME_MAP.get(spriteId)
-      const sprite = this.scene.add.sprite(0, 0, SPRITES_ID, spriteName)
+      const spriteKey = SpriteComponent.spriteKey[eid]
+      const info = SHEET_INFOS[spriteKey]
+      const spriteName = info.idToName(spriteId)
+      const sprite = this.scene.add.sprite(0, 0, info.key, spriteName)
       this.world.sprites.set(eid, sprite)
     })
 
@@ -79,10 +122,11 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
     })
 
     // @TODO User Groups ie Object Pools
-    const exitingEids = spriteExitQuery(this.world)
+    const exitingEids = this.spriteExitQuery(this.world)
     exitingEids.forEach((eid) => {
       this.world.sprites.get(eid)?.destroy()
       this.world.sprites.delete(eid)
+      console.log('Removing sprite' + eid)
     })
   }
 }

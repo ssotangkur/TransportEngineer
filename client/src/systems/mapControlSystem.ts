@@ -1,5 +1,6 @@
 import { MapWorld } from 'src/systems/mapSystem'
 import { BaseSystem } from './baseSystem'
+import { TimeWorld } from './timeSystem'
 
 export type MapControlWorld = {
   mapControl: {
@@ -18,15 +19,38 @@ export type CursorPositionWorld = {
   }
 }
 
-export class MapControl<WorldIn extends MapWorld> extends BaseSystem<
-  MapWorld,
+export type DoubleClickWorld = {
+  doubleClick: {
+    _lastPointerUpTime: number
+    _doubleClickSubscribers: Set<(pointer: Phaser.Input.Pointer) => void>
+    onDoubleClick: (listener: (pointer: Phaser.Input.Pointer) => void) => () => void
+  }
+}
+
+export const DOUBLE_CLICK_THRESHOLD = 500 // in ms
+
+export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem<
+  MapWorld & TimeWorld,
   WorldIn,
-  MapControlWorld & CursorPositionWorld
+  MapControlWorld & CursorPositionWorld & DoubleClickWorld
 > {
   createWorld(_worldIn: MapWorld) {
-    const mapControlWorld: MapControlWorld & CursorPositionWorld = {
+    const doubleClickSubscribers = new Set<(pointer: Phaser.Input.Pointer) => void>()
+    const onDoubleClick = (listener: (pointer: Phaser.Input.Pointer) => void) => {
+      doubleClickSubscribers.add(listener)
+      return () => {
+        doubleClickSubscribers.delete(listener)
+      }
+    }
+
+    const mapControlWorld: MapControlWorld & CursorPositionWorld & DoubleClickWorld = {
       mapControl: {},
       cursorPosition: {},
+      doubleClick: {
+        _lastPointerUpTime: 0,
+        _doubleClickSubscribers: doubleClickSubscribers,
+        onDoubleClick,
+      },
     }
     return mapControlWorld
   }
@@ -93,6 +117,16 @@ export class MapControl<WorldIn extends MapWorld> extends BaseSystem<
 
       camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom
       camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom
+    })
+
+    // Handle Double-click processing
+    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (this.world.doubleClick._lastPointerUpTime + DOUBLE_CLICK_THRESHOLD > this.world.time) {
+        // double click occured
+        this.world.doubleClick._doubleClickSubscribers.forEach((callback) => callback(pointer))
+      }
+      this.world.doubleClick._lastPointerUpTime = this.world.time
+      console.log(this.world.time)
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
