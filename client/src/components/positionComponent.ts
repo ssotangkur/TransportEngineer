@@ -23,3 +23,5 @@ export const SpeedComponent = defineComponent({ speed: Types.f32 })
  * Entity can rotate
  */
 export const AngleComponent = defineComponent({ radians: Types.f32 })
+
+export const SpatialComponent = defineComponent()

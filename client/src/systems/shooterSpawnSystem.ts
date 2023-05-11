@@ -1,5 +1,5 @@
 import { addComponent, addEntity } from 'bitecs'
-import { WorldPositionComponent } from 'src/components/positionComponent'
+import { SpatialComponent, TilePositionComponent } from 'src/components/positionComponent'
 import { SpriteComponent } from 'src/components/spriteComponent'
 import { BaseSystem } from 'src/systems/baseSystem'
 import { MapWorld } from './mapSystem'
@@ -38,12 +38,13 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
 
       if (this.world.shooterSpawnSystem.spawnCount < MAX_SPAWN_COUNT) {
         const eid = addEntity(this.world)
-        addComponent(this.world, WorldPositionComponent, eid)
-        WorldPositionComponent.x[eid] = 1000 * Math.random()
-        WorldPositionComponent.y[eid] = 1000 * Math.random()
+        addComponent(this.world, TilePositionComponent, eid)
+        TilePositionComponent.x[eid] = 20 * Math.random()
+        TilePositionComponent.y[eid] = 20 * Math.random()
         addComponent(this.world, SpriteComponent, eid)
         SpriteComponent.spriteId[eid] = 10
         SpriteComponent.spriteKey[eid] = 0
+        addComponent(this.world, SpatialComponent, eid)
 
         // increment spawnCount
         this.world.shooterSpawnSystem.spawnCount++

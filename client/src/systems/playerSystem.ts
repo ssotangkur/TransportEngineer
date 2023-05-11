@@ -17,11 +17,13 @@ import { SpriteComponent } from 'src/components/spriteComponent'
 import { SPRITE_NAME_TO_ID_MAP } from './spriteSystem'
 import {
   AngleComponent,
+  SpatialComponent,
   SpeedComponent,
   TilePositionComponent,
   TileTargetComponent,
 } from 'src/components/positionComponent'
 import { CursorPositionWorld, DoubleClickWorld } from './mapControlSystem'
+import { SpatialWorld } from './spatialSystem'
 
 const playerQuery = defineQuery([PlayerComponent])
 
@@ -49,6 +51,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
     SpeedComponent.speed[eid] = 1
     addComponent(this.world, AngleComponent, eid)
     AngleComponent.radians[eid] = 0
+    addComponent(this.world, SpatialComponent, eid)
 
     // this.sprite = this.add.sprite(100, 300, 'sprites', 'soldier1_gun.png')
   }
@@ -74,7 +77,7 @@ export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> e
   createWorld(worldIn: WorldIn): IWorld {
     // On double-click, create Movement for Player
     worldIn.doubleClick.onDoubleClick((pointer) => {
-      console.debug('double-click')
+      this.debug('double-click')
       this.forEidIn(playerQuery, (eid) => {
         if (!worldIn.mapSystem.map) {
           return
@@ -118,6 +121,8 @@ export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> e
       this.pos.add(speedVec)
       TilePositionComponent.x[eid] = this.pos.x
       TilePositionComponent.y[eid] = this.pos.y
+
+      this.debug('foo')
     })
     this.world
   }
@@ -161,7 +166,7 @@ export class ShowPlayerWaypointSystem<WorldIn extends MapWorld> extends BaseSyst
       TilePositionComponent.x[eid] = TileTargetComponent.x[refEid]
       TilePositionComponent.y[eid] = TileTargetComponent.y[refEid]
 
-      console.log('New target entity ' + eid)
+      this.debug('New target entity ' + eid)
     })
 
     // Update the targetEntity's position always
@@ -195,7 +200,7 @@ export class ShowPlayerWaypointSystem<WorldIn extends MapWorld> extends BaseSyst
         const targetEid = refEntities.get(playerEid)
         if (!targetEid) return
         removeEntity(this.world, targetEid)
-        console.log('Remove target entity ' + targetEid)
+        this.debug('Remove target entity ' + targetEid)
       })
     }
   }

@@ -52,7 +52,26 @@ export abstract class BaseSystem<
   forEidIn(query: (world: IWorld) => number[], cb: (eid: number) => void) {
     query(this.world).forEach(cb)
   }
+
+  _log(logger: (...args: any[]) => void, ...args: any[]) {
+    logger(`[${this.constructor.name}]`, ...args)
+  }
+
+  debug(...args: any[]) {
+    this._log(console.debug, ...args)
+  }
+  info(...args: any[]) {
+    this._log(console.info, ...args)
+  }
+  warn(...args: any[]) {
+    this._log(console.warn, ...args)
+  }
+  error(...args: any[]) {
+    this._log(console.error, ...args)
+  }
 }
+
+type TWorldNew<B> = B extends BaseSystem<IWorld, IWorld, infer O> ? O : never
 
 export class SystemBuilderClass<InitialWorldIn extends IWorld> {
   constructor(
@@ -69,7 +88,8 @@ export class SystemBuilderClass<InitialWorldIn extends IWorld> {
     const instance = new systemClass(this.scene, this.world)
     this.internalInstances.push(instance)
     // return new SystemBuilderClass<WorldIn & TWorldNew<S>, BaseSystem<TWorldNew<S> & WorldIn, any>>(
-    return new SystemBuilderClass<typeof instance.world>(
+    // return new SystemBuilderClass<typeof instance.world>(
+    return new SystemBuilderClass<TWorldNew<S> & WorldIn>(
       this.scene,
       instance.world,
       this.internalInstances,
@@ -128,8 +148,6 @@ export class SystemBuilderClass<InitialWorldIn extends IWorld> {
 //   }
 //   return createdSystems
 // }
-
-// type TWorldNew<B> = B extends BaseSystem<IWorld, infer O> ? O : never
 
 // export class SystemBuilderClass<WorldIn extends IWorld, S extends BaseSystem<WorldIn, any>> {
 //   constructor(

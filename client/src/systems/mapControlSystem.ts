@@ -126,7 +126,6 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
         this.world.doubleClick._doubleClickSubscribers.forEach((callback) => callback(pointer))
       }
       this.world.doubleClick._lastPointerUpTime = this.world.time
-      console.log(this.world.time)
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap

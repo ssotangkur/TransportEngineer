@@ -18,6 +18,7 @@ import {
 import { TileToWorldTranslationSystem } from 'src/systems/coordinateTranslationSystem'
 import { DebugSystem } from 'src/systems/debugSystem'
 import { TimeSystem } from 'src/systems/timeSystem'
+import { SpatialSystem, SpatialSystemInit } from 'src/systems/spatialSystem'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
@@ -43,11 +44,13 @@ export class EntityEditorScene extends OrchestratableScene {
       .build(TimeSystem)
       .build(MapSystem)
       .build(MapControl)
+      .build(SpatialSystemInit)
       .build(ShooterSpawnSystem)
       .build(PlayerSpawnSystem)
       // .build(PlayerFollowCursorSystem)
       .build(PlayerMovementSystem)
       .build(ShowPlayerWaypointSystem)
+      .build(SpatialSystem)
       .build(TileToWorldTranslationSystem)
       .build(SpriteSystem)
       .build(SpriteAngleSystem)

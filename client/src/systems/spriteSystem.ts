@@ -126,7 +126,7 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
     exitingEids.forEach((eid) => {
       this.world.sprites.get(eid)?.destroy()
       this.world.sprites.delete(eid)
-      console.log('Removing sprite' + eid)
+      this.debug('Removing sprite ' + eid)
     })
   }
 }
