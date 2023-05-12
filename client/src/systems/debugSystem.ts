@@ -12,7 +12,7 @@ export class DebugSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Worl
 
   update() {
     this.forEidIn(debugQuery, (eid) => {
-      console.log(`Target x=${TileTargetComponent.x[eid]} y=${TileTargetComponent.y[eid]}`)
+      this.debug(`Target x=${TileTargetComponent.x[eid]} y=${TileTargetComponent.y[eid]}`)
     })
   }
 }

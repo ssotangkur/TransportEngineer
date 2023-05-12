@@ -2,7 +2,7 @@ import { math } from './math.js'
 
 export type Bounds = number[][]
 export type Dimensions = number[]
-export type Position = number[]
+export type Position = Phaser.Math.Vector2
 
 export type Node = {
   next: null | Node
@@ -11,11 +11,12 @@ export type Node = {
 }
 
 export type Client = {
+  eid: number
   position: Position
   dimensions: Dimensions
   _cells: {
-    min: null | Position
-    max: null | Position
+    min: null | number[]
+    max: null | number[]
     nodes: null | Node[][]
   }
   _queryId: number
@@ -37,7 +38,7 @@ export class SpatialHashGrid {
     this.queryIds = 0
   }
 
-  _GetCellIndex(position: Position) {
+  _GetCellIndex(position: number[]) {
     const x = math.sat((position[0] - this.bounds[0][0]) / (this.bounds[1][0] - this.bounds[0][0]))
     const y = math.sat((position[1] - this.bounds[0][1]) / (this.bounds[1][1] - this.bounds[0][1]))
 
@@ -47,8 +48,9 @@ export class SpatialHashGrid {
     return [xIndex, yIndex]
   }
 
-  NewClient(position: Position, dimensions: Dimensions) {
+  NewClient(eid: number, position: Position, dimensions: Dimensions) {
     const client: Client = {
+      eid: eid,
       position: position,
       dimensions: dimensions,
       _cells: {
@@ -65,7 +67,7 @@ export class SpatialHashGrid {
   }
 
   UpdateClient(client: Client) {
-    const [x, y] = client.position
+    const { x, y } = client.position
     const [w, h] = client.dimensions
 
     const i1 = this._GetCellIndex([x - w / 2, y - h / 2])
@@ -85,7 +87,7 @@ export class SpatialHashGrid {
   }
 
   FindNear(position: Position, bounds: Dimensions) {
-    const [x, y] = position
+    const { x, y } = position
     const [w, h] = bounds
 
     const i1 = this._GetCellIndex([x - w / 2, y - h / 2])
@@ -113,7 +115,7 @@ export class SpatialHashGrid {
   }
 
   _Insert(client: Client) {
-    const [x, y] = client.position
+    const { x, y } = client.position
     const [w, h] = client.dimensions
 
     const i1 = this._GetCellIndex([x - w / 2, y - h / 2])

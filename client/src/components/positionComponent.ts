@@ -9,6 +9,8 @@ export const TilePositionComponent = defineComponent(Vector2)
 
 export const TileTargetComponent = defineComponent(Vector2)
 
+export const TileMoveComponent = defineComponent(Vector2)
+
 export const WorldPositionComponent = defineComponent(Vector2)
 
 export const WorldTargetComponent = defineComponent(Vector2)

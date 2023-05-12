@@ -1,4 +1,4 @@
-import { addComponent, addEntity } from 'bitecs'
+import { addComponent, addEntity, defineComponent } from 'bitecs'
 import { SpatialComponent, TilePositionComponent } from 'src/components/positionComponent'
 import { SpriteComponent } from 'src/components/spriteComponent'
 import { BaseSystem } from 'src/systems/baseSystem'
@@ -11,6 +11,11 @@ export type ClockWorld = {
 }
 
 const MAX_SPAWN_COUNT = 100
+
+/**
+ * Identifies an entity as a "Shooter"
+ */
+export const ShooterComponent = defineComponent()
 
 export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld, I, ClockWorld> {
   private lastTimeMs = 0
@@ -44,7 +49,7 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
         addComponent(this.world, SpriteComponent, eid)
         SpriteComponent.spriteId[eid] = 10
         SpriteComponent.spriteKey[eid] = 0
-        addComponent(this.world, SpatialComponent, eid)
+        addComponent(this.world, ShooterComponent, eid)
 
         // increment spawnCount
         this.world.shooterSpawnSystem.spawnCount++

@@ -1,6 +1,11 @@
-import { IWorld, defineQuery, enterQuery, exitQuery } from 'bitecs'
+import { defineQuery, enterQuery, exitQuery } from 'bitecs'
 import { BaseSystem } from './baseSystem'
-import { Bounds, Client, Dimensions, SpatialHashGrid } from 'src/utils/spatialHashGrid/spatial-grid'
+import {
+  Bounds,
+  Client,
+  Dimensions,
+  SpatialHashGrid,
+} from 'src/utils/spatialHashGrid/spatialHashGrid'
 import { MapWorld } from './mapSystem'
 import { SpatialComponent, TilePositionComponent } from 'src/components/positionComponent'
 
@@ -13,14 +18,14 @@ export type SpatialWorld = {
 
 export const spatialQuery = defineQuery([SpatialComponent, TilePositionComponent])
 
-/**
- * Initializes the Spatial Grid but doesn't do any processing
- */
-export class SpatialSystemInit<WorldIn extends MapWorld> extends BaseSystem<
+export class SpatialSystem<WorldIn extends MapWorld> extends BaseSystem<
   MapWorld,
   WorldIn,
   SpatialWorld
 > {
+  private spatialEnter = enterQuery(spatialQuery)
+  private spatialExit = exitQuery(spatialQuery)
+
   createWorld(): SpatialWorld {
     return {
       spatialWorld: {
@@ -29,10 +34,10 @@ export class SpatialSystemInit<WorldIn extends MapWorld> extends BaseSystem<
     }
   }
 
-  update() {
+  create(): void {
     const map = this.world.mapSystem.map
     if (!map) {
-      return
+      throw Error('Map is not found')
     }
     if (this.world.spatialWorld.spatialHashGrid) {
       return
@@ -44,19 +49,6 @@ export class SpatialSystemInit<WorldIn extends MapWorld> extends BaseSystem<
     const dimensions: Dimensions = [map!.width, map!.height]
     const grid = new SpatialHashGrid(bounds, dimensions)
     this.world.spatialWorld.spatialHashGrid = grid
-  }
-}
-
-export class SpatialSystem<WorldIn extends SpatialWorld> extends BaseSystem<
-  SpatialWorld,
-  WorldIn,
-  IWorld
-> {
-  private spatialEnter = enterQuery(spatialQuery)
-  private spatialExit = exitQuery(spatialQuery)
-
-  createWorld() {
-    return {}
   }
 
   update(_time: number, _delta: number): void {
@@ -70,7 +62,7 @@ export class SpatialSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       const x = TilePositionComponent.x[eid]
       const y = TilePositionComponent.y[eid]
       // Hardcode dimensions for now
-      const client = grid.NewClient([x, y], [0.5, 0.5])
+      const client = grid.NewClient(eid, new Phaser.Math.Vector2(x, y), [0.5, 0.5])
       if (client) {
         clients.set(eid, client)
       }
@@ -83,8 +75,7 @@ export class SpatialSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       }
       const x = TilePositionComponent.x[eid]
       const y = TilePositionComponent.y[eid]
-      client.position[0] = x
-      client.position[1] = y
+      client.position.set(x, y)
       grid.UpdateClient(client)
     })
 

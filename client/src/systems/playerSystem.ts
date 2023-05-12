@@ -19,10 +19,11 @@ import {
   AngleComponent,
   SpatialComponent,
   SpeedComponent,
+  TileMoveComponent,
   TilePositionComponent,
   TileTargetComponent,
 } from 'src/components/positionComponent'
-import { CursorPositionWorld, DoubleClickWorld } from './mapControlSystem'
+import { DoubleClickWorld } from './mapControlSystem'
 import { SpatialWorld } from './spatialSystem'
 
 const playerQuery = defineQuery([PlayerComponent])
@@ -108,21 +109,22 @@ export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> e
       // Set angle to match movement vector
       AngleComponent.radians[eid] = deltaVec.angle()
 
+      // Add the move component so we have a place to move to
+      addComponent(this.world, TileMoveComponent, eid)
+
       // If our movement is greater that the distance to our target just update the position
       // with the target instead
       if (speedVec.lengthSq() > deltaLenSq) {
-        TilePositionComponent.x[eid] = TileTargetComponent.x[eid]
-        TilePositionComponent.y[eid] = TileTargetComponent.y[eid]
+        TileMoveComponent.x[eid] = TileTargetComponent.x[eid]
+        TileMoveComponent.y[eid] = TileTargetComponent.y[eid]
         // Remove our target since we don't need it anymore
         removeComponent(this.world, TileTargetComponent, eid)
         return
       }
 
       this.pos.add(speedVec)
-      TilePositionComponent.x[eid] = this.pos.x
-      TilePositionComponent.y[eid] = this.pos.y
-
-      this.debug('foo')
+      TileMoveComponent.x[eid] = this.pos.x
+      TileMoveComponent.y[eid] = this.pos.y
     })
     this.world
   }
