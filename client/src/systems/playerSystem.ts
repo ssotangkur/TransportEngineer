@@ -18,7 +18,7 @@ import { SPRITE_NAME_TO_ID_MAP } from './spriteSystem'
 import {
   AngleComponent,
   SpatialComponent,
-  SpeedComponent,
+  MoveableComponent,
   TileMoveComponent,
   TilePositionComponent,
   TileTargetComponent,
@@ -48,8 +48,8 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
     addComponent(this.world, TilePositionComponent, eid)
     TilePositionComponent.x[eid] = 3.5
     TilePositionComponent.y[eid] = 5.5
-    addComponent(this.world, SpeedComponent, eid)
-    SpeedComponent.speed[eid] = 1
+    addComponent(this.world, MoveableComponent, eid)
+    MoveableComponent.maxSpeed[eid] = 1
     addComponent(this.world, AngleComponent, eid)
     AngleComponent.radians[eid] = 0
     addComponent(this.world, SpatialComponent, eid)
@@ -62,7 +62,7 @@ const playerMovementQuery = defineQuery([
   PlayerComponent,
   TilePositionComponent,
   TileTargetComponent,
-  SpeedComponent,
+  MoveableComponent,
   AngleComponent,
 ])
 
@@ -100,7 +100,7 @@ export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> e
       this.pos.y = TilePositionComponent.y[eid]
       this.target.x = TileTargetComponent.x[eid]
       this.target.y = TileTargetComponent.y[eid]
-      const speed = SpeedComponent.speed[eid]
+      const speed = MoveableComponent.maxSpeed[eid]
 
       const deltaVec = this.target.subtract(this.pos)
       const deltaLenSq = deltaVec.lengthSq()

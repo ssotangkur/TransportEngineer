@@ -108,6 +108,10 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
       const spriteName = info.idToName(spriteId)
       const sprite = this.scene.add.sprite(0, 0, info.key, spriteName)
       this.world.sprites.set(eid, sprite)
+
+      // Update the sprite's width and height info
+      SpriteComponent.width[eid] = sprite.width
+      SpriteComponent.height[eid] = sprite.height
     })
 
     // Update the world positions of the sprites

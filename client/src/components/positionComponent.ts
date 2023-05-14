@@ -19,7 +19,7 @@ export const WorldTargetComponent = defineComponent(Vector2)
  * Entity can move
  * speed is in Tiles/second
  */
-export const SpeedComponent = defineComponent({ speed: Types.f32 })
+export const MoveableComponent = defineComponent({ maxSpeed: Types.f32 })
 
 /**
  * Entity can rotate
