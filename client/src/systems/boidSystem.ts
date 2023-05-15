@@ -3,27 +3,37 @@ import { SpatialWorld } from './spatialSystem'
 import { BaseSystem } from './baseSystem'
 import { BoidComponent } from 'src/components/boidComponent'
 import {
+  AccelerationSumComponent,
   SpatialComponent,
   TileMoveComponent,
   TilePositionComponent,
+  VelocityComponent,
 } from 'src/components/positionComponent'
 import Phaser from 'phaser'
-import { Vector2 as Vector2Schema } from 'src/components/positionComponent'
 import { Client } from 'src/utils/spatialHashGrid/spatialHashGrid'
 import { ShooterComponent } from './shooterSpawnSystem'
+import {
+  addAcceleration,
+  newVec2FromComp,
+  setCompFromVec2,
+  setVec2FromComp,
+  sumCompFromVec2,
+} from 'src/utils/vectors'
 
 const perceptionDistance = 3
 const separationDistance = 1
-const MAX_SPEED = 5.0 // tiles per sec
-const MAX_ACCEL = 1.0 // tiles/s^2
+const MAX_SPEED = 3.0 // tiles per sec
+const MAX_ACCEL = 0.5 // tiles/s^2
 
-export const boidQuery = defineQuery([BoidComponent, TilePositionComponent])
+export const boidQuery = defineQuery([
+  BoidComponent,
+  TilePositionComponent,
+  VelocityComponent,
+  AccelerationSumComponent,
+])
+const boidEnter = enterQuery(boidQuery)
 
 type Vector2 = Phaser.Math.Vector2
-
-const shooterPositionQuery = defineQuery([ShooterComponent, TilePositionComponent])
-const shooterPositionEnter = enterQuery(shooterPositionQuery)
-const shooterPositionExit = exitQuery(shooterPositionQuery)
 
 export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
   SpatialWorld,
@@ -49,7 +59,7 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
     this.forEidIn(boidQuery, (eid) => {
       pos = setVec2FromComp(pos, TilePositionComponent, eid)
 
-      velocity = setVec2FromComp(velocity, BoidComponent.velocity, eid)
+      velocity = setVec2FromComp(velocity, VelocityComponent, eid)
       // Velocities are stored as tiles/sec but for simplicity
       // we convert all to tiles/tick
       velocity.scale(toTickCoeff)
@@ -60,9 +70,9 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       const boidsTooClose = this._findOthersInRange(eid, pos, separationDistance)
 
       // steering vectors are acceleration
-      const alignVec = this._align(velocity, toTickCoeff, maxSpeed, boidsInRange)
+      const alignVec = this._align(velocity, toTickCoeff, boidsInRange)
       const cohesionVec = this._cohesion(pos, velocity, maxSpeed, boidsInRange)
-      const separationVec = this._separation(pos, velocity, maxSpeed, boidsTooClose)
+      const separationVec = this._separation2(pos, velocity, maxSpeed, boidsTooClose)
       cohesionVec.limit(maxAccel)
       // separationVec.limit(maxAccel)
       // this.debug(
@@ -77,30 +87,36 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       accel.add(separationVec)
       // accel.scale(1 / 3)
 
-      // limit to max_accell
+      // limit to max_accel
       accel.limit(maxAccel)
 
-      velocity.add(accel).limit(maxSpeed)
+      // scale back to per sec^2 unit
+      accel.scale(fromTickCoeff)
+      // sum the accel component
+      addAcceleration(accel, eid)
 
-      // apply vectors
-      pos.add(velocity)
+      // MOVE THE REST TO MOTION RESOLVER
+      // velocity.add(accel).limit(maxSpeed)
 
-      addComponent(this.world, TileMoveComponent, eid)
-      TileMoveComponent.x[eid] = pos.x
-      TileMoveComponent.y[eid] = pos.y
+      // // apply vectors
+      // pos.add(velocity)
 
-      // convert back to Tile/sec velocity for storing
-      velocity.scale(fromTickCoeff)
-      BoidComponent.velocity.x[eid] = velocity.x
-      BoidComponent.velocity.y[eid] = velocity.y
+      // addComponent(this.world, TileMoveComponent, eid)
+      // TileMoveComponent.x[eid] = pos.x
+      // TileMoveComponent.y[eid] = pos.y
+
+      // // convert back to Tile/sec velocity for storing
+      // velocity.scale(fromTickCoeff)
+      // BoidComponent.velocity.x[eid] = velocity.x
+      // BoidComponent.velocity.y[eid] = velocity.y
     })
   }
 
-  _align(velocity: Vector2, toTickCoeff: number, maxSpeed: number, boidsInRange: Client[]) {
+  _align(velocity: Vector2, toTickCoeff: number, boidsInRange: Client[]) {
     let steering = new Phaser.Math.Vector2()
     let total = 0
     boidsInRange.forEach((client) => {
-      const clientVelocity = newVec2FromComp(BoidComponent.velocity, client.eid)
+      const clientVelocity = newVec2FromComp(VelocityComponent, client.eid)
       // convert to tick velocity
       clientVelocity.scale(toTickCoeff)
       steering.add(clientVelocity)
@@ -115,6 +131,7 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
 
       steering.subtract(velocity)
     }
+
     return steering
   }
 
@@ -178,6 +195,39 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
     return steering
   }
 
+  _separation2(pos: Vector2, velocity: Vector2, maxSpeed: number, boidsTooClose: Client[]) {
+    let steering = new Phaser.Math.Vector2()
+    let total = 0
+    boidsTooClose.forEach((other) => {
+      const otherPos = newVec2FromComp(TilePositionComponent, other.eid)
+      const dir = pos.clone()
+      // Dir we want to go is away from client
+      dir.subtract(otherPos)
+      // Magnitude is how far the client is to the separation radius
+      const mag = separationDistance - dir.length()
+      // Scale the dir by the mag we just calculated
+      dir.normalize().scale(mag)
+      // Sum them all up
+      steering.add(dir)
+      total++
+    })
+    if (total == 0 || steering.length() == 0) {
+      return steering
+    }
+
+    steering.scale(1.0 / total)
+
+    // steering.subtract(pos)
+
+    // At this point we just have a vector representing the distance
+    // we want to cover in one timestep (delta), i.e. a dX/dT. Since we
+    // already have an existing velocity, the acceleration we need for this
+    // tick is steering -  (current dX/dT) which is the tickVelocity
+    steering.subtract(velocity)
+
+    return steering
+  }
+
   _findOthersInRange(eid: number, pos: Vector2, range: number) {
     const clients =
       this.world.spatialWorld.spatialHashGrid?.FindNear(pos, [range * 2, range * 2]) ?? []
@@ -185,13 +235,9 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
   }
 
   _attachComponentsToShooters() {
-    // Add all the necessary components to a Shooter entity
-    this.forEidIn(shooterPositionEnter, (eid) => {
+    // Add all the necessary components to a Boid entity
+    this.forEidIn(boidEnter, (eid) => {
       addComponent(this.world, SpatialComponent, eid)
-      addComponent(this.world, BoidComponent, eid)
-
-      BoidComponent.velocity.x[eid] = Math.random()
-      BoidComponent.velocity.y[eid] = Math.random()
     })
   }
 }
@@ -205,19 +251,4 @@ export const toTickVelocity = (velocity: Vector2, delta: number) => {
 export const fromTickVelocity = (tickVelocity: Vector2, delta: number) => {
   const v = tickVelocity.clone()
   return v.scale(1000.0 / delta)
-}
-
-export const setVec2FromComp = (
-  vectorToSet: Vector2,
-  component: ComponentType<typeof Vector2Schema>,
-  eid: number,
-): Vector2 => {
-  return vectorToSet.set(component.x[eid], component.y[eid])
-}
-
-export const newVec2FromComp = (
-  component: ComponentType<typeof Vector2Schema>,
-  eid: number,
-): Vector2 => {
-  return setVec2FromComp(new Phaser.Math.Vector2(), component, eid)
 }

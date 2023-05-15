@@ -1,8 +1,13 @@
 import { SpriteComponent } from 'src/components/spriteComponent'
 import { BaseSystem } from './baseSystem'
-import { Types, IWorld, defineQuery, enterQuery, exitQuery } from 'bitecs'
-import { AngleComponent, WorldPositionComponent } from 'src/components/positionComponent'
+import { Types, IWorld, defineQuery, enterQuery, exitQuery, Not } from 'bitecs'
+import {
+  AngleComponent,
+  VelocityComponent,
+  WorldPositionComponent,
+} from 'src/components/positionComponent'
 import { useTheme } from 'styled-components'
+import { newVec2FromComp } from 'src/utils/vectors'
 
 export type SpriteWorld = {
   sprites: Map<number, Phaser.GameObjects.Sprite>
@@ -78,12 +83,26 @@ const SHEET_INFOS: SpriteSheetInfo[] = [SHOOTER_INFO, CROSSHAIR_INFO]
 
 export const SPRITE_KEYS = SHEET_INFOS.map((info) => info.key)
 
-const spriteQuery = defineQuery([SpriteComponent, WorldPositionComponent])
+const spriteNoVelocityQuery = defineQuery([
+  SpriteComponent,
+  WorldPositionComponent,
+  Not(VelocityComponent),
+])
+const spriteWithVecityQuery = defineQuery([
+  SpriteComponent,
+  WorldPositionComponent,
+  VelocityComponent,
+])
+
+export const MAX_ROTATION_SPEED = 1.0 // Radians per sec
 
 export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldIn, SpriteWorld> {
   // Define enter/exit queries locally so we don't accidentally share them
-  private spriteEnterQuery = enterQuery(spriteQuery)
-  private spriteExitQuery = exitQuery(spriteQuery)
+  private spriteEnterQuery = enterQuery(spriteNoVelocityQuery)
+  private spriteExitQuery = exitQuery(spriteNoVelocityQuery)
+
+  private spriteVelocityEnterQuery = enterQuery(spriteWithVecityQuery)
+  private spriteVelocityExitQuery = exitQuery(spriteWithVecityQuery)
 
   createWorld(_worldIn: WorldIn) {
     const spriteWorld: SpriteWorld = {
@@ -98,40 +117,77 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
     })
   }
 
-  update(_time: number, _delta: number) {
+  update(_time: number, delta: number) {
     // Add sprites that have entered into the scene
-    const enteringEids = this.spriteEnterQuery(this.world)
-    enteringEids.forEach((eid) => {
-      const spriteId = SpriteComponent.spriteId[eid]
-      const spriteKey = SpriteComponent.spriteKey[eid]
-      const info = SHEET_INFOS[spriteKey]
-      const spriteName = info.idToName(spriteId)
-      const sprite = this.scene.add.sprite(0, 0, info.key, spriteName)
-      this.world.sprites.set(eid, sprite)
-
-      // Update the sprite's width and height info
-      SpriteComponent.width[eid] = sprite.width
-      SpriteComponent.height[eid] = sprite.height
+    this.forEidIn(this.spriteEnterQuery, (eid) => {
+      this._addSprite(eid)
+    })
+    this.forEidIn(this.spriteVelocityEnterQuery, (eid) => {
+      this._addSprite(eid)
     })
 
+    // Adjust max rotation based on tick
+    const maxRotation = MAX_ROTATION_SPEED * 0.001 * delta
+
     // Update the world positions of the sprites
-    const eids = spriteQuery(this.world)
-    eids.forEach((eid) => {
-      const sprite = this.world.sprites.get(eid)
-      if (!sprite) {
-        return
-      }
-      sprite.x = WorldPositionComponent.x[eid]
-      sprite.y = WorldPositionComponent.y[eid]
+    this.forEidIn(spriteNoVelocityQuery, (eid) => {
+      const sprite = this.world.sprites.get(eid)!
+      this._updateSpritePosition(sprite, eid)
+    })
+    this.forEidIn(spriteWithVecityQuery, (eid) => {
+      const sprite = this.world.sprites.get(eid)!
+      this._updateSpritePosition(sprite, eid)
+      this._updateSpriteRotation(sprite, eid, maxRotation)
     })
 
     // @TODO User Groups ie Object Pools
-    const exitingEids = this.spriteExitQuery(this.world)
-    exitingEids.forEach((eid) => {
-      this.world.sprites.get(eid)?.destroy()
-      this.world.sprites.delete(eid)
-      this.debug('Removing sprite ' + eid)
+    this.forEidIn(this.spriteExitQuery, (eid) => {
+      this._removeSprite(eid)
     })
+    this.forEidIn(this.spriteVelocityExitQuery, (eid) => {
+      this._removeSprite(eid)
+    })
+  }
+
+  _addSprite(eid: number) {
+    const spriteId = SpriteComponent.spriteId[eid]
+    const spriteKey = SpriteComponent.spriteKey[eid]
+    const info = SHEET_INFOS[spriteKey]
+    const spriteName = info.idToName(spriteId)
+    const sprite = this.scene.add.sprite(0, 0, info.key, spriteName)
+    this.world.sprites.set(eid, sprite)
+    // Update the sprite's width and height info
+    SpriteComponent.width[eid] = sprite.width
+    SpriteComponent.height[eid] = sprite.height
+    return sprite
+  }
+
+  _updateSpritePosition(sprite: Phaser.GameObjects.Sprite, eid: number) {
+    if (!sprite) {
+      return
+    }
+    sprite.x = WorldPositionComponent.x[eid]
+    sprite.y = WorldPositionComponent.y[eid]
+  }
+
+  _updateSpriteRotation(sprite: Phaser.GameObjects.Sprite, eid: number, maxRotation: number) {
+    const velocity = newVec2FromComp(VelocityComponent, eid)
+
+    const desiredRotation = velocity.angle()
+    let rotationDelta = sprite.rotation - desiredRotation
+    if (rotationDelta > 0) {
+      rotationDelta = Math.min(maxRotation, rotationDelta)
+    } else {
+      rotationDelta = Math.max(-maxRotation, rotationDelta)
+    }
+
+    sprite.rotation += rotationDelta
+  }
+
+  _removeSprite(eid: number) {
+    this.world.sprites.get(eid)?.destroy()
+    this.world.sprites.delete(eid)
+    this.debug('Removing sprite ' + eid)
   }
 }
 

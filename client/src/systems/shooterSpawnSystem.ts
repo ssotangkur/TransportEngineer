@@ -1,8 +1,14 @@
 import { addComponent, addEntity, defineComponent } from 'bitecs'
-import { SpatialComponent, TilePositionComponent } from 'src/components/positionComponent'
+import {
+  AccelerationSumComponent,
+  TilePositionComponent,
+  VelocityComponent,
+} from 'src/components/positionComponent'
 import { SpriteComponent } from 'src/components/spriteComponent'
 import { BaseSystem } from 'src/systems/baseSystem'
 import { MapWorld } from './mapSystem'
+import { randomVector, setCompFromVec2 } from 'src/utils/vectors'
+import { BoidComponent } from 'src/components/boidComponent'
 
 export type ClockWorld = {
   shooterSpawnSystem: {
@@ -11,6 +17,7 @@ export type ClockWorld = {
 }
 
 const MAX_SPAWN_COUNT = 100
+const MAX_INITIAL_SPEED = 3
 
 /**
  * Identifies an entity as a "Shooter"
@@ -50,6 +57,11 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
         SpriteComponent.spriteId[eid] = 10
         SpriteComponent.spriteKey[eid] = 0
         addComponent(this.world, ShooterComponent, eid)
+        addComponent(this.world, VelocityComponent, eid)
+        const v = randomVector(Math.random() * MAX_INITIAL_SPEED)
+        setCompFromVec2(VelocityComponent, eid, v)
+        addComponent(this.world, AccelerationSumComponent, eid)
+        addComponent(this.world, BoidComponent, eid)
 
         // increment spawnCount
         this.world.shooterSpawnSystem.spawnCount++
