@@ -94,7 +94,7 @@ const spriteWithVecityQuery = defineQuery([
   VelocityComponent,
 ])
 
-export const MAX_ROTATION_SPEED = 1.0 // Radians per sec
+export const MAX_ROTATION_SPEED = 4.0 // Radians per sec
 
 export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldIn, SpriteWorld> {
   // Define enter/exit queries locally so we don't accidentally share them
@@ -174,14 +174,15 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
     const velocity = newVec2FromComp(VelocityComponent, eid)
 
     const desiredRotation = velocity.angle()
-    let rotationDelta = sprite.rotation - desiredRotation
+    let rotationDelta = desiredRotation - sprite.rotation
+    rotationDelta = Phaser.Math.Angle.Wrap(rotationDelta)
     if (rotationDelta > 0) {
       rotationDelta = Math.min(maxRotation, rotationDelta)
     } else {
       rotationDelta = Math.max(-maxRotation, rotationDelta)
     }
 
-    sprite.rotation += rotationDelta
+    sprite.rotation = Phaser.Math.Angle.Wrap(sprite.rotation + rotationDelta)
   }
 
   _removeSprite(eid: number) {
