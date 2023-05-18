@@ -16,10 +16,14 @@ import {
   ShowPlayerWaypointSystem,
 } from 'src/systems/playerSystem'
 import { TileToWorldTranslationSystem } from 'src/systems/coordinateTranslationSystem'
-import { DebugSystem } from 'src/systems/debugSystem'
+import { AccelVizSystem, DebugSystem } from 'src/systems/debugSystem'
 import { TimeSystem } from 'src/systems/timeSystem'
 import { SpatialSystem } from 'src/systems/spatialSystem'
-import { MoveComponentRemovalSystem, MoveResolutionSystem } from 'src/systems/movementSystem'
+import {
+  AccelerationResolutionSystem,
+  MoveComponentRemovalSystem,
+  MoveResolutionSystem,
+} from 'src/systems/movementSystem'
 import { BoidComponent } from 'src/components/boidComponent'
 import { BoidSystem } from 'src/systems/boidSystem'
 
@@ -54,10 +58,12 @@ export class EntityEditorScene extends OrchestratableScene {
       .build(ShowPlayerWaypointSystem)
       .build(SpatialSystem)
       .build(BoidSystem)
+      .build(AccelerationResolutionSystem)
       .build(MoveResolutionSystem)
       .build(TileToWorldTranslationSystem)
       .build(SpriteSystem)
       .build(SpriteAngleSystem)
+      // .build(AccelVizSystem)
       .build(MoveComponentRemovalSystem)
       // .build(DebugSystem)
       .instances()

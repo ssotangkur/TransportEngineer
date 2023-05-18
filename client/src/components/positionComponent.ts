@@ -30,6 +30,11 @@ export const MoveableComponent = defineComponent({
 export const VelocityComponent = defineComponent(Vector2)
 
 /**
+ * Entity can rotate in radians/sec, clockwise is positive
+ */
+export const AngularVelocityComponent = defineComponent({ w: Types.f32 })
+
+/**
  * Entities can add accelerations (ie forces) to this component
  * Values are in tiles/second/second
  */
@@ -37,6 +42,8 @@ export const AccelerationSumComponent = defineComponent({
   acceleration: Vector2,
   count: Types.i16,
 })
+
+export const AccelerationComponent = defineComponent(Vector2)
 
 /**
  * Entity can rotate

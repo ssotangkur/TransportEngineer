@@ -22,7 +22,7 @@ import {
 
 const perceptionDistance = 3
 const separationDistance = 1
-const MAX_SPEED = 3.0 // tiles per sec
+const MAX_SPEED = 20.0 // tiles per sec
 const MAX_ACCEL = 0.5 // tiles/s^2
 
 export const boidQuery = defineQuery([
@@ -70,9 +70,10 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       const boidsTooClose = this._findOthersInRange(eid, pos, separationDistance)
 
       // steering vectors are acceleration
-      const alignVec = this._align(velocity, toTickCoeff, boidsInRange)
+      const alignVec = this._align(velocity, toTickCoeff, maxSpeed, boidsInRange)
       const cohesionVec = this._cohesion(pos, velocity, maxSpeed, boidsInRange)
-      const separationVec = this._separation2(pos, velocity, maxSpeed, boidsTooClose)
+      const separationVec = this._separation(pos, velocity, maxSpeed, boidsTooClose)
+      const stayInVec = this._stayInBounds(pos)
       cohesionVec.limit(maxAccel)
       // separationVec.limit(maxAccel)
       // this.debug(
@@ -85,6 +86,7 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       accel.add(alignVec)
       accel.add(cohesionVec)
       accel.add(separationVec)
+      accel.add(stayInVec)
       // accel.scale(1 / 3)
 
       // limit to max_accel
@@ -112,7 +114,7 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
     })
   }
 
-  _align(velocity: Vector2, toTickCoeff: number, boidsInRange: Client[]) {
+  _align(velocity: Vector2, toTickCoeff: number, maxSpeed: number, boidsInRange: Client[]) {
     let steering = new Phaser.Math.Vector2()
     let total = 0
     boidsInRange.forEach((client) => {
@@ -126,8 +128,8 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       steering.scale(1.0 / total)
 
       // The following to keep them moving
-      // steering.normalize()
-      // steering.scale(maxSpeed)
+      steering.normalize()
+      steering.scale(maxSpeed)
 
       steering.subtract(velocity)
     }
@@ -169,41 +171,6 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       // Dir we want to go is away from client
       dir.subtract(otherPos)
       // Magnitude is how far the client is to the separation radius
-      const mag = separationDistance / dir.length()
-      // Scale the dir by the mag we just calculated
-      dir.normalize().scale(mag)
-      // Sum them all up
-      steering.add(dir)
-      total++
-    })
-    if (total == 0 || steering.length() == 0) {
-      return steering
-    }
-
-    steering.scale(1.0 / total)
-
-    // Since we're not calculating a new position anymore we don't subtract pos
-    // steering.subtract(pos)
-    steering.normalize().scale(maxSpeed)
-
-    // At this point we just have a vector representing the distance
-    // we want to cover in one timestep (delta), i.e. a dX/dT. Since we
-    // already have an existing velocity, the acceleration we need for this
-    // tick is steering -  (current dX/dT) which is the tickVelocity
-    steering.subtract(velocity)
-
-    return steering
-  }
-
-  _separation2(pos: Vector2, velocity: Vector2, maxSpeed: number, boidsTooClose: Client[]) {
-    let steering = new Phaser.Math.Vector2()
-    let total = 0
-    boidsTooClose.forEach((other) => {
-      const otherPos = newVec2FromComp(TilePositionComponent, other.eid)
-      const dir = pos.clone()
-      // Dir we want to go is away from client
-      dir.subtract(otherPos)
-      // Magnitude is how far the client is to the separation radius
       const mag = separationDistance - dir.length()
       // Scale the dir by the mag we just calculated
       dir.normalize().scale(mag)
@@ -225,6 +192,23 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
     // tick is steering -  (current dX/dT) which is the tickVelocity
     steering.subtract(velocity)
 
+    return steering
+  }
+
+  _stayInBounds(pos: Vector2) {
+    let steering = new Phaser.Math.Vector2()
+    if (pos.x < 0) {
+      steering.x = -pos.x
+    }
+    if (pos.x > 40) {
+      steering.x = 40 - pos.x
+    }
+    if (pos.y < 0) {
+      steering.y = -pos.y
+    }
+    if (pos.y > 40) {
+      steering.y = 40 - pos.y
+    }
     return steering
   }
 

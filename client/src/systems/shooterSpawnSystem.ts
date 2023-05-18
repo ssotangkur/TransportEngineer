@@ -1,6 +1,8 @@
 import { addComponent, addEntity, defineComponent } from 'bitecs'
 import {
   AccelerationSumComponent,
+  AngleComponent,
+  AngularVelocityComponent,
   TilePositionComponent,
   VelocityComponent,
 } from 'src/components/positionComponent'
@@ -9,6 +11,7 @@ import { BaseSystem } from 'src/systems/baseSystem'
 import { MapWorld } from './mapSystem'
 import { randomVector, setCompFromVec2 } from 'src/utils/vectors'
 import { BoidComponent } from 'src/components/boidComponent'
+import { AccelVizComponent } from 'src/components/debugComponent'
 
 export type ClockWorld = {
   shooterSpawnSystem: {
@@ -16,7 +19,7 @@ export type ClockWorld = {
   }
 }
 
-const MAX_SPAWN_COUNT = 100
+const MAX_SPAWN_COUNT = 1000
 const MAX_INITIAL_SPEED = 3
 
 /**
@@ -41,7 +44,7 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
     const now = time
 
     if (this.lastTimeMs == 0) {
-      this.newSpawnTime = now + 1000
+      this.newSpawnTime = now + 100
     }
     this.lastTimeMs = now
 
@@ -60,15 +63,18 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
         addComponent(this.world, VelocityComponent, eid)
         const v = randomVector(Math.random() * MAX_INITIAL_SPEED)
         setCompFromVec2(VelocityComponent, eid, v)
+        addComponent(this.world, AngleComponent, eid)
+        addComponent(this.world, AngularVelocityComponent, eid)
         addComponent(this.world, AccelerationSumComponent, eid)
         addComponent(this.world, BoidComponent, eid)
+        addComponent(this.world, AccelVizComponent, eid)
 
         // increment spawnCount
         this.world.shooterSpawnSystem.spawnCount++
       }
 
       // reset newSpawnTime
-      this.newSpawnTime = now + 1000
+      this.newSpawnTime = now + 100
     }
   }
 }

@@ -137,7 +137,7 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
     this.forEidIn(spriteWithVecityQuery, (eid) => {
       const sprite = this.world.sprites.get(eid)!
       this._updateSpritePosition(sprite, eid)
-      this._updateSpriteRotation(sprite, eid, maxRotation)
+      // this._updateSpriteRotation(sprite, eid, maxRotation)
     })
 
     // @TODO User Groups ie Object Pools
@@ -170,20 +170,20 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
     sprite.y = WorldPositionComponent.y[eid]
   }
 
-  _updateSpriteRotation(sprite: Phaser.GameObjects.Sprite, eid: number, maxRotation: number) {
-    const velocity = newVec2FromComp(VelocityComponent, eid)
+  // _updateSpriteRotation(sprite: Phaser.GameObjects.Sprite, eid: number, maxRotation: number) {
+  //   const velocity = newVec2FromComp(VelocityComponent, eid)
 
-    const desiredRotation = velocity.angle()
-    let rotationDelta = desiredRotation - sprite.rotation
-    rotationDelta = Phaser.Math.Angle.Wrap(rotationDelta)
-    if (rotationDelta > 0) {
-      rotationDelta = Math.min(maxRotation, rotationDelta)
-    } else {
-      rotationDelta = Math.max(-maxRotation, rotationDelta)
-    }
+  //   const desiredRotation = velocity.angle()
+  //   let rotationDelta = desiredRotation - sprite.rotation
+  //   rotationDelta = Phaser.Math.Angle.Wrap(rotationDelta)
+  //   if (rotationDelta > 0) {
+  //     rotationDelta = Math.min(maxRotation, rotationDelta)
+  //   } else {
+  //     rotationDelta = Math.max(-maxRotation, rotationDelta)
+  //   }
 
-    sprite.rotation = Phaser.Math.Angle.Wrap(sprite.rotation + rotationDelta)
-  }
+  //   sprite.rotation = Phaser.Math.Angle.Wrap(sprite.rotation + rotationDelta)
+  // }
 
   _removeSprite(eid: number) {
     this.world.sprites.get(eid)?.destroy()
