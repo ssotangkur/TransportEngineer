@@ -12,6 +12,7 @@ import {
   AccelerationSumComponent,
   AngleComponent,
   AngularVelocityComponent,
+  MoveableComponent,
   TileMoveComponent,
   TilePositionComponent,
   VelocityComponent,
@@ -21,7 +22,7 @@ import { setCompFromVec2, setVec2FromComp, sumCompFromVec2 } from 'src/utils/vec
 export const MIN_VELOCITY_THRESHOLD = 0.1
 export const MIN_VELOCITY_SQ = MIN_VELOCITY_THRESHOLD * MIN_VELOCITY_THRESHOLD
 export const MAX_ALPHA = 2 * Math.PI // 360deg/s/s
-export const MAX_ANGULAR_VELOCITY = 5 * 2 * Math.PI
+export const MAX_ANGULAR_VELOCITY = 1 * 2 * Math.PI
 
 /**
  * Resolves the AccelerationSumComponent into the AccelerationComponent
@@ -31,7 +32,7 @@ export class AccelerationResolutionSystem<WorldIn extends IWorld> extends BaseSy
   WorldIn,
   IWorld
 > {
-  private accelSumQuery = defineQuery([AccelerationSumComponent])
+  private accelSumQuery = defineQuery([AccelerationSumComponent, MoveableComponent])
   private accelSumEnter = enterQuery(this.accelSumQuery)
 
   createWorld(): IWorld {
@@ -51,6 +52,8 @@ export class AccelerationResolutionSystem<WorldIn extends IWorld> extends BaseSy
       } else {
         accel = setVec2FromComp(accel, AccelerationSumComponent.acceleration, eid)
         accel.scale(1.0 / total)
+        accel.limit(MoveableComponent.maxAcceleration[eid])
+
         setCompFromVec2(AccelerationComponent, eid, accel)
       }
       // Reset our sum component
@@ -137,8 +140,11 @@ export class MoveResolutionSystem<WorldIn extends IWorld> extends BaseSystem<
     let accel = new Phaser.Math.Vector2()
 
     this.forEidIn(angleVelocityAccelQuery, (eid) => {
-      // We want to point the direction we're accelerating
+      // We want to point the direction we're moving
       accel = setVec2FromComp(accel, VelocityComponent, eid)
+      if (accel.length() < 0.5) {
+        return
+      }
       let desired = Phaser.Math.Angle.Wrap(accel.angle())
       let angle = AngleComponent.radians[eid]
       let angVelocity = AngularVelocityComponent.w[eid] * 0.001 * delta

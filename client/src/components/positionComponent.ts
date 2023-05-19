@@ -18,10 +18,15 @@ export const WorldTargetComponent = defineComponent(Vector2)
 /**
  * Entity can move
  * speed is in tiles/second
+ *
+ * omega is angular velocity
+ * alpha is angular acceleration
  */
 export const MoveableComponent = defineComponent({
   maxSpeed: Types.f32,
   maxAcceleration: Types.f32,
+  maxOmega: Types.f32,
+  maxAlpha: Types.f32,
 })
 
 /**

@@ -4,6 +4,7 @@ import { BaseSystem } from './baseSystem'
 import { BoidComponent } from 'src/components/boidComponent'
 import {
   AccelerationSumComponent,
+  MoveableComponent,
   SpatialComponent,
   TileMoveComponent,
   TilePositionComponent,
@@ -22,14 +23,13 @@ import {
 
 const perceptionDistance = 3
 const separationDistance = 1
-const MAX_SPEED = 20.0 // tiles per sec
-const MAX_ACCEL = 0.5 // tiles/s^2
 
 export const boidQuery = defineQuery([
   BoidComponent,
   TilePositionComponent,
   VelocityComponent,
   AccelerationSumComponent,
+  MoveableComponent,
 ])
 const boidEnter = enterQuery(boidQuery)
 
@@ -51,12 +51,12 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
     let velocity = new Phaser.Math.Vector2()
 
     const toTickCoeff = 0.001 * delta
-    const maxAccel = MAX_ACCEL * toTickCoeff
-    const maxSpeed = MAX_SPEED * toTickCoeff
 
     const fromTickCoeff = 1000.0 / delta
 
     this.forEidIn(boidQuery, (eid) => {
+      const maxAccel = MoveableComponent.maxAcceleration[eid] * toTickCoeff
+      const maxSpeed = MoveableComponent.maxSpeed[eid] * toTickCoeff
       pos = setVec2FromComp(pos, TilePositionComponent, eid)
 
       velocity = setVec2FromComp(velocity, VelocityComponent, eid)
@@ -71,23 +71,18 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
 
       // steering vectors are acceleration
       const alignVec = this._align(velocity, toTickCoeff, maxSpeed, boidsInRange)
-      const cohesionVec = this._cohesion(pos, velocity, maxSpeed, boidsInRange)
+      // const cohesionVec = this._cohesion(pos, velocity, maxSpeed, boidsInRange)
       const separationVec = this._separation(pos, velocity, maxSpeed, boidsTooClose)
       const stayInVec = this._stayInBounds(pos)
-      cohesionVec.limit(maxAccel)
+      // cohesionVec.limit(maxAccel)
       // separationVec.limit(maxAccel)
-      // this.debug(
-      //   `align=${alignVec.length()} cohesion=${cohesionVec.length()} separation=${separationVec.length()}`,
-      // )
 
       // combine vectors here
-      // const accel = alignVec.add(cohesionVec).scale(0.5)
       const accel = new Phaser.Math.Vector2()
       accel.add(alignVec)
-      accel.add(cohesionVec)
+      // accel.add(cohesionVec)
       accel.add(separationVec)
       accel.add(stayInVec)
-      // accel.scale(1 / 3)
 
       // limit to max_accel
       accel.limit(maxAccel)
@@ -96,21 +91,6 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       accel.scale(fromTickCoeff)
       // sum the accel component
       addAcceleration(accel, eid)
-
-      // MOVE THE REST TO MOTION RESOLVER
-      // velocity.add(accel).limit(maxSpeed)
-
-      // // apply vectors
-      // pos.add(velocity)
-
-      // addComponent(this.world, TileMoveComponent, eid)
-      // TileMoveComponent.x[eid] = pos.x
-      // TileMoveComponent.y[eid] = pos.y
-
-      // // convert back to Tile/sec velocity for storing
-      // velocity.scale(fromTickCoeff)
-      // BoidComponent.velocity.x[eid] = velocity.x
-      // BoidComponent.velocity.y[eid] = velocity.y
     })
   }
 
@@ -128,8 +108,8 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       steering.scale(1.0 / total)
 
       // The following to keep them moving
-      steering.normalize()
-      steering.scale(maxSpeed)
+      // steering.normalize()
+      // steering.scale(maxSpeed)
 
       steering.subtract(velocity)
     }

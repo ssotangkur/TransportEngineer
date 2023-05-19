@@ -4,7 +4,7 @@ import tilesheetUrl from '/assets/tiles/tilesheet_complete_2X_extruded.png'
 import { Scenes } from './sceneOrchestrator'
 import { OrchestratableScene } from './orchestratableScene'
 import { MapControl } from 'src/systems/mapControlSystem'
-import { MapInfoWorld, MapSystem } from 'src/systems/mapSystem'
+import { MapSystem } from 'src/systems/mapSystem'
 import { createWorld } from 'bitecs'
 import { SpriteAngleSystem, SpriteSystem } from 'src/systems/spriteSystem'
 import { ShooterSpawnSystem } from '../../systems/shooterSpawnSystem'
@@ -63,7 +63,7 @@ export class EntityEditorScene extends OrchestratableScene {
       .build(TileToWorldTranslationSystem)
       .build(SpriteSystem)
       .build(SpriteAngleSystem)
-      // .build(AccelVizSystem)
+      .build(AccelVizSystem)
       .build(MoveComponentRemovalSystem)
       // .build(DebugSystem)
       .instances()

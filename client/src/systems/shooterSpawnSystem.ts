@@ -3,6 +3,7 @@ import {
   AccelerationSumComponent,
   AngleComponent,
   AngularVelocityComponent,
+  MoveableComponent,
   TilePositionComponent,
   VelocityComponent,
 } from 'src/components/positionComponent'
@@ -21,6 +22,8 @@ export type ClockWorld = {
 
 const MAX_SPAWN_COUNT = 1000
 const MAX_INITIAL_SPEED = 3
+const MAX_SPEED = 20.0 // tiles per sec
+const MAX_ACCEL = 0.5 // tiles/s^2
 
 /**
  * Identifies an entity as a "Shooter"
@@ -68,6 +71,9 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
         addComponent(this.world, AccelerationSumComponent, eid)
         addComponent(this.world, BoidComponent, eid)
         addComponent(this.world, AccelVizComponent, eid)
+        addComponent(this.world, MoveableComponent, eid)
+        MoveableComponent.maxAcceleration[eid] = MAX_ACCEL
+        MoveableComponent.maxSpeed[eid] = MAX_SPEED
 
         // increment spawnCount
         this.world.shooterSpawnSystem.spawnCount++
