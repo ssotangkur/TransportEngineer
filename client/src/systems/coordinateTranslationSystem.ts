@@ -43,8 +43,8 @@ export class TileToWorldTranslationSystem<WorldIn extends MapWorld> extends Base
     if (map != undefined) {
       const posEids = tilePositionQuery(this.world)
       posEids.forEach((eid) => {
-        WorldPositionComponent.x[eid] = map.tileToWorldX(TilePositionComponent.x[eid])
-        WorldPositionComponent.y[eid] = map.tileToWorldX(TilePositionComponent.y[eid])
+        WorldPositionComponent.x[eid] = map.tileToWorldX(TilePositionComponent.x[eid])!
+        WorldPositionComponent.y[eid] = map.tileToWorldX(TilePositionComponent.y[eid])!
       })
     }
 
@@ -63,8 +63,8 @@ export class TileToWorldTranslationSystem<WorldIn extends MapWorld> extends Base
     if (map != undefined) {
       const targetEids = tileTargetQuery(this.world)
       targetEids.forEach((eid) => {
-        WorldTargetComponent.x[eid] = map.tileToWorldX(TileTargetComponent.x[eid])
-        WorldTargetComponent.y[eid] = map.tileToWorldX(TileTargetComponent.y[eid])
+        WorldTargetComponent.x[eid] = map.tileToWorldX(TileTargetComponent.x[eid])!
+        WorldTargetComponent.y[eid] = map.tileToWorldX(TileTargetComponent.y[eid])!
       })
     }
 

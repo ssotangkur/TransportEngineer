@@ -13,6 +13,7 @@ import { MapWorld } from './mapSystem'
 import { randomVector, setCompFromVec2 } from 'src/utils/vectors'
 import { BoidComponent } from 'src/components/boidComponent'
 import { AccelVizComponent } from 'src/components/debugComponent'
+import { TextureWorld } from './textureSystem'
 
 export type ClockWorld = {
   shooterSpawnSystem: {
@@ -30,7 +31,11 @@ const MAX_ACCEL = 0.5 // tiles/s^2
  */
 export const ShooterComponent = defineComponent()
 
-export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld, I, ClockWorld> {
+export class ShooterSpawnSystem<I extends MapWorld & TextureWorld> extends BaseSystem<
+  MapWorld & TextureWorld,
+  I,
+  ClockWorld
+> {
   private lastTimeMs = 0
   private newSpawnTime?: number
 
@@ -59,9 +64,7 @@ export class ShooterSpawnSystem<I extends MapWorld> extends BaseSystem<MapWorld,
         addComponent(this.world, TilePositionComponent, eid)
         TilePositionComponent.x[eid] = 20 * Math.random()
         TilePositionComponent.y[eid] = 20 * Math.random()
-        addComponent(this.world, SpriteComponent, eid)
-        SpriteComponent.spriteId[eid] = 10
-        SpriteComponent.spriteKey[eid] = 0
+        this.world.textureWorld.textureManager.setShooterTexture(eid)
         addComponent(this.world, ShooterComponent, eid)
         addComponent(this.world, VelocityComponent, eid)
         const v = randomVector(Math.random() * MAX_INITIAL_SPEED)

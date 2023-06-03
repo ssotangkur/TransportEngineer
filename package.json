@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "client": "^1.0.0",
-    "server": "^1.0.0"
+    "server": "^1.0.0",
+    "vite": "^3.2.5"
   },
   "workspaces": [
     "client",

@@ -10,9 +10,7 @@ import {
   TilePositionComponent,
   VelocityComponent,
 } from 'src/components/positionComponent'
-import Phaser from 'phaser'
 import { Client } from 'src/utils/spatialHashGrid/spatialHashGrid'
-import { ShooterComponent } from './shooterSpawnSystem'
 import {
   addAcceleration,
   newVec2FromComp,
@@ -22,7 +20,7 @@ import {
 } from 'src/utils/vectors'
 
 const perceptionDistance = 3
-const separationDistance = 1
+const separationDistance = 0.5
 
 export const boidQuery = defineQuery([
   BoidComponent,

@@ -100,6 +100,9 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
       },
     )
 
+    // Disable browswer default right button context menu
+    this.scene.input.mouse.disableContextMenu()
+
     this.scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       // Store current cursor position in our world for others to use
       this.world.cursorPosition.worldX = pointer.worldX
@@ -113,7 +116,7 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
         false,
       )
 
-      if (!pointer.isDown) return
+      if (!pointer.isDown || !pointer.middleButtonDown()) return
 
       camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom
       camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom
@@ -121,6 +124,9 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
 
     // Handle Double-click processing
     this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      this.debug(
+        `lastPtrUp=${this.world.doubleClick._lastPointerUpTime} world.time=${this.world.time}`,
+      )
       if (this.world.doubleClick._lastPointerUpTime + DOUBLE_CLICK_THRESHOLD > this.world.time) {
         // double click occured
         this.world.doubleClick._doubleClickSubscribers.forEach((callback) => callback(pointer))

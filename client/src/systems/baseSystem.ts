@@ -78,6 +78,7 @@ export class SystemBuilderClass<InitialWorldIn extends IWorld> {
     private scene: OrchestratableScene,
     private world: InitialWorldIn,
     private internalInstances: BaseSystem<any, any, any>[] = [],
+    private systemClasses = new Set<any>(),
   ) {}
 
   build<
@@ -85,14 +86,17 @@ export class SystemBuilderClass<InitialWorldIn extends IWorld> {
     WorldIn extends WorldRequired & InitialWorldIn,
     S extends BaseSystem<InitialWorldIn, WorldIn, any>,
   >(systemClass: new (scene: OrchestratableScene, world: InitialWorldIn) => S) {
+    if (this.systemClasses.has(systemClass)) {
+      throw new Error('Attempted to add duplicate system')
+    }
+    this.systemClasses.add(systemClass)
     const instance = new systemClass(this.scene, this.world)
     this.internalInstances.push(instance)
-    // return new SystemBuilderClass<WorldIn & TWorldNew<S>, BaseSystem<TWorldNew<S> & WorldIn, any>>(
-    // return new SystemBuilderClass<typeof instance.world>(
     return new SystemBuilderClass<TWorldNew<S> & WorldIn>(
       this.scene,
       instance.world,
       this.internalInstances,
+      this.systemClasses,
     )
   }
 

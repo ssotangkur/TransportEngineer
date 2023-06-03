@@ -26,6 +26,8 @@ import {
 } from 'src/systems/movementSystem'
 import { BoidComponent } from 'src/components/boidComponent'
 import { BoidSystem } from 'src/systems/boidSystem'
+import { GroupRenderingSystem } from 'src/systems/groupSystem'
+import { TextureSystem } from 'src/systems/textureSystem'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
@@ -49,6 +51,7 @@ export class EntityEditorScene extends OrchestratableScene {
 
     this.systems = new SystemBuilderClass(this, this.world)
       .build(TimeSystem)
+      .build(TextureSystem)
       .build(MapSystem)
       .build(MapControl)
       .build(ShooterSpawnSystem)
@@ -64,6 +67,7 @@ export class EntityEditorScene extends OrchestratableScene {
       .build(SpriteSystem)
       .build(SpriteAngleSystem)
       .build(AccelVizSystem)
+      .build(GroupRenderingSystem)
       .build(MoveComponentRemovalSystem)
       // .build(DebugSystem)
       .instances()

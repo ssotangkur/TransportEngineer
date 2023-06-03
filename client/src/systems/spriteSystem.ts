@@ -1,87 +1,19 @@
 import { SpriteComponent } from 'src/components/spriteComponent'
 import { BaseSystem } from './baseSystem'
-import { Types, IWorld, defineQuery, enterQuery, exitQuery, Not } from 'bitecs'
+import { IWorld, defineQuery, enterQuery, exitQuery, Not } from 'bitecs'
 import {
   AngleComponent,
   VelocityComponent,
   WorldPositionComponent,
 } from 'src/components/positionComponent'
-import { useTheme } from 'styled-components'
-import { newVec2FromComp } from 'src/utils/vectors'
+import { TextureManager } from 'src/utils/textureManager'
+import { TextureWorld } from './textureSystem'
 
 export type SpriteWorld = {
-  sprites: Map<number, Phaser.GameObjects.Sprite>
+  spriteWorld: {
+    sprites: Map<number, Phaser.GameObjects.Sprite>
+  }
 }
-
-export type SpriteSheetInfo = {
-  imagePath: string
-  jsonPath: string
-  key: string
-  idToName: (id: number) => string
-  nameToId: (name: string) => number
-}
-
-export const SPRITE_CHARACTERS = [
-  'hitman1',
-  'manBlue',
-  'manBrown',
-  'manOld',
-  'robot1',
-  'soldier1',
-] as const
-export type SpriteCharacter = typeof SPRITE_CHARACTERS[number]
-export const SPRITE_STATES = ['gun', 'hold', 'machine', 'reload', 'silencer', 'stand'] as const
-export type SpriteState = typeof SPRITE_STATES[number]
-export type SpriteName = `${SpriteCharacter}_${SpriteState}.png`
-export const SPRITE_ID_TO_NAME_MAP = new Map<number, SpriteName>()
-export type k = keyof typeof SPRITE_CHARACTERS
-
-let spriteId = 0
-SPRITE_CHARACTERS.forEach((character) => {
-  SPRITE_STATES.forEach((state) => {
-    const name: SpriteName = `${character}_${state}.png`
-    SPRITE_ID_TO_NAME_MAP.set(spriteId++, name)
-  })
-})
-
-export const SPRITE_NAME_TO_ID_MAP = new Map<string, number>()
-Array.from(SPRITE_ID_TO_NAME_MAP.entries()).forEach(([id, spriteName]) => {
-  SPRITE_NAME_TO_ID_MAP.set(spriteName, id)
-})
-
-function pad(numToPad: number, size: number) {
-  let num = numToPad.toString()
-  while (num.length < size) num = '0' + num
-  return num
-}
-
-const CROSSHAIR_INFO: SpriteSheetInfo = {
-  imagePath: 'assets/sprites/crosshair/crosshairsheet.png',
-  jsonPath: 'assets/sprites/crosshair/crosshair.json',
-  key: 'crosshair',
-  idToName: (id) => {
-    return `crosshair${pad(id, 3)}.png`
-  },
-  nameToId: (name) => {
-    return parseInt(name.slice(9, 12), 10)
-  },
-}
-
-const SHOOTER_INFO: SpriteSheetInfo = {
-  imagePath: 'assets/sprites/shooter/shooter.png',
-  jsonPath: 'assets/sprites/shooter/shooter.json',
-  key: 'shooter',
-  idToName: (id) => {
-    return SPRITE_ID_TO_NAME_MAP.get(id) ?? ''
-  },
-  nameToId: (name) => {
-    return SPRITE_NAME_TO_ID_MAP.get(name) ?? 0
-  },
-}
-
-const SHEET_INFOS: SpriteSheetInfo[] = [SHOOTER_INFO, CROSSHAIR_INFO]
-
-export const SPRITE_KEYS = SHEET_INFOS.map((info) => info.key)
 
 const spriteNoVelocityQuery = defineQuery([
   SpriteComponent,
@@ -96,7 +28,11 @@ const spriteWithVecityQuery = defineQuery([
 
 export const MAX_ROTATION_SPEED = 4.0 // Radians per sec
 
-export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldIn, SpriteWorld> {
+export class SpriteSystem<WorldIn extends TextureWorld> extends BaseSystem<
+  TextureWorld,
+  WorldIn,
+  SpriteWorld
+> {
   // Define enter/exit queries locally so we don't accidentally share them
   private spriteEnterQuery = enterQuery(spriteNoVelocityQuery)
   private spriteExitQuery = exitQuery(spriteNoVelocityQuery)
@@ -106,18 +42,18 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
 
   createWorld(_worldIn: WorldIn) {
     const spriteWorld: SpriteWorld = {
-      sprites: new Map(),
+      spriteWorld: {
+        sprites: new Map(),
+      },
     }
     return spriteWorld
   }
 
-  preload(): void {
-    SHEET_INFOS.forEach((info) => {
-      this.scene.load.atlas(info.key, info.imagePath, info.jsonPath)
-    })
-  }
+  preload(): void {}
 
   update(_time: number, delta: number) {
+    const sprites = this.world.spriteWorld.sprites
+
     // Add sprites that have entered into the scene
     this.forEidIn(this.spriteEnterQuery, (eid) => {
       this._addSprite(eid)
@@ -131,11 +67,11 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
 
     // Update the world positions of the sprites
     this.forEidIn(spriteNoVelocityQuery, (eid) => {
-      const sprite = this.world.sprites.get(eid)!
+      const sprite = sprites.get(eid)!
       this._updateSpritePosition(sprite, eid)
     })
     this.forEidIn(spriteWithVecityQuery, (eid) => {
-      const sprite = this.world.sprites.get(eid)!
+      const sprite = sprites.get(eid)!
       this._updateSpritePosition(sprite, eid)
       // this._updateSpriteRotation(sprite, eid, maxRotation)
     })
@@ -150,12 +86,14 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
   }
 
   _addSprite(eid: number) {
-    const spriteId = SpriteComponent.spriteId[eid]
-    const spriteKey = SpriteComponent.spriteKey[eid]
-    const info = SHEET_INFOS[spriteKey]
-    const spriteName = info.idToName(spriteId)
-    const sprite = this.scene.add.sprite(0, 0, info.key, spriteName)
-    this.world.sprites.set(eid, sprite)
+    const textInfo = this.world.textureWorld.textureManager.getTextureInfo(eid)
+    const sprite = this.scene.add.sprite(0, 0, textInfo.key, textInfo.frame)
+    if (textInfo.anchorX || textInfo.anchorY) {
+      sprite.setOrigin(textInfo.anchorX, textInfo.anchorY)
+    }
+
+    this.world.spriteWorld.sprites.set(eid, sprite)
+
     // Update the sprite's width and height info
     SpriteComponent.width[eid] = sprite.width
     SpriteComponent.height[eid] = sprite.height
@@ -186,8 +124,8 @@ export class SpriteSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, Wor
   // }
 
   _removeSprite(eid: number) {
-    this.world.sprites.get(eid)?.destroy()
-    this.world.sprites.delete(eid)
+    this.world.spriteWorld.sprites.get(eid)?.destroy()
+    this.world.spriteWorld.sprites.delete(eid)
     this.debug('Removing sprite ' + eid)
   }
 }
@@ -208,7 +146,7 @@ export class SpriteAngleSystem<WorldIn extends SpriteWorld> extends BaseSystem<
   update() {
     const eids = spriteAngleQuery(this.world)
     eids.forEach((eid) => {
-      const sprite = this.world.sprites.get(eid)
+      const sprite = this.world.spriteWorld.sprites.get(eid)
       if (sprite === undefined) {
         return
       }

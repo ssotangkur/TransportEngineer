@@ -14,7 +14,6 @@ import {
 import { MapWorld } from './mapSystem'
 import { PlayerComponent } from 'src/components/playerComponent'
 import { SpriteComponent } from 'src/components/spriteComponent'
-import { SPRITE_NAME_TO_ID_MAP } from './spriteSystem'
 import {
   AngleComponent,
   SpatialComponent,
@@ -24,14 +23,15 @@ import {
   TileTargetComponent,
 } from 'src/components/positionComponent'
 import { DoubleClickWorld } from './mapControlSystem'
-import { SpatialWorld } from './spatialSystem'
+import { GroupComponent } from 'src/components/groupComponent'
+import { TextureWorld } from './textureSystem'
 
 const playerQuery = defineQuery([PlayerComponent])
 
 const playerTargetQuery = defineQuery([PlayerComponent, TileTargetComponent])
 
-export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
-  MapWorld,
+export class PlayerSpawnSystem<WorldIn extends MapWorld & TextureWorld> extends BaseSystem<
+  MapWorld & TextureWorld,
   WorldIn,
   IWorld
 > {
@@ -42,9 +42,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
   create() {
     const eid = addEntity(this.world)
     addComponent(this.world, PlayerComponent, eid)
-    addComponent(this.world, SpriteComponent, eid)
-    SpriteComponent.spriteId[eid] = SPRITE_NAME_TO_ID_MAP.get('soldier1_gun.png') ?? 0
-    SpriteComponent.spriteKey[eid] = 0
+    this.world.textureWorld.textureManager.setPlayerTexture(eid)
     addComponent(this.world, TilePositionComponent, eid)
     TilePositionComponent.x[eid] = 3.5
     TilePositionComponent.y[eid] = 5.5
@@ -54,7 +52,10 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld> extends BaseSystem<
     AngleComponent.radians[eid] = 0
     addComponent(this.world, SpatialComponent, eid)
 
-    // this.sprite = this.add.sprite(100, 300, 'sprites', 'soldier1_gun.png')
+    //TEMP
+    addComponent(this.world, GroupComponent, eid)
+    const groupEid = addEntity(this.world)
+    GroupComponent.group[eid] = groupEid
   }
 }
 
