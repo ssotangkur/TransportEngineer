@@ -1,16 +1,13 @@
-import { Method, METHODS, ServerImpl } from "common/src/api/types";
+import { ErrorResponse, Method, METHODS, ServerImpl } from "common/src/api/types";
 import { RootApis } from "common/src/routes/root";
-import express, { Router } from "express";
+import express, { RequestHandler, Router } from "express";
 import { catalogImpl } from "src/routes/catalog";
-
-// export type Api<ReqType, RespType> = {
-//   request: ReqType;
-//   response: RespType;
-// };
+import { sceneImpl } from "src/routes/scene";
 
 const rootRoute: ServerImpl<RootApis> = {
   routes: {
     catalog: catalogImpl,
+    scene: sceneImpl,
   },
   async get() {
     return "Transport Engineer API";
@@ -26,6 +23,28 @@ const splitMethod = (methodName: string): [Method, string] => {
   });
   return result;
 };
+
+const createHandler = (val: any): RequestHandler => {
+  return async (req, resp) => {
+    const implFunc = val as (req: any) => Promise<any>;
+    try {
+      const result = await implFunc(req.body);
+      resp.send(result);
+    } catch (e) {
+      const errResp: ErrorResponse = e instanceof Error ? {
+        typeName: 'error',
+        message: e.message,
+        stack: e.stack,
+        cause: e.cause,
+      } : {
+        typeName: 'error',
+        message: String(e),
+      }
+      
+      resp.status(400).send(errResp)
+    }
+  }
+}
 
 export const makeRouter = <T>(impl: ServerImpl<T>): Router => {
   const router = express.Router();
@@ -44,32 +63,16 @@ export const makeRouter = <T>(impl: ServerImpl<T>): Router => {
       const [method, resource] = splitMethod(key);
       switch (method) {
         case "POST":
-          router.post(`/${resource}`, async (req, resp) => {
-            const implFunc = val as (req: any) => Promise<any>;
-            const result = await implFunc(req.body);
-            resp.send(result);
-          });
+          router.post(`/${resource}`, createHandler(val));
           break;
         case "GET":
-          router.get(`/${resource}`, async (req, resp) => {
-            const implFunc = val as (req: any) => Promise<any>;
-            const result = await implFunc(req.body);
-            resp.send(result);
-          });
+          router.get(`/${resource}`, createHandler(val));
           break;
         case "DELETE":
-          router.delete(`/${resource}`, async (req, resp) => {
-            const implFunc = val as (req: any) => Promise<any>;
-            const result = await implFunc(req.body);
-            resp.send(result);
-          });
+          router.delete(`/${resource}`, createHandler(val));
           break;
         case "PUT":
-          router.put(`/${resource}`, async (req, resp) => {
-            const implFunc = val as (req: any) => Promise<any>;
-            const result = await implFunc(req.body);
-            resp.send(result);
-          });
+          router.put(`/${resource}`, createHandler(val));
           break;
       }
     }

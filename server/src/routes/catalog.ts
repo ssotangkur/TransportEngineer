@@ -86,7 +86,7 @@ export const catalogImpl: ServerImpl<CatalogApis> = {
       }
     });
     await writeCatalogJson(catalog);
-    return "foo";
+    return;
   },
   async postRemoveComponentTypeFromEntityType({ componentType, entityType }) {
     console.log(
@@ -100,7 +100,7 @@ export const catalogImpl: ServerImpl<CatalogApis> = {
       }
     });
     await writeCatalogJson(catalog);
-    return "foo";
+    return;
   },
   async post() {
     return;
@@ -109,7 +109,9 @@ export const catalogImpl: ServerImpl<CatalogApis> = {
     return getCatalogJson();
   },
   async delete() {
-    return "foo";
+    return {
+      typeName: 'error',
+      message: 'Not Implemented'};
   },
 
   routes: {

@@ -8,6 +8,7 @@ import 'phaser'
 import { Tab, Tabs } from './widgets/tabs'
 import { EntityTypeEditor } from './widgets/entityTypeEditor'
 import { ActionButtons } from './widgets/actionButtons'
+import { SceneEditor } from './scene/sceneEditor'
 // import { useOnWSEvent } from 'src/api/useWebSocket'
 
 const FullPageDiv = styled.div`
@@ -37,6 +38,9 @@ export const EditorPage = () => {
             </Tab>
             <Tab label='Actions'>
               <ActionButtons />
+            </Tab>
+            <Tab label='Scenes'>
+              <SceneEditor />
             </Tab>
           </Tabs>
         </ReflexElement>

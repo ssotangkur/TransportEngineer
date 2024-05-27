@@ -35,7 +35,16 @@ export type Output<SuccessType, ErrorType> = {
   data?: SuccessType;
   error?: ErrorType;
 };
-export type ErrorMessage = string;
+
+/**
+ * Always use this type for errors. The message will be provided by useRest's error result. 
+ */
+export type ErrorResponse = {
+  typeName: 'error'
+  message: string
+  stack?: string | undefined
+  cause?: any
+};
 
 type Handlers<T> = Omit<T, "routes">;
 

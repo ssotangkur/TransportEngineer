@@ -16,7 +16,7 @@
     "noImplicitReturns": true,
     "baseUrl": "./",
     "paths": {
-      "common": ["../common/src"]
+      "common/*": ["../common/src/*"]
     }
   },
   "include": ["src/**/*"],

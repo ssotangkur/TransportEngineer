@@ -17,8 +17,10 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
-    this.startKey.isDown = false
+    if (this.input.keyboard) {
+      this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+      this.startKey.isDown = false
+    }
     this.load.image('particle', particleUrl)
     this.load.audio('gasp', gaspUrl)
   }
@@ -30,7 +32,9 @@ export class MenuScene extends Phaser.Scene {
     })
 
     this.cameras.main.setBounds(0, 0, this.world.width, this.world.height)
-    this.cursors = this.input.keyboard.createCursorKeys()
+    if (this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys()
+    }
 
     this.add.image(100, 100, 'particle')
     this.add.grid(

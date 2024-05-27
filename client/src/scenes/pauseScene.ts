@@ -14,27 +14,28 @@ export class PauseScene extends OrchestratableScene {
   }
 
   preload(): void {
-    this.startKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.S,
-    );
-    this.startKey.isDown = false;
+    if (this.input.keyboard) {
+      this.startKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.S,
+      );
+      this.startKey.isDown = false;
+    }
     this.load.image('particle', particleUrl);
     this.load.audio('gasp', gaspUrl);
   }
 
   create(): void {
-    const text = this.add.text(0, 0, 'Press space to continue', {
+    this.add.text(0, 0, 'Press space to continue', {
       fontSize: '60px',
       fontFamily: "Helvetica",
     });
   }
 
-  update(): void {
-    super.update();
+  update(time: number, delta: number): void {
+    super.update(time, delta);
     if (this.startKey.isDown) {
       this.sound.play('gasp');
       this.scene.start(this);
     }
-
   }
 }
