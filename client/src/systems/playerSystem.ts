@@ -87,8 +87,8 @@ export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> e
         // bitECE makes this idempotent
         addComponent(worldIn, TileTargetComponent, eid)
 
-        TileTargetComponent.x[eid] = worldIn.mapSystem.map.worldToTileX(pointer.worldX, false)
-        TileTargetComponent.y[eid] = worldIn.mapSystem.map.worldToTileY(pointer.worldY, false)
+        TileTargetComponent.x[eid] = worldIn.mapSystem.map.worldToTileX(pointer.worldX, false) ?? 0
+        TileTargetComponent.y[eid] = worldIn.mapSystem.map.worldToTileY(pointer.worldY, false) ?? 0
       })
     })
     return {}

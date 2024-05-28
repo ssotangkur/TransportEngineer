@@ -1,0 +1,6 @@
+[
+    {
+        "name": "testScene",
+        "importPath": "./src/generated/testScene"
+    }
+]

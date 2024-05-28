@@ -2,8 +2,11 @@ import { Api } from "../../api/types";
 
 export type Scene = {
     name: string
-    code: string
+    filePath: string
+    importPath: string
 }
+
+export type ScenePersisted = Omit<Scene, 'filePath'>;
 
 export interface SceneApis {
     "": {

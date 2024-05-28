@@ -13,7 +13,7 @@ type SceneComponentProps = {
 }
 const SceneComponent = ({scene}: SceneComponentProps) => {
     return <div>
-        <a href={scene.code}>{scene.name}</a>
+        <a href={scene.filePath}>{scene.name}</a>
     </div>
 }
 
