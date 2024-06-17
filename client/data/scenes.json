@@ -1,6 +1,7 @@
 [
     {
         "name": "testScene",
-        "importPath": "./src/generated/testScene"
+        "importPath": "./src/generated/testScene",
+        "systems": []
     }
 ]

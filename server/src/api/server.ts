@@ -3,11 +3,13 @@ import { RootApis } from "common/src/routes/root";
 import express, { RequestHandler, Router } from "express";
 import { catalogImpl } from "src/routes/catalog";
 import { sceneImpl } from "src/routes/scene";
+import { systemImpl } from "src/routes/system";
 
 const rootRoute: ServerImpl<RootApis> = {
   routes: {
     catalog: catalogImpl,
     scene: sceneImpl,
+    system: systemImpl,
   },
   async get() {
     return "Transport Engineer API";

@@ -1,7 +1,6 @@
 import 'phaser';
 import particleUrl from '/assets/particle.png';
 import gaspUrl from '/assets/gasp.mp3';
-import { Scenes } from 'src/editor/scenes/sceneOrchestrator';
 import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene';
 
 export const pauseSceneName = 'PauseScene';
@@ -10,7 +9,7 @@ export class PauseScene extends OrchestratableScene {
   private startKey!: Phaser.Input.Keyboard.Key;
 
   constructor() {
-    super(Scenes.PAUSE);
+    super("pause");
   }
 
   preload(): void {

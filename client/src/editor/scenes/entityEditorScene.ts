@@ -1,7 +1,6 @@
 import 'phaser'
 // Tilesheets need to be extruded to avoid bleeding around the edges issue
 import tilesheetUrl from '/assets/tiles/tilesheet_complete_2X_extruded.png'
-import { Scenes } from './sceneOrchestrator'
 import { OrchestratableScene } from './orchestratableScene'
 import { MapControl } from 'src/systems/mapControlSystem'
 import { MapSystem } from 'src/systems/mapSystem'
@@ -27,6 +26,8 @@ import {
 import { BoidSystem } from 'src/systems/boidSystem'
 import { GroupRenderingSystem } from 'src/systems/groupSystem'
 import { TextureSystem } from 'src/systems/textureSystem'
+import { SingletonSystem } from 'src/systems/singletonSystem'
+import { MouseSystem } from 'src/systems/mouseSystem'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
@@ -37,7 +38,7 @@ export class EntityEditorScene extends OrchestratableScene {
   private systems
 
   constructor() {
-    super(Scenes.EDITOR)
+    super("editor")
 
     this.world = createWorld({
       time: 0,
@@ -49,7 +50,9 @@ export class EntityEditorScene extends OrchestratableScene {
     })
 
     this.systems = new SystemBuilderClass(this, this.world)
+      .build(SingletonSystem)
       .build(TimeSystem)
+      .build(MouseSystem)
       .build(TextureSystem)
       .build(MapSystem)
       .build(MapControl)

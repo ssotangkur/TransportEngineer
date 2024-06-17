@@ -6,16 +6,7 @@ export type MapControlWorld = {
   mapControl: {
     camera?: Phaser.Cameras.Scene2D.Camera
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys
-    controls?: Phaser.Cameras.Controls.FixedKeyControl
-  }
-}
-
-export type CursorPositionWorld = {
-  cursorPosition: {
-    worldX?: number
-    worldY?: number
-    tileX?: number
-    tileY?: number
+    controls?: Phaser.Cameras.Controls.SmoothedKeyControl
   }
 }
 
@@ -27,30 +18,15 @@ export type DoubleClickWorld = {
   }
 }
 
-export const DOUBLE_CLICK_THRESHOLD = 500 // in ms
-
 export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem<
   MapWorld & TimeWorld,
   WorldIn,
-  MapControlWorld & CursorPositionWorld & DoubleClickWorld
+  MapControlWorld
 > {
   createWorld(_worldIn: MapWorld) {
-    const doubleClickSubscribers = new Set<(pointer: Phaser.Input.Pointer) => void>()
-    const onDoubleClick = (listener: (pointer: Phaser.Input.Pointer) => void) => {
-      doubleClickSubscribers.add(listener)
-      return () => {
-        doubleClickSubscribers.delete(listener)
-      }
-    }
-
-    const mapControlWorld: MapControlWorld & CursorPositionWorld & DoubleClickWorld = {
+   
+    const mapControlWorld: MapControlWorld = {
       mapControl: {},
-      cursorPosition: {},
-      doubleClick: {
-        _lastPointerUpTime: 0,
-        _doubleClickSubscribers: doubleClickSubscribers,
-        onDoubleClick,
-      },
     }
     return mapControlWorld
   }
@@ -59,16 +35,18 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
     // Phaser supports multiple cameras, but you can access the default camera like this:
     const camera = this.scene.cameras.main
     // Set up the arrows to control the camera
-    const cursors = this.scene.input.keyboard.createCursorKeys()
-    const controls = new Phaser.Cameras.Controls.FixedKeyControl({
+    const cursors = this.scene.input.keyboard!.createCursorKeys()
+    const controls = new Phaser.Cameras.Controls.SmoothedKeyControl({
       camera: camera,
       left: cursors.left,
       right: cursors.right,
       up: cursors.up,
       down: cursors.down,
-      speed: 0.5,
-      zoomIn: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
-      zoomOut: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
+      acceleration: 2.0,
+      drag: 0.5,
+      maxSpeed: 1000.0,
+      zoomIn: this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
+      zoomOut: this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
       zoomSpeed: 0.002,
     })
     this.world.mapControl.camera = camera
@@ -84,6 +62,8 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
         deltaY: number,
         _deltaZ: number,
       ) => {
+        this.debug("Zoom: " + camera.zoom)
+
         if (deltaY > 0) {
           var newZoom = camera.zoom - 0.1
           if (newZoom > 0.1) {
@@ -100,38 +80,11 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
       },
     )
 
-    // Disable browswer default right button context menu
-    this.scene.input.mouse.disableContextMenu()
-
     this.scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      // Store current cursor position in our world for others to use
-      this.world.cursorPosition.worldX = pointer.worldX
-      this.world.cursorPosition.worldY = pointer.worldY
-      this.world.cursorPosition.tileX = this.world.mapSystem.map?.worldToTileX(
-        pointer.worldX,
-        false,
-      ) // Need false to get inter-tile precision
-      this.world.cursorPosition.tileY = this.world.mapSystem.map?.worldToTileY(
-        pointer.worldY,
-        false,
-      )
-
       if (!pointer.isDown || !pointer.middleButtonDown()) return
 
       camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom
       camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom
-    })
-
-    // Handle Double-click processing
-    this.scene.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      this.debug(
-        `lastPtrUp=${this.world.doubleClick._lastPointerUpTime} world.time=${this.world.time}`,
-      )
-      if (this.world.doubleClick._lastPointerUpTime + DOUBLE_CLICK_THRESHOLD > this.world.time) {
-        // double click occured
-        this.world.doubleClick._doubleClickSubscribers.forEach((callback) => callback(pointer))
-      }
-      this.world.doubleClick._lastPointerUpTime = this.world.time
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap

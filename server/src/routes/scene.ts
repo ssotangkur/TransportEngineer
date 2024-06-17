@@ -1,12 +1,7 @@
 import { ServerImpl } from "common";
 import { Scene, SceneApis, ScenePersisted} from "common/routes/scene/scene";
-import express from "express";
 import fs from "fs/promises";
 import path from "path";
-
-export const sceneRoute = express.Router();
-
-
 
 const sceneFile = "../client/data/scenes.json";
 const generatedPath = "../client/src/generated";
@@ -21,17 +16,6 @@ const getScenes = async (): Promise<Scene[]> => {
             filePath: `vscode://file/${absolutePath}`
         }
     })
-    
-
-    // const dirEnts = await fs.readdir(sceneDir, {withFileTypes: true});
-    // return dirEnts.filter(dirEnt => dirEnt.isFile()).map((file): Scene => {
-    //     const absolutePath = path.resolve( sceneDir, file.name )
-    //     return {
-    //         name: file.name,
-    //         importPath: `generated`
-    //         importPath: `vscode://file/${absolutePath}`,
-    //     }
-    // });
 }
 
 export const sceneImpl: ServerImpl<SceneApis> = {

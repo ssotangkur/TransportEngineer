@@ -21,10 +21,12 @@ import {
   TileMoveComponent,
   TilePositionComponent,
   TileTargetComponent,
+  WorldPositionComponent,
 } from 'src/components/positionComponent'
-import { DoubleClickWorld } from './mapControlSystem'
 import { GroupComponent } from 'src/components/groupComponent'
 import { TextureWorld } from './textureSystem'
+import { SingletonWorld } from './singletonSystem'
+import { MouseDoubleClickComponent } from 'src/components/mouseComponent'
 
 const playerQuery = defineQuery([PlayerComponent])
 
@@ -36,7 +38,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld & TextureWorld> extends 
   IWorld
 > {
   createWorld(_worldIn: WorldIn): IWorld {
-    return {}
+    return _worldIn;
   }
 
   create() {
@@ -67,8 +69,8 @@ const playerMovementQuery = defineQuery([
   AngleComponent,
 ])
 
-export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> extends BaseSystem<
-  DoubleClickWorld & MapWorld,
+export class PlayerMovementSystem<WorldIn extends MapWorld & SingletonWorld> extends BaseSystem<
+  MapWorld & SingletonWorld,
   WorldIn,
   IWorld
 > {
@@ -77,24 +79,23 @@ export class PlayerMovementSystem<WorldIn extends DoubleClickWorld & MapWorld> e
   private target = new Phaser.Math.Vector2(0, 0)
 
   createWorld(worldIn: WorldIn): IWorld {
-    // On double-click, create Movement for Player
-    worldIn.doubleClick.onDoubleClick((pointer) => {
-      this.debug('double-click')
-      this.forEidIn(playerQuery, (eid) => {
-        if (!worldIn.mapSystem.map) {
-          return
-        }
-        // bitECE makes this idempotent
-        addComponent(worldIn, TileTargetComponent, eid)
-
-        TileTargetComponent.x[eid] = worldIn.mapSystem.map.worldToTileX(pointer.worldX, false) ?? 0
-        TileTargetComponent.y[eid] = worldIn.mapSystem.map.worldToTileY(pointer.worldY, false) ?? 0
-      })
-    })
-    return {}
+    return worldIn
   }
 
   update(_time: number, delta: number) {
+
+    const singletonEid = this.world.singleton.eid
+    const isDoubleClick = !!MouseDoubleClickComponent.isDoubleClick[singletonEid]
+
+    this.forEidIn(playerQuery, (eid) => {
+      if (isDoubleClick) {
+        addComponent(this.world, TileTargetComponent, eid)
+        // Whatever the current mouse position is, make that the target position
+        TileTargetComponent.x[eid] = this.world.mapSystem.map?.worldToTileX(WorldPositionComponent.x[singletonEid], false) ?? 0
+        TileTargetComponent.y[eid] = this.world.mapSystem.map?.worldToTileY(WorldPositionComponent.y[singletonEid], false) ?? 0
+      }
+    })
+
     const playerEids = playerMovementQuery(this.world)
     playerEids.forEach((eid) => {
       this.pos.x = TilePositionComponent.x[eid]

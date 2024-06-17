@@ -31,15 +31,31 @@ export abstract class BaseSystem<
   abstract createWorld(worldIn: WorldRequired): WorldAdded
 
   preload() {
-    // no-op child classes should override if needed
+    // no-op, child classes should override if needed
   }
 
   create() {
-    // no-op child classes should override if needed
+    // no-op, child classes should override if needed
+  }
+
+  /**
+   * Runs before any update() call
+   */
+  preupdate() {
+    // no-op, child classes should override if needed
+    // @TODO need to call this
   }
 
   update(_time: number, _delta: number) {
-    // no-op child classes should override if needed
+    // no-op, child classes should override if needed
+  }
+
+  /**
+   * Runs after all update() calls. Use this for cleanup tasks.
+   */
+  postupdate() {
+     // no-op, child classes should override if needed
+     // @TODO need to call this
   }
 
   mergeWorlds<PrevWorld extends IWorld, AddedWorld extends IWorld>(

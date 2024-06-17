@@ -7,7 +7,6 @@ import {
   TilePositionComponent,
   VelocityComponent,
 } from 'src/components/positionComponent'
-import { SpriteComponent } from 'src/components/spriteComponent'
 import { BaseSystem } from 'src/systems/baseSystem'
 import { MapWorld } from './mapSystem'
 import { randomVector, setCompFromVec2 } from 'src/utils/vectors'
@@ -23,7 +22,7 @@ export type ClockWorld = {
 
 const MAX_SPAWN_COUNT = 1000
 const MAX_INITIAL_SPEED = 3
-const MAX_SPEED = 20.0 // tiles per sec
+const MAX_SPEED = 4.0 // tiles per sec
 const MAX_ACCEL = 0.5 // tiles/s^2
 
 /**

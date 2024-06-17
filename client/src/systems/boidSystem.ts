@@ -106,8 +106,8 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
       steering.scale(1.0 / total)
 
       // The following to keep them moving
-      // steering.normalize()
-      // steering.scale(maxSpeed)
+      steering.normalize()
+      steering.scale(maxSpeed)
 
       steering.subtract(velocity)
     }

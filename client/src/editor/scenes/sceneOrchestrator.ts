@@ -1,16 +1,16 @@
 import { Events } from "src/events/events";
 import { OrchestratableScene } from "./orchestratableScene";
 
-export enum Scenes {
-  BOOT = "boot",
-  EDITOR = "editor",
-  PAUSE = "pause",
-}
+// export enum Scenes {
+//   BOOT = "boot",
+//   EDITOR = "editor",
+//   PAUSE = "pause",
+// }
 
 export class BootScene extends OrchestratableScene {
 
   constructor() {
-    super(Scenes.BOOT);
+    super("boot");
   }
 
   create () {
@@ -25,11 +25,11 @@ export class BootScene extends OrchestratableScene {
 
 export type SceneCommand = {
   type: 'switch' | 'pause',
-  source: '*' | Scenes,
-  target: Scenes,
+  source: '*' | string,
+  target: string,
 }
 
-export const createSwitchCommand = (target: Scenes): SceneCommand => {
+export const createSwitchCommand = (target: string): SceneCommand => {
   return {
     type: 'switch',
     source: '*',
@@ -41,13 +41,13 @@ const sceneCommandQueue: SceneCommand[] = [];
 
 
 Events.on('unpause', () => {
-  sceneCommandQueue.push(createSwitchCommand(Scenes.EDITOR));
+  sceneCommandQueue.push(createSwitchCommand("editor"));
 });
 Events.on('pause', () => {
-  sceneCommandQueue.push(createSwitchCommand(Scenes.PAUSE));
+  sceneCommandQueue.push(createSwitchCommand("pause"));
 });
 Events.on('boot', () => {
-  sceneCommandQueue.push(createSwitchCommand(Scenes.EDITOR));
+  sceneCommandQueue.push(createSwitchCommand("boot"));
 });
 
 

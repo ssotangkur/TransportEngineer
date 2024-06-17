@@ -52,6 +52,9 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       TILE_MARGIN,
       TILE_SPACING,
     )
+    if(tileset === null) {
+      throw Error("tileset is null")
+    }
     this.world.mapSystem.map.createLayer('Tile Layer 1', tileset)
   }
 
