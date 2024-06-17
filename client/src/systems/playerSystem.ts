@@ -49,7 +49,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld & TextureWorld> extends 
     TilePositionComponent.x[eid] = 3.5
     TilePositionComponent.y[eid] = 5.5
     addComponent(this.world, MoveableComponent, eid)
-    MoveableComponent.maxSpeed[eid] = 1
+    MoveableComponent.maxSpeed[eid] = 10
     addComponent(this.world, AngleComponent, eid)
     AngleComponent.radians[eid] = 0
     addComponent(this.world, SpatialComponent, eid)

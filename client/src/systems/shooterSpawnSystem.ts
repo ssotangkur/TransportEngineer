@@ -20,7 +20,7 @@ export type ClockWorld = {
   }
 }
 
-const MAX_SPAWN_COUNT = 1000
+const MAX_SPAWN_COUNT = 100
 const MAX_INITIAL_SPEED = 3
 const MAX_SPEED = 4.0 // tiles per sec
 const MAX_ACCEL = 0.5 // tiles/s^2

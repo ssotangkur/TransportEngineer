@@ -53,6 +53,9 @@ export const AccelerationComponent = defineComponent(Vector2)
 /**
  * Entity can rotate
  */
-export const AngleComponent = defineComponent({ radians: Types.f32 })
+export const AngleComponent = defineComponent({ 
+  radians: Types.f32,
+  desiredAngle: Types.f32,
+ })
 
 export const SpatialComponent = defineComponent()

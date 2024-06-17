@@ -3,7 +3,6 @@ import {
   addComponent,
   defineQuery,
   enterQuery,
-  hasComponent,
   removeComponent,
 } from 'bitecs'
 import { BaseSystem } from './baseSystem'
@@ -21,7 +20,7 @@ import { setCompFromVec2, setVec2FromComp, sumCompFromVec2 } from 'src/utils/vec
 
 export const MIN_VELOCITY_THRESHOLD = 0.1
 export const MIN_VELOCITY_SQ = MIN_VELOCITY_THRESHOLD * MIN_VELOCITY_THRESHOLD
-export const MAX_ALPHA = 2 * Math.PI // 360deg/s/s
+export const MAX_ALPHA = 5 * 2 * Math.PI // 360deg/s/s
 export const MAX_ANGULAR_VELOCITY = 1 * 2 * Math.PI
 
 /**
@@ -128,41 +127,64 @@ export class MoveResolutionSystem<WorldIn extends IWorld> extends BaseSystem<
   /**
    * Takes the desired direction and changes the angular velocity up to the max towards
    * that direction
-   * @param delta
-   * @param desiredAngleVec
-   * @param eid
-   * @param maxAlpha  Maximum angular acceleration in rads/tick/tick
+   * @param delta time since last frame in milliseconds
    */
   _resolveAngularVelocity(delta: number) {
-    const toTickCoeff = 0.001 * delta
-    const maxAlpha = toTickCoeff * MAX_ALPHA
-    const maxW = toTickCoeff * MAX_ANGULAR_VELOCITY
+    const deltaSeconds = 0.001 * delta // Since delta is in milliseconds, convert to seconds
+    const maxAlpha = deltaSeconds * MAX_ALPHA
+    const maxW = deltaSeconds * MAX_ANGULAR_VELOCITY
     let accel = new Phaser.Math.Vector2()
 
     this.forEidIn(angleVelocityAccelQuery, (eid) => {
       // We want to point the direction we're moving
       accel = setVec2FromComp(accel, VelocityComponent, eid)
-      if (accel.length() < 0.5) {
-        return
-      }
-      let desired = Phaser.Math.Angle.Wrap(accel.angle())
-      let angle = AngleComponent.radians[eid]
-      let angVelocity = AngularVelocityComponent.w[eid] * 0.001 * delta
-      // alpha is the angular acceleration needed to turn to the desired angle
-      // in 1 tick given the current angular velocity
-      let alpha = desired - Phaser.Math.Angle.Wrap(angVelocity + angle)
-      // alpha = Phaser.Math.Angle.Wrap(alpha)
-      if (alpha > 0) {
-        alpha = Math.min(maxAlpha, alpha)
+
+      // Minimum velocity before we start rotating
+      let desired = 0
+      if (accel.length() >= 0.5) {
+        desired = accel.angle()
+        AngleComponent.desiredAngle[eid] = desired 
       } else {
-        alpha = Math.max(-maxAlpha, alpha)
+        desired = AngleComponent.desiredAngle[eid]
       }
-      angVelocity += alpha
-      angVelocity = Phaser.Math.Clamp(angVelocity, -maxW, maxW)
-      // TODO: Limit max angular velocity?
-      angle += angVelocity
-      AngleComponent.radians[eid] = Phaser.Math.Angle.Wrap(angle)
-      AngularVelocityComponent.w[eid] = (angVelocity * 1000) / delta // Convert back to rads/sec
+      
+      let angle = AngleComponent.radians[eid]
+      //let angVelocity = AngularVelocityComponent.w[eid] * 0.001 * delta
+      let angVelocity = AngularVelocityComponent.w[eid]
+      // deltaAngle is the angle needed to turn to the desired angle
+      let deltaAngle = Phaser.Math.Angle.Wrap(desired - angle)
+      // alpha = Phaser.Math.Angle.Wrap(alpha)
+      if (deltaAngle > 0) {
+        let newAngVelocity = angVelocity + maxAlpha
+        let maxDeltaAngleThisTick = newAngVelocity * deltaSeconds
+        if (maxDeltaAngleThisTick > deltaAngle) {
+          // We are gonna overshoot this tick so just set the angle to match
+          AngleComponent.radians[eid] = desired
+          AngularVelocityComponent.w[eid] = 0
+        } else {
+          AngleComponent.radians[eid] = angle + maxDeltaAngleThisTick
+          AngularVelocityComponent.w[eid] = newAngVelocity
+        }
+        
+      } else {
+        let newAngVelocity = angVelocity - maxAlpha
+        let maxDeltaAngleThisTick = newAngVelocity * deltaSeconds
+        if (maxDeltaAngleThisTick < deltaAngle) {
+          // We are gonna overshoot this tick so just set the angle to match
+          AngleComponent.radians[eid] = desired
+          AngularVelocityComponent.w[eid] = 0
+        } else {
+          AngleComponent.radians[eid] = angle + maxDeltaAngleThisTick
+          AngularVelocityComponent.w[eid] = newAngVelocity
+        }
+        
+      }
+      // angVelocity += alpha
+      // angVelocity = Phaser.Math.Clamp(angVelocity, -maxW, maxW)
+      // // TODO: Limit max angular velocity?
+      // angle += angVelocity
+      // AngleComponent.radians[eid] = angle
+      // AngularVelocityComponent.w[eid] = (angVelocity * 1000) / delta // Convert back to rads/sec
     })
   }
 
