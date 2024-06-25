@@ -1,8 +1,11 @@
+import { TileSetInfo, convert1DTo2DArray, parseTiledJson } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
+import { ASSETS_PATH } from 'src/constants'
 
-const EXTRUSION_PX = 8
-const TILE_MARGIN = EXTRUSION_PX
-const TILE_SPACING = EXTRUSION_PX * 2
+const TILE_SET_IMAGE_KEY = 'tiles'
+
+const TILES_PATH = ASSETS_PATH + '/tiles'
+const TILED_JSON_FILE = 'te.json'
 
 export type MapInfoWorld = {
   mapInfoWorld: {
@@ -38,24 +41,47 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
   }
 
   public preload() {
-    this.scene.load.image('tiles', this.world.mapInfoWorld.tilesheetUrl)
-    this.scene.load.tilemapTiledJSON('map', this.world.mapInfoWorld.tilemapJsonPath)
+    // const tileSetInfo = parseTiledJson(this.world.mapInfoWorld.tilemapJsonPath)
+    this.scene.load.rexAwait(async (successCallback, failureCallback) => {
+      try {
+        const tileSetInfo = await parseTiledJson(TILES_PATH + '/' + TILED_JSON_FILE)
+        this.scene.load.image(TILE_SET_IMAGE_KEY, TILES_PATH + '/' + tileSetInfo.tileSetImage)
+        this.scene.cache.addCustom('tileSetInfo')
+        this.scene.cache.custom.tileSetInfo.add(TILED_JSON_FILE, tileSetInfo)
+        successCallback()
+      } catch (error) {
+        failureCallback(error)
+      }
+    })
+    // this.scene.load.image('tiles', this.world.mapInfoWorld.tilesheetUrl)
+    // this.scene.load.tilemapTiledJSON('map', this.world.mapInfoWorld.tilemapJsonPath)
   }
 
   public create() {
-    this.world.mapSystem.map = this.scene.make.tilemap({ key: 'map' })
+    // this.world.mapSystem.map = this.scene.make.tilemap({ key: 'map'})
+    const tileSetInfo = this.scene.cache.custom.tileSetInfo.get(TILED_JSON_FILE) as TileSetInfo
+
+    const layer0 = tileSetInfo.layers[0]
+    const shiftedData = layer0.data.map((x) => x - tileSetInfo.firstGid)
+    const data = convert1DTo2DArray(shiftedData, layer0.width, layer0.height)
+    this.world.mapSystem.map = this.scene.make.tilemap({
+      key: layer0.name,
+      data,
+      tileWidth: tileSetInfo.tileWidth,
+      tileHeight: tileSetInfo.tileHeight,
+    })
     const tileset = this.world.mapSystem.map.addTilesetImage(
       'tileset',
-      'tiles',
-      undefined,
-      undefined,
-      TILE_MARGIN,
-      TILE_SPACING,
+      TILE_SET_IMAGE_KEY,
+      tileSetInfo.tileWidth,
+      tileSetInfo.tileHeight,
+      tileSetInfo.tileMargin,
+      tileSetInfo.tileSpacing,
     )
-    if(tileset === null) {
-      throw Error("tileset is null")
+    if (tileset === null) {
+      throw Error('tileset is null')
     }
-    this.world.mapSystem.map.createLayer('Tile Layer 1', tileset)
+    this.world.mapSystem.map.createLayer('layer', tileset)
   }
 
   public get heightInPixels() {

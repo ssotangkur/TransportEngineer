@@ -1,13 +1,10 @@
-import 'phaser';
-import { ModifiedGameConfig, PhaserAdapter } from 'src/reactComponents/phaserAdapter';
-import React from 'react';
-import { BootScene } from './scenes/sceneOrchestrator';
-import { EntityEditorScene } from './scenes/entityEditorScene';
-import { PauseScene } from 'src/scenes/pauseScene';
-
-import { TsProxy } from 'src/api/tsProxy';
-// import t from '../generated/testScene.js'
-
+import 'phaser'
+import { ModifiedGameConfig, PhaserAdapter } from 'src/reactComponents/phaserAdapter'
+import React from 'react'
+import { BootScene } from './scenes/sceneOrchestrator'
+import { EntityEditorScene } from './scenes/entityEditorScene'
+import { PauseScene } from 'src/scenes/pauseScene'
+import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin'
 
 const editorConfig: ModifiedGameConfig = {
   title: 'TransportEngineer',
@@ -16,14 +13,26 @@ const editorConfig: ModifiedGameConfig = {
   type: Phaser.AUTO,
   scene: [BootScene, EntityEditorScene, PauseScene],
   input: {
-    keyboard: true
+    keyboard: true,
+  },
+  plugins: {
+    global: [
+      {
+        key: 'rexAwaitLoader',
+        plugin: AwaitLoaderPlugin,
+        start: true,
+      },
+    ],
   },
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 0 },
-      debug: false
-    }
+      gravity: {
+        x: 0,
+        y: 0,
+      },
+      debug: false,
+    },
   },
   backgroundColor: '#300000',
   render: { pixelArt: false, antialias: true },
@@ -35,9 +44,8 @@ const editorConfig: ModifiedGameConfig = {
     fullscreenTarget: 'app',
     expandParent: false,
   },
-};
-
-export const EditorGame = () => {
-  return <PhaserAdapter config={editorConfig} />;
 }
 
+export const EditorGame = () => {
+  return <PhaserAdapter config={editorConfig} />
+}
