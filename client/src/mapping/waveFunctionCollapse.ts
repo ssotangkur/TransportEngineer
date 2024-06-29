@@ -46,6 +46,7 @@ export class PossibleTilesMap {
       this.possibleTiles[0][c].possibleNumbers = this.possibleTiles[0][c].possibleNumbers.filter(
         (num) => this.adjacency.testDirection(num, 'up', BORDER_TILE_NUMBER),
       )
+      this.possibleTiles[0][c].collapsed = this.possibleTiles[0][c].possibleNumbers.length === 1
       cellsToCheck.push(rowColKey(0, c))
       cellsToCheck.push(rowColKey(1, c)) // optimization: add row below, since they are adjacent
       // bottom row
@@ -54,6 +55,8 @@ export class PossibleTilesMap {
       ].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'down', BORDER_TILE_NUMBER),
       )
+      this.possibleTiles[this.height - 1][c].collapsed =
+        this.possibleTiles[this.height - 1][c].possibleNumbers.length === 1
       cellsToCheck.push(rowColKey(this.height - 1, c))
       cellsToCheck.push(rowColKey(this.height - 2, c)) // optimization: add row above, since they are adjacent
     }
@@ -62,6 +65,7 @@ export class PossibleTilesMap {
       this.possibleTiles[r][0].possibleNumbers = this.possibleTiles[r][0].possibleNumbers.filter(
         (num) => this.adjacency.testDirection(num, 'left', BORDER_TILE_NUMBER),
       )
+      this.possibleTiles[r][0].collapsed = this.possibleTiles[r][0].possibleNumbers.length === 1
       cellsToCheck.push(rowColKey(r, 0))
       cellsToCheck.push(rowColKey(r, 1)) // optimization: add row to the right, since they are adjacent
       // right column
@@ -70,6 +74,8 @@ export class PossibleTilesMap {
       ].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'right', BORDER_TILE_NUMBER),
       )
+      this.possibleTiles[r][this.width - 1].collapsed =
+        this.possibleTiles[r][this.width - 1].possibleNumbers.length === 1
       cellsToCheck.push(rowColKey(r, this.width - 1))
       cellsToCheck.push(rowColKey(r, this.width - 2)) // optimization: add row to the left, since they are adjacent
     }
