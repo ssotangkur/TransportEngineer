@@ -7,6 +7,7 @@ import {
   rowColKey,
 } from './waveFunctionCollapse'
 import { Adjacency } from './adjacency'
+import { UniqueArray } from 'src/utils/uniqueArray'
 
 describe('PossibleTilesMap', () => {
   it('constructs possibleTilesMap', () => {
@@ -14,18 +15,32 @@ describe('PossibleTilesMap', () => {
       [1, 2, 3],
       [4, 5, 6],
     ]
-    const possible = new PossibleTilesMap(3, 3, example)
+    const possible = new PossibleTilesMap(3, 2, example)
 
-    const allValues = [1, 2, 3, 4, 5, 6]
     expect(possible.getPossibleTiles(0, 0).possibleNumbers).toEqual([1])
-    expect(possible.getPossibleTiles(0, 1).possibleNumbers).toEqual([1, 2, 3])
+    expect(possible.getPossibleTiles(0, 1).possibleNumbers).toEqual([2])
     expect(possible.getPossibleTiles(0, 2).possibleNumbers).toEqual([3])
-    expect(possible.getPossibleTiles(1, 0).possibleNumbers).toEqual([1, 4])
-    expect(possible.getPossibleTiles(1, 1).possibleNumbers).toEqual(allValues)
-    expect(possible.getPossibleTiles(1, 2).possibleNumbers).toEqual([3, 6])
-    expect(possible.getPossibleTiles(2, 0).possibleNumbers).toEqual([4])
-    expect(possible.getPossibleTiles(2, 1).possibleNumbers).toEqual([4, 5, 6])
-    expect(possible.getPossibleTiles(2, 2).possibleNumbers).toEqual([6])
+    expect(possible.getPossibleTiles(1, 0).possibleNumbers).toEqual([4])
+    expect(possible.getPossibleTiles(1, 1).possibleNumbers).toEqual([5])
+    expect(possible.getPossibleTiles(1, 2).possibleNumbers).toEqual([6])
+  })
+
+  it.only('constructs possibleTilesMap with propagation', () => {
+    const example = [
+      [1, 2, 1, 2],
+      [2, 4, 4, 1],
+      [2, 4, 3, 1],
+      [1, 1, 1, 1],
+    ]
+    const possible = new PossibleTilesMap(4, 4, example)
+
+    possible.print()
+
+    expect(possible.getPossibleTiles(0, 0).possibleNumbers).toEqual([1, 2]) // borders only 1 and 2
+    expect(possible.getPossibleTiles(1, 0).possibleNumbers).toEqual([1, 2])
+    expect(possible.getPossibleTiles(1, 1).possibleNumbers).toEqual([1, 2, 4]) // No 3 since 3 is never right of 1 or 2
+    expect(possible.getPossibleTiles(2, 2).possibleNumbers.sort()).toEqual([1, 2, 3, 4]) // 3 is possible since 3 can be right of 4
+    expect(possible.getPossibleTiles(3, 1).possibleNumbers).toEqual([1]) // only 1s are on the bottom row
   })
 
   it('propagates correctly', () => {
@@ -43,7 +58,7 @@ describe('PossibleTilesMap', () => {
     cell.collapsed = true
     cell.possibleNumbers = [3]
     const modified = new Set<string>([rowColKey(0, 0)])
-    const cellsToCheck = adjCellCoordinates(0, 0)
+    const cellsToCheck = new UniqueArray(adjCellCoordinates(0, 0))
 
     possible.propagate(modified, cellsToCheck)
     possible.print()

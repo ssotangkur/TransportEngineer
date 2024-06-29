@@ -1,3 +1,4 @@
+import { UniqueArray } from 'src/utils/uniqueArray'
 import {
   Adjacency,
   AdjacencyTile,
@@ -38,31 +39,41 @@ export class PossibleTilesMap {
       this.possibleTiles.push(row)
     }
 
+    const cellsToCheck = new UniqueArray<string>()
     // collapse border tiles since only some tiles can be on the border
     for (let c = 0; c < this.width; c++) {
       // top row
       this.possibleTiles[0][c].possibleNumbers = this.possibleTiles[0][c].possibleNumbers.filter(
         (num) => this.adjacency.testDirection(num, 'up', BORDER_TILE_NUMBER),
       )
+      cellsToCheck.push(rowColKey(0, c))
+      cellsToCheck.push(rowColKey(1, c)) // optimization: add row below, since they are adjacent
       // bottom row
       this.possibleTiles[this.height - 1][c].possibleNumbers = this.possibleTiles[this.height - 1][
         c
       ].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'down', BORDER_TILE_NUMBER),
       )
+      cellsToCheck.push(rowColKey(this.height - 1, c))
+      cellsToCheck.push(rowColKey(this.height - 2, c)) // optimization: add row above, since they are adjacent
     }
     for (let r = 0; r < this.height; r++) {
       // left column
       this.possibleTiles[r][0].possibleNumbers = this.possibleTiles[r][0].possibleNumbers.filter(
         (num) => this.adjacency.testDirection(num, 'left', BORDER_TILE_NUMBER),
       )
+      cellsToCheck.push(rowColKey(r, 0))
+      cellsToCheck.push(rowColKey(r, 1)) // optimization: add row to the right, since they are adjacent
       // right column
       this.possibleTiles[r][this.width - 1].possibleNumbers = this.possibleTiles[r][
         this.width - 1
       ].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'right', BORDER_TILE_NUMBER),
       )
+      cellsToCheck.push(rowColKey(r, this.width - 1))
+      cellsToCheck.push(rowColKey(r, this.width - 2)) // optimization: add row to the left, since they are adjacent
     }
+    this.propagate(new Set<string>(), cellsToCheck)
   }
 
   collapsed() {
@@ -93,7 +104,7 @@ export class PossibleTilesMap {
     return getLowestEntropy(this.adjacency, this.possibleTiles, this.width, this.height)
   }
 
-  propagate(modifiedCells: Set<string>, cellsToCheck: string[] = []) {
+  propagate(modifiedCells: Set<string>, cellsToCheck: UniqueArray<string>) {
     // const coordToCollapse = this.getLowestEntropy()
     // if (coordToCollapse === undefined) {
     //   console.error('Unable to collapse. No lowest entropy coord')
