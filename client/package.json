@@ -5,6 +5,7 @@
   "main": "index.js",
   "devDependencies": {
     "@eslint/create-config": "^0.3.1",
+    "@types/lodash": "^4.17.5",
     "@types/react": "^18.0.19",
     "@types/react-dom": "^18.0.6",
     "@types/styled-components": "^5.1.26",
@@ -21,11 +22,13 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.7.1",
     "typescript": "^4.8.3",
-    "vite": "^3.2.5"
+    "vite": "^3.2.5",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "bitecs": "github:NateTheGreatt/bitECS#master",
     "common": "*",
+    "lodash": "^4.17.21",
     "phaser": "^3.60.0",
     "phaser3-rex-plugins": "^1.60.1",
     "react": "^18.2.0",
@@ -43,7 +46,7 @@
     "dev": "vite --force",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
