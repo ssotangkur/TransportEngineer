@@ -154,7 +154,7 @@ export const createGeneratedMapLayerFromTileSetInfo = (
   const exampleMap = convert1DTo2DArray(canonicalMap, layer0.width, layer0.height)
   const possibleMap = new PossibleTilesMap(width, height, exampleMap)
   const data = possibleMap.collapse()
-  possibleMap.print()
+  // possibleMap.print()
 
   const map = scene.make.tilemap({
     data,

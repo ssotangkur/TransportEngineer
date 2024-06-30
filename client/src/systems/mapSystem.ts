@@ -72,8 +72,8 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       // this.world.mapSystem.map = tiledData.phaserTileMap
 
       const generatedData = createGeneratedMapLayerFromTileSetInfo(
-        30,
-        30,
+        100,
+        100,
         this.world.mapSystem.tileSetInfo,
         this.scene,
       )
