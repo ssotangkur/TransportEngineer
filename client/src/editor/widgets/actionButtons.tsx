@@ -31,6 +31,13 @@ export const ActionButtons = () => {
       >
         UnPause
       </button>
+      <button
+        onClick={() => {
+          Events.emit('regenerateMap')
+        }}
+      >
+        Regenerate Map
+      </button>
     </Container>
   )
 }

@@ -25,7 +25,7 @@ describe('PossibleTilesMap', () => {
     expect(possible.getPossibleTiles(1, 2).possibleNumbers).toEqual([6])
   })
 
-  it.only('constructs possibleTilesMap with propagation', () => {
+  it('constructs possibleTilesMap with propagation', () => {
     const example = [
       [1, 2, 1, 2],
       [2, 4, 4, 1],
@@ -33,8 +33,6 @@ describe('PossibleTilesMap', () => {
       [1, 1, 1, 1],
     ]
     const possible = new PossibleTilesMap(4, 4, example)
-
-    possible.print()
 
     expect(possible.getPossibleTiles(0, 0).possibleNumbers).toEqual([1, 2]) // borders only 1 and 2
     expect(possible.getPossibleTiles(1, 0).possibleNumbers).toEqual([1, 2])
@@ -51,7 +49,6 @@ describe('PossibleTilesMap', () => {
       [1, 3, 2, 1],
     ]
     const possible = new PossibleTilesMap(3, 3, example)
-    possible.print()
 
     // manually collapse 0, 0
     const cell = possible.possibleTiles[0][0]
@@ -61,9 +58,7 @@ describe('PossibleTilesMap', () => {
     const cellsToCheck = new UniqueArray(adjCellCoordinates(0, 0))
 
     possible.propagate(modified, cellsToCheck)
-    possible.print()
-    console.log('Modified')
-    console.log(modified)
+
     expect(possible.possibleTiles[0][0].possibleNumbers.sort()).toEqual([3])
     expect(possible.possibleTiles[0][1].possibleNumbers.sort()).toEqual([2])
     expect(possible.possibleTiles[0][2].possibleNumbers.sort()).toEqual([1, 2, 3])
@@ -75,6 +70,20 @@ describe('PossibleTilesMap', () => {
     expect(possible.possibleTiles[2][2].possibleNumbers.sort()).toEqual([1, 2, 3])
     expect(possible.possibleTiles[2][2].possibleNumbers.sort()).toEqual([1, 2, 3])
     expect(possible.possibleTiles[2][2].possibleNumbers.sort()).toEqual([1, 2, 3])
+  })
+
+  it('collapses correctly', () => {
+    const example = [
+      [1, 3, 2, 1],
+      [2, 2, 2, 3],
+      [3, 2, 3, 2],
+      [1, 3, 2, 1],
+    ]
+    const possible = new PossibleTilesMap(3, 3, example)
+    possible.print()
+
+    possible.collapse()
+    possible.print()
   })
 })
 

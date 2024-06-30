@@ -7,6 +7,7 @@ import {
   opposite,
 } from './adjacency'
 import _ from 'lodash'
+import { duration } from 'moment'
 
 export type CollapsibleCell = {
   possibleNumbers: number[]
@@ -19,7 +20,7 @@ export const adjCellCoordinates = (row: number, col: number) => {
 }
 
 export class PossibleTilesMap {
-  public possibleTiles: CollapsibleCell[][]
+  public possibleTiles: CollapsibleCell[][] = []
   private adjacency: Adjacency
   private collapsedCount = 0
   private numCells: number
@@ -27,7 +28,11 @@ export class PossibleTilesMap {
   constructor(private width: number, private height: number, exampleMap: number[][]) {
     this.adjacency = new Adjacency(exampleMap)
     this.numCells = this.width * this.height
+    this.reset()
+  }
 
+  reset() {
+    this.collapsedCount = 0
     // initialize possibleTiles so every cell has every possible tile
     this.possibleTiles = []
     const usedTileNumbers = Array.from(this.adjacency.getUsedTileNumbers())
@@ -79,7 +84,7 @@ export class PossibleTilesMap {
     this.propagate(new Set<string>(), cellsToCheck)
   }
 
-  collapsed() {
+  get collapsed() {
     return this.collapsedCount === this.numCells
   }
 
@@ -107,13 +112,19 @@ export class PossibleTilesMap {
     return getLowestEntropy(this.adjacency, this.possibleTiles, this.width, this.height)
   }
 
+  /**
+   * Note: possibilities should be an array of unique numbers
+   * @param row
+   * @param col
+   * @param possibilities
+   * @returns true if the cell possibilities were updated
+   */
   updateCellPossibilities(row: number, col: number, possibilities: number[]) {
     const cell = this.possibleTiles[row][col]
-    const newPossibleNumbers = cell.possibleNumbers.filter((num) => possibilities.includes(num))
-    if (newPossibleNumbers.length === cell.possibleNumbers.length) {
+    if (possibilities.length === cell.possibleNumbers.length) {
       return false
     }
-    cell.possibleNumbers = newPossibleNumbers
+    cell.possibleNumbers = possibilities
     if (cell.possibleNumbers.length === 1) {
       cell.collapsed = true
       this.collapsedCount++
@@ -122,78 +133,71 @@ export class PossibleTilesMap {
   }
 
   collapse() {
-    while (!this.collapsed) {}
+    const startTime = Date.now()
+    let iterations = 0
+    while (!this.collapsed) {
+      try {
+        const modifiedCells = new Set<string>()
+        while (!this.collapsed) {
+          const coordToCollapse = this.getLowestEntropy()
+          // console.log('Collapsing', coordToCollapse)
+          if (coordToCollapse === undefined) {
+            throw new Error('Unable to collapse. No lowest entropy coord')
+          }
+          const collapsedTileNum = _.sample(
+            Array.from(this.getPossibleTiles(...coordToCollapse).possibleNumbers),
+          )
+          if (collapsedTileNum === undefined) {
+            throw new Error(`Unable to collapse coord ${coordToCollapse}. No possible options`)
+          }
+
+          const updated = this.updateCellPossibilities(...coordToCollapse, [collapsedTileNum])
+          if (updated) {
+            modifiedCells.add(rowColKey(...coordToCollapse))
+            this.propagate(modifiedCells, new UniqueArray(adjCellCoordinates(...coordToCollapse)))
+          }
+        }
+
+        console.log('Collapsed in', duration(Date.now() - startTime).asSeconds(), 'sec')
+        return this.toNumberArrays()
+      } catch (e) {
+        console.warn(`Error collapsing. Iteration=${iterations}`, e)
+        this.reset()
+        iterations++
+      }
+    }
+  }
+
+  /**
+   * Only call this after the map has been collapsed
+   * @returns a 2D array of numbers representing the collapsed map
+   */
+  private toNumberArrays() {
+    const result = []
+    for (let r = 0; r < this.height; r++) {
+      const row = []
+      for (let c = 0; c < this.width; c++) {
+        row.push(this.possibleTiles[r][c].possibleNumbers[0])
+      }
+      result.push(row)
+    }
+    return result
   }
 
   propagate(modifiedCells: Set<string>, cellsToCheck: UniqueArray<string>) {
-    // const coordToCollapse = this.getLowestEntropy()
-    // if (coordToCollapse === undefined) {
-    //   console.error('Unable to collapse. No lowest entropy coord')
-    //   return
-    // }
-    // const collapsedTileNum = _.sample(
-    //   Array.from(this.getPossibleTiles(...coordToCollapse).possibleNumbers),
-    // )
-    // if (collapsedTileNum === undefined) {
-    //   console.error(`Unable to collapse coord ${coordToCollapse}. No possible options`)
-    //   return
-    // }
-
-    // const cell = this.possibleTiles[coordToCollapse[0]][coordToCollapse[1]]
-    // cell.possibleNumbers.clear()
-    // cell.possibleNumbers.add(collapsedTileNum)
-    // cell.collapsedValue = collapsedTileNum
-    // modifiedCells.add(rowColKey(...coordToCollapse))
-
-    // // Add neighbor cells to check
-    // for (const vector of Object.values(CARDINAL_DIRECTIONS)) {
-    //   const adjRow = coordToCollapse[0] + vector[0]
-    //   const adjCol = coordToCollapse[1] + vector[1]
-    //   const adjRowColKey = rowColKey(adjRow, adjCol)
-    //   if (!modifiedCells.has(adjRowColKey)) {
-    //     cellsToCheck.push(adjRowColKey)
-    //     console.log('Adding to check', adjRowColKey)
-    //   }
-    // }
-
     // collapse cells to check
     while (cellsToCheck.length > 0) {
       const [row, col] = cellsToCheck.shift()!.split(',').map(Number)
-      console.log('Checking', row, col)
+      // console.log('Checking', row, col)
       const updated = this.testCellPossibilities(row, col, modifiedCells)
       if (updated) {
-        console.log('Updated', row, col)
+        // console.log('Updated', row, col)
         // Add neighbor cells to check
         adjCellCoordinates(row, col).forEach((adjRowColKey) => {
-          if (!modifiedCells.has(adjRowColKey)) {
-            cellsToCheck.push(adjRowColKey)
-            console.log('Adding to check2', adjRowColKey)
-          }
+          cellsToCheck.push(adjRowColKey)
         })
       }
     }
-    // for (const [direction, vector] of Object.entries(CARDINAL_DIRECTIONS)) {
-    //   const dir = direction as keyof AdjacencyTile
-    //   const adjRow = coordToCollapse[0] + vector[0]
-    //   const adjCol = coordToCollapse[1] + vector[1]
-
-    //   const adjCellWasUpdated = this.updateCellPossibilities(adjRow, adjCol, modifiedCells)
-    //   // Don't add cells that were already modified to the ones we need to check
-    //   if (adjCellWasUpdated && !modifiedCells.has(rowColKey(adjRow, adjCol))) {
-    //     cellsToCheck.push(rowColKey(adjRow, adjCol))
-    //   }
-
-    //   const adjCell = this.possibleTiles[adjRow][adjCol]
-    //   // Check for each possible number in the adjacent cell whether that tile
-    //   // is allowed to have the collapsed tile in the direction opposite of the
-    //   // adjacent cell.
-    //   Array.from(adjCell.possibleNumbers.values()).forEach((num) => {
-    //     if (!this.adjacency.testDirection(num, opposite(dir), collapsedTileNum)) {
-    //       adjCell.possibleNumbers.delete(num)
-    //       modifiedCells.add(rowColKey(adjRow, adjCol))
-    //     }
-    //   })
-    // }
   }
 
   /**
@@ -229,7 +233,7 @@ export class PossibleTilesMap {
       return false
     }
     // for each possible number, check if all 4 directions support it
-    const newPossibleNums = Array.from(cell.possibleNumbers).filter((num) => {
+    const newPossibleNums = cell.possibleNumbers.filter((num) => {
       return Object.entries(CARDINAL_DIRECTIONS).every(([direction, vector]) => {
         return this.supportsNumberInDirection(
           row + vector[0],
@@ -239,12 +243,12 @@ export class PossibleTilesMap {
         )
       })
     })
-    if (newPossibleNums.length === cell.possibleNumbers.length) {
-      // Same possibilities, no need to update
+
+    const updated = this.updateCellPossibilities(row, col, newPossibleNums)
+    if (!updated) {
       return false
     }
-    // Different lengths means we need to update
-    cell.possibleNumbers = newPossibleNums
+
     modifiedCells.add(rowColKey(row, col))
     // If we've collapsed to one possibility, mark as collapsed
     if (cell.possibleNumbers.length === 1) {
@@ -252,6 +256,7 @@ export class PossibleTilesMap {
     }
     // If we've collapsed to zero possibilities, we can't continue
     if (cell.possibleNumbers.length === 0) {
+      // this.print()
       console.error(`No possible numbers for cell ${row}, ${col}`)
       throw new Error('No possible numbers')
     }

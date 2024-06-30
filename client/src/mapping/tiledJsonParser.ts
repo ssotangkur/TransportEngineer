@@ -1,9 +1,10 @@
 import { ASSETS_PATH } from 'src/constants'
 import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
+import { PossibleTilesMap } from './waveFunctionCollapse'
+import { EquilavencyGroups } from './equilavencyGroup'
 
 const TILES_PATH = ASSETS_PATH + '/tiles'
 const TILE_SET_CACHE_ID = 'tileSetInfo'
-const TILE_SET_IMAGE_KEY = 'tiles'
 
 export type TileSetInfo = {
   tileSetImage: string
@@ -14,6 +15,11 @@ export type TileSetInfo = {
   tileSpacing: number
   firstGid: number
   layers: TiledJson['layers']
+  /**
+   * Tiles with the same equivalence group name can be used interchangeably.
+   * We map tiles with the same equivalence group name to the same number.
+   */
+  equivalencyGroups: EquilavencyGroups
 }
 
 export type TileMap = {
@@ -42,6 +48,14 @@ export type TiledJson = {
     tileheight: number
     tilewidth: number
     tilecount: number
+    tiles: {
+      id: number
+      properties: {
+        name: string
+        type: string
+        value: string
+      }[]
+    }[]
   }[]
 }
 
@@ -78,7 +92,18 @@ export const loadTiledJson = async (
     tileMargin: tileSet.margin,
     tileSpacing: tileSet.spacing,
     layers: tiledJson.layers,
+    equivalencyGroups: new EquilavencyGroups(),
   }
+  // Compute equivalency groups
+  tileSet.tiles.forEach((tile) => {
+    const equivalenceGroup = tile.properties.find((prop) => prop.name === 'equivalencyGroup')
+    if (equivalenceGroup) {
+      // Need to add firstgid so that these tile ids so match the tile ids in the map data
+      tileSetInfo.equivalencyGroups.add(tile.id + tileSet.firstgid, equivalenceGroup.value)
+    }
+  })
+
+  tileSetInfo.equivalencyGroups.print()
 
   scene.load.image(tileSetInfo.tileSetImage, TILES_PATH + '/' + tileSetInfo.tileSetImage)
   scene.cache.addCustom(TILE_SET_CACHE_ID)
@@ -87,9 +112,50 @@ export const loadTiledJson = async (
   return tileSetInfo
 }
 
-export const createTiledMap = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
+export const createTiledMapLayer = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
   const layer0 = tileSetInfo.layers[0]
   const data = convert1DTo2DArray(layer0.data, layer0.width, layer0.height)
+  const map = scene.make.tilemap({
+    data,
+    tileWidth: tileSetInfo.tileWidth,
+    tileHeight: tileSetInfo.tileHeight,
+  })
+  const tileset = map.addTilesetImage(
+    'tileset',
+    tileSetInfo.tileSetImage,
+    tileSetInfo.tileWidth,
+    tileSetInfo.tileHeight,
+    tileSetInfo.tileMargin,
+    tileSetInfo.tileSpacing,
+    tileSetInfo.firstGid,
+  )
+  if (tileset === null) {
+    throw Error('tileset is null')
+  }
+  map.createLayer(0, tileset)
+  return {
+    phaserTileMap: map,
+    mapData: data,
+  }
+}
+
+export const createGeneratedMapLayerFromTileSetInfo = (
+  width: number,
+  height: number,
+  tileSetInfo: TileSetInfo,
+  scene: OrchestratableScene,
+) => {
+  const layer0 = tileSetInfo.layers[0]
+  // canonicalize the tile numbers using the equivalence groups
+  const canonicalMap = layer0.data.map((tileNum) =>
+    tileSetInfo.equivalencyGroups.getCanonicalId(tileNum),
+  )
+
+  const exampleMap = convert1DTo2DArray(canonicalMap, layer0.width, layer0.height)
+  const possibleMap = new PossibleTilesMap(width, height, exampleMap)
+  const data = possibleMap.collapse()
+  possibleMap.print()
+
   const map = scene.make.tilemap({
     data,
     tileWidth: tileSetInfo.tileWidth,

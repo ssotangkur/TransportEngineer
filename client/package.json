@@ -29,6 +29,7 @@
     "bitecs": "github:NateTheGreatt/bitECS#master",
     "common": "*",
     "lodash": "^4.17.21",
+    "moment": "^2.30.1",
     "phaser": "^3.60.0",
     "phaser3-rex-plugins": "^1.60.1",
     "react": "^18.2.0",

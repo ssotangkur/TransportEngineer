@@ -38,7 +38,7 @@ export class EntityEditorScene extends OrchestratableScene {
   private systems
 
   constructor() {
-    super("editor")
+    super('editor')
 
     this.world = createWorld({
       time: 0,

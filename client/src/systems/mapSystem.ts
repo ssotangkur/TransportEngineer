@@ -1,5 +1,11 @@
-import { TileSetInfo, createTiledMap, loadTiledJson } from 'src/mapping/tiledJsonParser'
+import {
+  TileSetInfo,
+  createGeneratedMapLayerFromTileSetInfo,
+  createTiledMapLayer,
+  loadTiledJson,
+} from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
+import { Events } from 'src/events/events'
 
 const TILED_JSON_FILE = 'te.json'
 
@@ -49,9 +55,29 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
   }
 
   public create() {
+    this.createMap()
+    const createMapClosure = () => {
+      this.createMap()
+    }
+    Events.on('regenerateMap', createMapClosure)
+    const unsubscribe = () => {
+      Events.off('regenerateMap', createMapClosure)
+    }
+    this.scene.events.on('destroy', unsubscribe)
+  }
+
+  private createMap() {
     if (this.world.mapSystem.tileSetInfo) {
-      const tiledData = createTiledMap(this.world.mapSystem.tileSetInfo, this.scene)
-      this.world.mapSystem.map = tiledData.phaserTileMap
+      // const tiledData = createTiledMapLayer(this.world.mapSystem.tileSetInfo, this.scene)
+      // this.world.mapSystem.map = tiledData.phaserTileMap
+
+      const generatedData = createGeneratedMapLayerFromTileSetInfo(
+        30,
+        30,
+        this.world.mapSystem.tileSetInfo,
+        this.scene,
+      )
+      this.world.mapSystem.map = generatedData.phaserTileMap
     }
   }
 

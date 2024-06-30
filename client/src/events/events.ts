@@ -8,6 +8,7 @@ export interface EventCallbacks {
   unpause: () => void
   pause: () => void
   boot: () => void
+  regenerateMap: () => void
   'EntityTypeList:EntitySelected': (entityType: EntityType) => void
   addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => void
   removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => void

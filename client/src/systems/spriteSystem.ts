@@ -6,7 +6,6 @@ import {
   VelocityComponent,
   WorldPositionComponent,
 } from 'src/components/positionComponent'
-import { TextureManager } from 'src/utils/textureManager'
 import { TextureWorld } from './textureSystem'
 
 export type SpriteWorld = {
