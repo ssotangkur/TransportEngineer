@@ -21,9 +21,12 @@ export const adjCellCoordinates = (row: number, col: number) => {
 export class PossibleTilesMap {
   public possibleTiles: CollapsibleCell[][]
   private adjacency: Adjacency
+  private collapsedCount = 0
+  private numCells: number
 
   constructor(private width: number, private height: number, exampleMap: number[][]) {
     this.adjacency = new Adjacency(exampleMap)
+    this.numCells = this.width * this.height
 
     // initialize possibleTiles so every cell has every possible tile
     this.possibleTiles = []
@@ -33,7 +36,7 @@ export class PossibleTilesMap {
       for (let c = 0; c < this.width; c++) {
         row.push({
           possibleNumbers: _.cloneDeep(usedTileNumbers),
-          collapsed: usedTileNumbers.length === 1,
+          collapsed: false, // assume it's not collapsed yet
         })
       }
       this.possibleTiles.push(row)
@@ -43,39 +46,33 @@ export class PossibleTilesMap {
     // collapse border tiles since only some tiles can be on the border
     for (let c = 0; c < this.width; c++) {
       // top row
-      this.possibleTiles[0][c].possibleNumbers = this.possibleTiles[0][c].possibleNumbers.filter(
-        (num) => this.adjacency.testDirection(num, 'up', BORDER_TILE_NUMBER),
+      const upFiltered = this.possibleTiles[0][c].possibleNumbers.filter((num) =>
+        this.adjacency.testDirection(num, 'up', BORDER_TILE_NUMBER),
       )
-      this.possibleTiles[0][c].collapsed = this.possibleTiles[0][c].possibleNumbers.length === 1
+      this.updateCellPossibilities(0, c, upFiltered)
       cellsToCheck.push(rowColKey(0, c))
       cellsToCheck.push(rowColKey(1, c)) // optimization: add row below, since they are adjacent
       // bottom row
-      this.possibleTiles[this.height - 1][c].possibleNumbers = this.possibleTiles[this.height - 1][
-        c
-      ].possibleNumbers.filter((num) =>
+      const bottomFiltered = this.possibleTiles[this.height - 1][c].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'down', BORDER_TILE_NUMBER),
       )
-      this.possibleTiles[this.height - 1][c].collapsed =
-        this.possibleTiles[this.height - 1][c].possibleNumbers.length === 1
+      this.updateCellPossibilities(this.height - 1, c, bottomFiltered)
       cellsToCheck.push(rowColKey(this.height - 1, c))
       cellsToCheck.push(rowColKey(this.height - 2, c)) // optimization: add row above, since they are adjacent
     }
     for (let r = 0; r < this.height; r++) {
       // left column
-      this.possibleTiles[r][0].possibleNumbers = this.possibleTiles[r][0].possibleNumbers.filter(
-        (num) => this.adjacency.testDirection(num, 'left', BORDER_TILE_NUMBER),
+      const leftFiltered = this.possibleTiles[r][0].possibleNumbers.filter((num) =>
+        this.adjacency.testDirection(num, 'left', BORDER_TILE_NUMBER),
       )
-      this.possibleTiles[r][0].collapsed = this.possibleTiles[r][0].possibleNumbers.length === 1
+      this.updateCellPossibilities(r, 0, leftFiltered)
       cellsToCheck.push(rowColKey(r, 0))
       cellsToCheck.push(rowColKey(r, 1)) // optimization: add row to the right, since they are adjacent
       // right column
-      this.possibleTiles[r][this.width - 1].possibleNumbers = this.possibleTiles[r][
-        this.width - 1
-      ].possibleNumbers.filter((num) =>
+      const rightFiltered = this.possibleTiles[r][this.width - 1].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'right', BORDER_TILE_NUMBER),
       )
-      this.possibleTiles[r][this.width - 1].collapsed =
-        this.possibleTiles[r][this.width - 1].possibleNumbers.length === 1
+      this.updateCellPossibilities(r, this.width - 1, rightFiltered)
       cellsToCheck.push(rowColKey(r, this.width - 1))
       cellsToCheck.push(rowColKey(r, this.width - 2)) // optimization: add row to the left, since they are adjacent
     }
@@ -83,7 +80,7 @@ export class PossibleTilesMap {
   }
 
   collapsed() {
-    return this.possibleTiles.every((row) => row.every((cell) => cell.collapsed))
+    return this.collapsedCount === this.numCells
   }
 
   print() {
@@ -108,6 +105,24 @@ export class PossibleTilesMap {
    */
   getLowestEntropy() {
     return getLowestEntropy(this.adjacency, this.possibleTiles, this.width, this.height)
+  }
+
+  updateCellPossibilities(row: number, col: number, possibilities: number[]) {
+    const cell = this.possibleTiles[row][col]
+    const newPossibleNumbers = cell.possibleNumbers.filter((num) => possibilities.includes(num))
+    if (newPossibleNumbers.length === cell.possibleNumbers.length) {
+      return false
+    }
+    cell.possibleNumbers = newPossibleNumbers
+    if (cell.possibleNumbers.length === 1) {
+      cell.collapsed = true
+      this.collapsedCount++
+    }
+    return true
+  }
+
+  collapse() {
+    while (!this.collapsed) {}
   }
 
   propagate(modifiedCells: Set<string>, cellsToCheck: UniqueArray<string>) {
@@ -145,7 +160,7 @@ export class PossibleTilesMap {
     while (cellsToCheck.length > 0) {
       const [row, col] = cellsToCheck.shift()!.split(',').map(Number)
       console.log('Checking', row, col)
-      const updated = this.updateCellPossibilities(row, col, modifiedCells)
+      const updated = this.testCellPossibilities(row, col, modifiedCells)
       if (updated) {
         console.log('Updated', row, col)
         // Add neighbor cells to check
@@ -205,7 +220,7 @@ export class PossibleTilesMap {
    * @param modifiedCells
    * @returns true if the cell possibilities was modified
    */
-  updateCellPossibilities(row: number, col: number, modifiedCells: Set<string>) {
+  testCellPossibilities(row: number, col: number, modifiedCells: Set<string>) {
     if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
       return false
     }
