@@ -1,6 +1,6 @@
-import React from "react";
-import { MenuScene } from "src/scenes/menu-scene";
-import { PhaserAdapter } from "./phaserAdapter";
+import React from 'react'
+import { MenuScene } from 'src/scenes/menu-scene'
+import { PhaserAdapter } from './phaserAdapter'
 
 const mainGameConfig: Omit<Phaser.Types.Core.GameConfig, 'parent'> = {
   title: 'TransportEngineer',
@@ -9,17 +9,17 @@ const mainGameConfig: Omit<Phaser.Types.Core.GameConfig, 'parent'> = {
   type: Phaser.AUTO,
   scene: [MenuScene],
   input: {
-    keyboard: true
+    keyboard: true,
   },
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 0 },
-      debug: false
-    }
+      gravity: { x: 0, y: 0 },
+      debug: false,
+    },
   },
   backgroundColor: '#300000',
-  render: { pixelArt: false, antialias: true },
+  render: { pixelArt: false },
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -28,6 +28,6 @@ const mainGameConfig: Omit<Phaser.Types.Core.GameConfig, 'parent'> = {
     fullscreenTarget: 'app',
     expandParent: false,
   },
-};
+}
 
-export const MainGame = () => <PhaserAdapter config={mainGameConfig}/>;
+export const MainGame = () => <PhaserAdapter config={mainGameConfig} />

@@ -50,7 +50,7 @@ export type TiledJson = {
     tilecount: number
     tiles: {
       id: number
-      properties: {
+      properties?: {
         name: string
         type: string
         value: string
@@ -96,7 +96,7 @@ export const loadTiledJson = async (
   }
   // Compute equivalency groups
   tileSet.tiles.forEach((tile) => {
-    const equivalenceGroup = tile.properties.find((prop) => prop.name === 'equivalencyGroup')
+    const equivalenceGroup = tile.properties?.find((prop) => prop.name === 'equivalencyGroup')
     if (equivalenceGroup) {
       // Need to add firstgid so that these tile ids so match the tile ids in the map data
       tileSetInfo.equivalencyGroups.add(tile.id + tileSet.firstgid, equivalenceGroup.value)
@@ -139,11 +139,10 @@ export const createTiledMapLayer = (tileSetInfo: TileSetInfo, scene: Orchestrata
   }
 }
 
-export const createGeneratedMapLayerFromTileSetInfo = (
+export const generateMapDataFromTileSetInfo = (
   width: number,
   height: number,
   tileSetInfo: TileSetInfo,
-  scene: OrchestratableScene,
 ) => {
   const layer0 = tileSetInfo.layers[0]
   // canonicalize the tile numbers using the equivalence groups
@@ -154,6 +153,16 @@ export const createGeneratedMapLayerFromTileSetInfo = (
   const exampleMap = convert1DTo2DArray(canonicalMap, layer0.width, layer0.height)
   const possibleMap = new PossibleTilesMap(width, height, exampleMap)
   const data = possibleMap.collapse()
+  return data
+}
+
+export const createGeneratedMapLayerFromTileSetInfo = (
+  width: number,
+  height: number,
+  tileSetInfo: TileSetInfo,
+  scene: OrchestratableScene,
+) => {
+  const data = generateMapDataFromTileSetInfo(width, height, tileSetInfo)
   // possibleMap.print()
 
   const map = scene.make.tilemap({

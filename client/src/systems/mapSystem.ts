@@ -2,12 +2,14 @@ import {
   TileSetInfo,
   createGeneratedMapLayerFromTileSetInfo,
   createTiledMapLayer,
+  generateMapDataFromTileSetInfo,
   loadTiledJson,
 } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
 import { Events } from 'src/events/events'
 
-const TILED_JSON_FILE = 'te.json'
+//const TILED_JSON_FILE = 'te.json'
+const TILED_JSON_FILE = 'grass_biome.json'
 
 export type MapInfoWorld = {
   mapInfoWorld: {
@@ -56,14 +58,21 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   public create() {
     this.createMap()
-    const createMapClosure = () => {
-      this.createMap()
+    const regenMapClosure = () => {
+      this.regenerateMap()
     }
-    Events.on('regenerateMap', createMapClosure)
+    Events.on('regenerateMap', regenMapClosure)
     const unsubscribe = () => {
-      Events.off('regenerateMap', createMapClosure)
+      Events.off('regenerateMap', regenMapClosure)
     }
     this.scene.events.on('destroy', unsubscribe)
+  }
+
+  private regenerateMap() {
+    if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
+      const data = generateMapDataFromTileSetInfo(40, 40, this.world.mapSystem.tileSetInfo)
+      this.world.mapSystem.map.putTilesAt(data, 0, 0)
+    }
   }
 
   private createMap() {
@@ -72,8 +81,8 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       // this.world.mapSystem.map = tiledData.phaserTileMap
 
       const generatedData = createGeneratedMapLayerFromTileSetInfo(
-        100,
-        100,
+        40,
+        40,
         this.world.mapSystem.tileSetInfo,
         this.scene,
       )

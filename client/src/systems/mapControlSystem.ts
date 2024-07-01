@@ -1,6 +1,7 @@
 import { MapWorld } from 'src/systems/mapSystem'
 import { BaseSystem } from './baseSystem'
 import { TimeWorld } from './timeSystem'
+import { MySmoothedKeyControl } from 'src/utils/mySmoothedKeyControl'
 
 export type MapControlWorld = {
   mapControl: {
@@ -24,7 +25,6 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
   MapControlWorld
 > {
   createWorld(_worldIn: MapWorld) {
-   
     const mapControlWorld: MapControlWorld = {
       mapControl: {},
     }
@@ -36,7 +36,8 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
     const camera = this.scene.cameras.main
     // Set up the arrows to control the camera
     const cursors = this.scene.input.keyboard!.createCursorKeys()
-    const controls = new Phaser.Cameras.Controls.SmoothedKeyControl({
+    // const controls = new Phaser.Cameras.Controls.SmoothedKeyControl({
+    const controls = new MySmoothedKeyControl({
       camera: camera,
       left: cursors.left,
       right: cursors.right,
@@ -45,9 +46,9 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
       acceleration: 2.0,
       drag: 0.5,
       maxSpeed: 1000.0,
-      zoomIn: this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
-      zoomOut: this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
-      zoomSpeed: 0.002,
+      zoomIn: this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.MINUS),
+      zoomOut: this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PLUS),
+      zoomSpeed: 0.02,
     })
     this.world.mapControl.camera = camera
     this.world.mapControl.cursors = cursors
@@ -62,18 +63,20 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
         deltaY: number,
         _deltaZ: number,
       ) => {
-        this.debug("Zoom: " + camera.zoom)
+        this.debug('Zoom: ' + camera.zoom)
 
         if (deltaY > 0) {
-          var newZoom = camera.zoom - 0.1
+          // Making zoom strength proportional to current zoom feels more natural
+          var newZoom = camera.zoom - 0.01 * camera.zoom
           if (newZoom > 0.1) {
             camera.zoom = newZoom
           }
         }
 
         if (deltaY < 0) {
-          var newZoom = camera.zoom + 0.1
-          if (newZoom < 1.3) {
+          // Making zoom strength proportional to current zoom feels more natural
+          var newZoom = camera.zoom + 0.01 * camera.zoom
+          if (newZoom < 4.0) {
             camera.zoom = newZoom
           }
         }
@@ -88,13 +91,22 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
-    // let { width, height } = scene.sys.game.scale.gameSize
-    // this.camera.setBounds(
-    //   -width,
-    //   -height,
-    //   this.map.widthInPixels + 20 * width,
-    //   this.map.heightInPixels + 20 * height,
-    // )
+    if (this.world.mapSystem.map) {
+      //let { width, height } = this.scene.sys.game.scale.gameSize
+      camera.useBounds = true
+      // camera.setBounds(
+      //   -width,
+      //   -height,
+      //   this.world.mapSystem.map.widthInPixels + 20 * width,
+      //   this.world.mapSystem.map.heightInPixels + 20 * height,
+      // )
+      camera.setBounds(
+        0,
+        0,
+        this.world.mapSystem.map.widthInPixels,
+        this.world.mapSystem.map.heightInPixels,
+      )
+    }
   }
 
   update(_time: number, delta: number): void {

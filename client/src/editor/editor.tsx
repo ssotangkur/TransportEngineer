@@ -35,7 +35,7 @@ const editorConfig: ModifiedGameConfig = {
     },
   },
   backgroundColor: '#300000',
-  render: { pixelArt: false, antialias: true },
+  render: { pixelArt: true, antialias: false },
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,

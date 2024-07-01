@@ -132,7 +132,7 @@ export class PossibleTilesMap {
     return true
   }
 
-  collapse() {
+  collapse(): number[][] {
     const startTime = Date.now()
     let iterations = 0
     while (!this.collapsed) {
@@ -166,6 +166,7 @@ export class PossibleTilesMap {
         iterations++
       }
     }
+    return [] // To make TS happy
   }
 
   /**
