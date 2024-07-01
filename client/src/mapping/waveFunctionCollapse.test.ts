@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   CollapsibleCell,
   PossibleTilesMap,
-  adjCellCoordinates,
+  adjCellKeys,
   getLowestEntropy,
   rowColKey,
 } from './waveFunctionCollapse'
@@ -55,9 +55,44 @@ describe('PossibleTilesMap', () => {
     cell.collapsed = true
     cell.possibleNumbers = [3]
     const modified = new Set<string>([rowColKey(0, 0)])
-    const cellsToCheck = new UniqueArray(adjCellCoordinates(0, 0))
+    const cellsToCheck = new UniqueArray(adjCellKeys(0, 0))
 
     possible.propagate(modified, cellsToCheck)
+
+    expect(possible.possibleTiles[0][0].possibleNumbers.sort()).toEqual([3])
+    expect(possible.possibleTiles[0][1].possibleNumbers.sort()).toEqual([2])
+    expect(possible.possibleTiles[0][2].possibleNumbers.sort()).toEqual([1, 2, 3])
+
+    expect(possible.possibleTiles[1][0].possibleNumbers.sort()).toEqual([1, 2])
+    expect(possible.possibleTiles[1][1].possibleNumbers.sort()).toEqual([1, 2, 3])
+    expect(possible.possibleTiles[1][2].possibleNumbers.sort()).toEqual([1, 2, 3])
+
+    expect(possible.possibleTiles[2][2].possibleNumbers.sort()).toEqual([1, 2, 3])
+    expect(possible.possibleTiles[2][2].possibleNumbers.sort()).toEqual([1, 2, 3])
+    expect(possible.possibleTiles[2][2].possibleNumbers.sort()).toEqual([1, 2, 3])
+  })
+
+  it.only('propagates2 correctly', () => {
+    const example = [
+      [1, 3, 2, 1],
+      [2, 2, 2, 3],
+      [3, 2, 3, 2],
+      [1, 3, 2, 1],
+    ]
+    const possible = new PossibleTilesMap(3, 3, example)
+
+    // manually collapse 0, 0
+    const cell = possible.possibleTiles[0][0]
+    cell.collapsed = true
+    cell.possibleNumbers = [3]
+
+    console.log('Before')
+    possible.print()
+
+    possible.propagate2(0, 0)
+
+    console.log('After')
+    possible.print()
 
     expect(possible.possibleTiles[0][0].possibleNumbers.sort()).toEqual([3])
     expect(possible.possibleTiles[0][1].possibleNumbers.sort()).toEqual([2])

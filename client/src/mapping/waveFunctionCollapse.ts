@@ -8,15 +8,45 @@ import {
 } from './adjacency'
 import _ from 'lodash'
 import { duration } from 'moment'
+import { aD } from 'vitest/dist/reporters-yx5ZTtEV'
 
 export type CollapsibleCell = {
   possibleNumbers: number[]
   collapsed: boolean
 }
 
+export type UndoRandomSampleStep = {
+  row: number
+  col: number
+  tileChosen: number
+  prevCellState: CollapsibleCell
+}
+
 export const rowColKey = (row: number, col: number) => `${row},${col}`
-export const adjCellCoordinates = (row: number, col: number) => {
+export const adjCellKeys = (row: number, col: number) => {
   return Object.values(CARDINAL_DIRECTIONS).map(([r, c]) => rowColKey(row + r, col + c))
+}
+export const adjCellCoords = (row: number, col: number): [number, number][] => {
+  return Object.values(CARDINAL_DIRECTIONS).map(([r, c]) => [row + r, col + c])
+}
+export const adjCellDirAndCoords = (
+  row: number,
+  col: number,
+): [keyof AdjacencyTile, [number, number]][] => {
+  return Object.entries(CARDINAL_DIRECTIONS).map(([dir, [r, c]]) => [
+    dir as keyof AdjacencyTile,
+    [row + r, col + c],
+  ])
+}
+export const adjCellDirAndCoordsInBounds = (
+  row: number,
+  col: number,
+  width: number,
+  height: number,
+) => {
+  return adjCellDirAndCoords(row, col).filter(
+    ([_, [r, c]]) => r >= 0 && r < height && c >= 0 && c < width,
+  )
 }
 
 export class PossibleTilesMap {
@@ -135,6 +165,7 @@ export class PossibleTilesMap {
   collapse(): number[][] {
     const startTime = Date.now()
     let iterations = 0
+    // const undoSteps: UndoRandomSampleStep[] = []
     while (!this.collapsed) {
       try {
         const modifiedCells = new Set<string>()
@@ -154,7 +185,7 @@ export class PossibleTilesMap {
           const updated = this.updateCellPossibilities(...coordToCollapse, [collapsedTileNum])
           if (updated) {
             modifiedCells.add(rowColKey(...coordToCollapse))
-            this.propagate(modifiedCells, new UniqueArray(adjCellCoordinates(...coordToCollapse)))
+            this.propagate(modifiedCells, new UniqueArray(adjCellKeys(...coordToCollapse)))
           }
         }
 
@@ -167,6 +198,48 @@ export class PossibleTilesMap {
       }
     }
     return [] // To make TS happy
+  }
+
+  /**
+   * Finds lowest entropy cell and collapses it (does not propagate)
+   * @returns the coordinates of the cell that was collapsed
+   */
+  private collapseLowestEntropy(): [number, number] {
+    const coordToCollapse = this.getLowestEntropy()
+    // console.log('Collapsing', coordToCollapse)
+    if (coordToCollapse === undefined) {
+      throw new Error('Unable to collapse. No lowest entropy coord')
+    }
+    const collapsedTileNum = _.sample(
+      Array.from(this.getPossibleTiles(...coordToCollapse).possibleNumbers),
+    )
+    if (collapsedTileNum === undefined) {
+      throw new Error(`Unable to collapse coord ${coordToCollapse}. No possible options`)
+    }
+
+    this.updateCellPossibilities(...coordToCollapse, [collapsedTileNum])
+    return coordToCollapse
+  }
+
+  collapse2(): number[][] {
+    const startTime = Date.now()
+    let iterations = 0
+    // const undoSteps: UndoRandomSampleStep[] = []
+
+    while (!this.collapsed) {
+      const modifiedCoord = this.collapseLowestEntropy()
+      const success = this.propagate2(...modifiedCoord)
+      if (!success) {
+        // If we can't propagate, we need to reset and try again
+        // @TODO implement backtracking
+        console.warn(`Error collapsing. Iteration=${iterations}`)
+        this.reset()
+        iterations++
+      }
+    }
+
+    console.log('Collapsed in', duration(Date.now() - startTime).asSeconds(), 'sec')
+    return this.toNumberArrays()
   }
 
   /**
@@ -194,11 +267,50 @@ export class PossibleTilesMap {
       if (updated) {
         // console.log('Updated', row, col)
         // Add neighbor cells to check
-        adjCellCoordinates(row, col).forEach((adjRowColKey) => {
+        adjCellKeys(row, col).forEach((adjRowColKey) => {
           cellsToCheck.push(adjRowColKey)
         })
       }
     }
+  }
+
+  /**
+   *
+   * @param modifiedRow
+   * @param modifiedCol
+   * @returns true if propagation was successful (no need to backtrack)
+   */
+  propagate2(modifiedRow: number, modifiedCol: number): boolean {
+    // Eliminate possibilities for all adjacent cells based on this cell
+    const modifiedCell = this.getPossibleTiles(modifiedRow, modifiedCol)
+    return adjCellDirAndCoordsInBounds(modifiedRow, modifiedCol, this.width, this.height).every(
+      ([dir, adjCellCoord]) => {
+        const adjCell = this.getPossibleTiles(...adjCellCoord)
+        const filteredAdjPossibilities = adjCell.possibleNumbers.filter((possibleTile) => {
+          return modifiedCell.possibleNumbers.some((modifiedPossibleNumber) => {
+            return this.adjacency.testDirection(possibleTile, opposite(dir), modifiedPossibleNumber)
+          })
+        })
+
+        if (filteredAdjPossibilities.length === 0) {
+          // We've eliminated all possibilities for this cell, return false to
+          // backtrack
+          return false
+        }
+
+        const adjWasModified = this.updateCellPossibilities(
+          ...adjCellCoord,
+          filteredAdjPossibilities,
+        )
+        if (!adjWasModified) {
+          // Since nothing was modified, we're done in this direction
+          return true
+        }
+
+        // If the adj cell was modified, we need to propagate from it
+        return this.propagate2(...adjCellCoord)
+      },
+    )
   }
 
   /**
@@ -217,8 +329,8 @@ export class PossibleTilesMap {
   }
 
   /**
-   * Tests all possible numbers for a cell against adjacent cells that are in
-   * the modifiedCells set. If the possibilities are reduced, the cell is added
+   * Tests all possible numbers for a cell against adjacent cells.
+   * If the possibilities are reduced, the cell is added
    * to the modifiedCells set.
    * @param row
    * @param col

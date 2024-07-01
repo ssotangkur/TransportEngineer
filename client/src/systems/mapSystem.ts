@@ -1,7 +1,6 @@
 import {
   TileSetInfo,
   createGeneratedMapLayerFromTileSetInfo,
-  createTiledMapLayer,
   generateMapDataFromTileSetInfo,
   loadTiledJson,
 } from 'src/mapping/tiledJsonParser'
