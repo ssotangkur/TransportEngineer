@@ -69,7 +69,7 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   private regenerateMap() {
     if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
-      const data = generateMapDataFromTileSetInfo(40, 40, this.world.mapSystem.tileSetInfo)
+      const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
       this.world.mapSystem.map.putTilesAt(data, 0, 0)
     }
   }
@@ -80,8 +80,8 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       // this.world.mapSystem.map = tiledData.phaserTileMap
 
       const generatedData = createGeneratedMapLayerFromTileSetInfo(
-        40,
-        40,
+        100,
+        100,
         this.world.mapSystem.tileSetInfo,
         this.scene,
       )

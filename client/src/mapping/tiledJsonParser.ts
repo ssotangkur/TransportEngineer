@@ -139,6 +139,14 @@ export const createTiledMapLayer = (tileSetInfo: TileSetInfo, scene: Orchestrata
   }
 }
 
+let sampleIndex = 0
+const sampleLast = <T>(arr: T[]) => {
+  sampleIndex++
+  const ans = arr[(sampleIndex + 7) % arr.length]
+
+  return ans
+}
+
 export const generateMapDataFromTileSetInfo = (
   width: number,
   height: number,
@@ -152,7 +160,7 @@ export const generateMapDataFromTileSetInfo = (
 
   const exampleMap = convert1DTo2DArray(canonicalMap, layer0.width, layer0.height)
   const possibleMap = new PossibleTilesMap(width, height, exampleMap)
-  const data = possibleMap.collapse2()
+  const data = possibleMap.collapse()
   return data
 }
 

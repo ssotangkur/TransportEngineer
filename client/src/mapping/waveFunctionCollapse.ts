@@ -8,19 +8,65 @@ import {
 } from './adjacency'
 import _ from 'lodash'
 import { duration } from 'moment'
-import { aD } from 'vitest/dist/reporters-yx5ZTtEV'
 
 export type CollapsibleCell = {
   possibleNumbers: number[]
   collapsed: boolean
 }
 
-export type UndoRandomSampleStep = {
-  row: number
-  col: number
-  tileChosen: number
-  prevCellState: CollapsibleCell
+export class RandomSampleState {
+  public origCellState: CollapsibleCell // Cell will be replaced with this if all possibilities fail
+  public tilesTried: number[] = []
+  public tileChosen: number | undefined
+  public undoPropagateStack: UndoPropagateStep[] = []
+
+  constructor(
+    public row: number,
+    public col: number,
+    origCellState: CollapsibleCell,
+    private sampleFunc: <T>(array: T[]) => T,
+  ) {
+    this.origCellState = cloneCell(origCellState)
+  }
+
+  /**
+   *
+   * @returns the tile number that was chosen, or undefined if no more tiles are
+   * available to choose
+   */
+  chooseNewTile(): number | undefined {
+    if (this.tileChosen !== undefined) {
+      this.tilesTried.push(this.tileChosen)
+    }
+    const remainingTiles = this.origCellState.possibleNumbers.filter((origOption) => {
+      return !this.tilesTried.includes(origOption)
+    })
+    this.tileChosen = this.sampleFunc(remainingTiles)
+    return this.tileChosen
+  }
+
+  /**
+   * @returns true if there are more tiles to sample, false otherwise
+   */
+  hasMoreTilesToSample() {
+    const tileChosenCount = this.tileChosen !== undefined ? 1 : 0
+    return this.origCellState.possibleNumbers.length > this.tilesTried.length + tileChosenCount
+  }
 }
+
+class UndoPropagateStep {
+  public prevCellState: CollapsibleCell
+
+  constructor(public row: number, public col: number, prevCellState: CollapsibleCell) {
+    // We need to clone the cell state so we can undo
+    this.prevCellState = cloneCell(prevCellState)
+  }
+}
+
+const cloneCell = (cell: CollapsibleCell): CollapsibleCell => ({
+  possibleNumbers: _.cloneDeep(cell.possibleNumbers),
+  collapsed: cell.collapsed,
+})
 
 export const rowColKey = (row: number, col: number) => `${row},${col}`
 export const adjCellKeys = (row: number, col: number) => {
@@ -50,12 +96,17 @@ export const adjCellDirAndCoordsInBounds = (
 }
 
 export class PossibleTilesMap {
-  public possibleTiles: CollapsibleCell[][] = []
+  private possibleTiles: CollapsibleCell[][] = []
   private adjacency: Adjacency
-  private collapsedCount = 0
+  public collapsedCount = 0
   private numCells: number
 
-  constructor(private width: number, private height: number, exampleMap: number[][]) {
+  constructor(
+    private width: number,
+    private height: number,
+    exampleMap: number[][],
+    private sampleFunc: <T>(array: T[]) => T = _.sample,
+  ) {
     this.adjacency = new Adjacency(exampleMap)
     this.numCells = this.width * this.height
     this.reset()
@@ -86,14 +137,12 @@ export class PossibleTilesMap {
       )
       this.updateCellPossibilities(0, c, upFiltered)
       cellsToCheck.push(rowColKey(0, c))
-      cellsToCheck.push(rowColKey(1, c)) // optimization: add row below, since they are adjacent
       // bottom row
       const bottomFiltered = this.possibleTiles[this.height - 1][c].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'down', BORDER_TILE_NUMBER),
       )
       this.updateCellPossibilities(this.height - 1, c, bottomFiltered)
       cellsToCheck.push(rowColKey(this.height - 1, c))
-      cellsToCheck.push(rowColKey(this.height - 2, c)) // optimization: add row above, since they are adjacent
     }
     for (let r = 0; r < this.height; r++) {
       // left column
@@ -102,16 +151,17 @@ export class PossibleTilesMap {
       )
       this.updateCellPossibilities(r, 0, leftFiltered)
       cellsToCheck.push(rowColKey(r, 0))
-      cellsToCheck.push(rowColKey(r, 1)) // optimization: add row to the right, since they are adjacent
       // right column
       const rightFiltered = this.possibleTiles[r][this.width - 1].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'right', BORDER_TILE_NUMBER),
       )
       this.updateCellPossibilities(r, this.width - 1, rightFiltered)
       cellsToCheck.push(rowColKey(r, this.width - 1))
-      cellsToCheck.push(rowColKey(r, this.width - 2)) // optimization: add row to the left, since they are adjacent
     }
-    this.propagate(new Set<string>(), cellsToCheck)
+    cellsToCheck.toArray().forEach((cellKey) => {
+      const coord = cellKey.split(',').map(Number) as [number, number]
+      this.propagate(...coord)
+    })
   }
 
   get collapsed() {
@@ -130,7 +180,7 @@ export class PossibleTilesMap {
     }
   }
 
-  getPossibleTiles(row: number, column: number) {
+  getCell(row: number, column: number) {
     return this.possibleTiles[row][column]
   }
 
@@ -139,7 +189,13 @@ export class PossibleTilesMap {
    * In case of a tie, one will be randomly selected
    */
   getLowestEntropy() {
-    return getLowestEntropy(this.adjacency, this.possibleTiles, this.width, this.height)
+    return getLowestEntropy(
+      this.adjacency,
+      this.possibleTiles,
+      this.width,
+      this.height,
+      this.sampleFunc,
+    )
   }
 
   /**
@@ -147,94 +203,106 @@ export class PossibleTilesMap {
    * @param row
    * @param col
    * @param possibilities
-   * @returns true if the cell possibilities were updated
+   * @returns an UndoStep if cell possibilities were updated, undefined otherwise
    */
   updateCellPossibilities(row: number, col: number, possibilities: number[]) {
     const cell = this.possibleTiles[row][col]
     if (possibilities.length === cell.possibleNumbers.length) {
-      return false
+      return undefined
     }
-    cell.possibleNumbers = possibilities
-    if (cell.possibleNumbers.length === 1) {
+    const undoStep = new UndoPropagateStep(row, col, cell)
+
+    // if the cell was already collapsed but we are undoing it with more than
+    // one possibility, then we'll have to decrement the collapsed count
+    if (cell.collapsed && possibilities.length > 1) {
+      this.collapsedCount--
+      cell.collapsed = false
+    }
+
+    // if the cell was not collapsed but we are collapsing it, then increment
+    // the collapsed count
+    if (!cell.collapsed && possibilities.length === 1) {
       cell.collapsed = true
       this.collapsedCount++
     }
-    return true
+
+    cell.possibleNumbers = possibilities
+
+    return undoStep
+  }
+
+  /**
+   * Will clean up after itself if it fails to collapse
+   * @param state
+   * @returns
+   */
+  collapseOnce(state: RandomSampleState): boolean {
+    let propagateSuccess = false
+
+    while (!propagateSuccess) {
+      // get one of remaining possible tiles
+      const newTile = state.chooseNewTile()
+      if (newTile === undefined) {
+        // If we've tried all possible tiles, we need undo any propagation
+        // we've done and return false
+        this.undoRandomSample(state)
+        return false
+      }
+
+      // Apply the new tile to the cell
+      const undoStep = this.updateCellPossibilities(state.row, state.col, [newTile])
+      if (undoStep === undefined) {
+        // Should never happen
+        throw new Error('Cell was not modified')
+      }
+
+      const undoStack: UndoPropagateStep[] = [undoStep]
+
+      propagateSuccess = this.propagate(state.row, state.col, undoStack)
+      if (!propagateSuccess) {
+        // If we can't propagate, we need to undo the propagation, then try
+        // a different random sample
+
+        console.log('Failed to propagate, undoing prop stack')
+
+        this.undo(undoStack)
+      } else {
+        // Save the current propagation stack so we can undo it if we need to
+        state.undoPropagateStack = undoStack
+      }
+    }
+    return propagateSuccess
+  }
+
+  createRandomSampleState(): RandomSampleState {
+    const a = this.getLowestEntropy()
+    const [row, col] = a
+    return new RandomSampleState(row, col, this.getCell(row, col), this.sampleFunc)
   }
 
   collapse(): number[][] {
     const startTime = Date.now()
-    let iterations = 0
-    // const undoSteps: UndoRandomSampleStep[] = []
+    const undoStack: RandomSampleState[] = []
+
+    let state = this.createRandomSampleState()
+
     while (!this.collapsed) {
-      try {
-        const modifiedCells = new Set<string>()
-        while (!this.collapsed) {
-          const coordToCollapse = this.getLowestEntropy()
-          // console.log('Collapsing', coordToCollapse)
-          if (coordToCollapse === undefined) {
-            throw new Error('Unable to collapse. No lowest entropy coord')
-          }
-          const collapsedTileNum = _.sample(
-            Array.from(this.getPossibleTiles(...coordToCollapse).possibleNumbers),
-          )
-          if (collapsedTileNum === undefined) {
-            throw new Error(`Unable to collapse coord ${coordToCollapse}. No possible options`)
-          }
+      const collapseOnceSucceeded = this.collapseOnce(state)
 
-          const updated = this.updateCellPossibilities(...coordToCollapse, [collapsedTileNum])
-          if (updated) {
-            modifiedCells.add(rowColKey(...coordToCollapse))
-            this.propagate(modifiedCells, new UniqueArray(adjCellKeys(...coordToCollapse)))
-          }
-        }
-
-        console.log('Collapsed in', duration(Date.now() - startTime).asSeconds(), 'sec')
-        return this.toNumberArrays()
-      } catch (e) {
-        console.warn(`Error collapsing. Iteration=${iterations}`, e)
-        this.reset()
-        iterations++
+      if (this.collapsed) {
+        break
       }
-    }
-    return [] // To make TS happy
-  }
 
-  /**
-   * Finds lowest entropy cell and collapses it (does not propagate)
-   * @returns the coordinates of the cell that was collapsed
-   */
-  private collapseLowestEntropy(): [number, number] {
-    const coordToCollapse = this.getLowestEntropy()
-    // console.log('Collapsing', coordToCollapse)
-    if (coordToCollapse === undefined) {
-      throw new Error('Unable to collapse. No lowest entropy coord')
-    }
-    const collapsedTileNum = _.sample(
-      Array.from(this.getPossibleTiles(...coordToCollapse).possibleNumbers),
-    )
-    if (collapsedTileNum === undefined) {
-      throw new Error(`Unable to collapse coord ${coordToCollapse}. No possible options`)
-    }
-
-    this.updateCellPossibilities(...coordToCollapse, [collapsedTileNum])
-    return coordToCollapse
-  }
-
-  collapse2(): number[][] {
-    const startTime = Date.now()
-    let iterations = 0
-    // const undoSteps: UndoRandomSampleStep[] = []
-
-    while (!this.collapsed) {
-      const modifiedCoord = this.collapseLowestEntropy()
-      const success = this.propagate2(...modifiedCoord)
-      if (!success) {
-        // If we can't propagate, we need to reset and try again
-        // @TODO implement backtracking
-        console.warn(`Error collapsing. Iteration=${iterations}`)
-        this.reset()
-        iterations++
+      if (collapseOnceSucceeded) {
+        undoStack.push(state)
+        state = this.createRandomSampleState()
+      } else {
+        // If we failed to collapse, we need to undo the last state
+        if (undoStack.length === 0) {
+          throw new Error('Undo stack is empty but we need to pop a state')
+        }
+        console.log('Undoing last state')
+        state = undoStack.pop()!
       }
     }
 
@@ -258,34 +326,26 @@ export class PossibleTilesMap {
     return result
   }
 
-  propagate(modifiedCells: Set<string>, cellsToCheck: UniqueArray<string>) {
-    // collapse cells to check
-    while (cellsToCheck.length > 0) {
-      const [row, col] = cellsToCheck.shift()!.split(',').map(Number)
-      // console.log('Checking', row, col)
-      const updated = this.testCellPossibilities(row, col, modifiedCells)
-      if (updated) {
-        // console.log('Updated', row, col)
-        // Add neighbor cells to check
-        adjCellKeys(row, col).forEach((adjRowColKey) => {
-          cellsToCheck.push(adjRowColKey)
-        })
-      }
-    }
-  }
-
   /**
    *
+   * Note: This function does not perform any undo operations.
    * @param modifiedRow
    * @param modifiedCol
-   * @returns true if propagation was successful (no need to backtrack)
+   * @param undoStack a stack of undo steps that this function will push onto as
+   * it makes modifications.
+   * @returns true if the propagation was successful, false otherwise
    */
-  propagate2(modifiedRow: number, modifiedCol: number): boolean {
+  propagate(
+    modifiedRow: number,
+    modifiedCol: number,
+    undoStack: UndoPropagateStep[] = [],
+  ): boolean {
     // Eliminate possibilities for all adjacent cells based on this cell
-    const modifiedCell = this.getPossibleTiles(modifiedRow, modifiedCol)
+    const modifiedCell = this.getCell(modifiedRow, modifiedCol)
+
     return adjCellDirAndCoordsInBounds(modifiedRow, modifiedCol, this.width, this.height).every(
       ([dir, adjCellCoord]) => {
-        const adjCell = this.getPossibleTiles(...adjCellCoord)
+        const adjCell = this.getCell(...adjCellCoord)
         const filteredAdjPossibilities = adjCell.possibleNumbers.filter((possibleTile) => {
           return modifiedCell.possibleNumbers.some((modifiedPossibleNumber) => {
             return this.adjacency.testDirection(possibleTile, opposite(dir), modifiedPossibleNumber)
@@ -298,91 +358,59 @@ export class PossibleTilesMap {
           return false
         }
 
-        const adjWasModified = this.updateCellPossibilities(
+        const maybeUndoStep = this.updateCellPossibilities(
           ...adjCellCoord,
           filteredAdjPossibilities,
         )
-        if (!adjWasModified) {
+        if (maybeUndoStep === undefined) {
           // Since nothing was modified, we're done in this direction
           return true
         }
 
+        // If we modified the cell, we need to push it onto the undo stack
+        // before we propagate from it
+        undoStack.push(maybeUndoStep)
+
         // If the adj cell was modified, we need to propagate from it
-        return this.propagate2(...adjCellCoord)
+        return this.propagate(...adjCellCoord, undoStack)
       },
     )
   }
 
-  /**
-   * Returns true if the cell at the provided row and column can have the
-   * provided number in the provided direction. If the cell is on the border,
-   * it will always return true.
-   */
-  supportsNumberInDirection(row: number, col: number, num: number, direction: keyof AdjacencyTile) {
-    if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
-      return true
+  private undo(undoStack: UndoPropagateStep[]) {
+    console.log('Undoing prop stack')
+    while (undoStack.length > 0) {
+      const undoStep = undoStack.pop()!
+      this.updateCellPossibilities(
+        undoStep.row,
+        undoStep.col,
+        undoStep.prevCellState.possibleNumbers,
+      )
     }
-    const cell = this.possibleTiles[row][col]
-    return Array.from(cell.possibleNumbers).some((possibleNum) => {
-      return this.adjacency.testDirection(possibleNum, direction, num)
-    })
   }
 
-  /**
-   * Tests all possible numbers for a cell against adjacent cells.
-   * If the possibilities are reduced, the cell is added
-   * to the modifiedCells set.
-   * @param row
-   * @param col
-   * @param modifiedCells
-   * @returns true if the cell possibilities was modified
-   */
-  testCellPossibilities(row: number, col: number, modifiedCells: Set<string>) {
-    if (row < 0 || row >= this.height || col < 0 || col >= this.width) {
-      return false
-    }
-    const cell = this.possibleTiles[row][col]
-    if (cell.collapsed) {
-      return false
-    }
-    // for each possible number, check if all 4 directions support it
-    const newPossibleNums = cell.possibleNumbers.filter((num) => {
-      return Object.entries(CARDINAL_DIRECTIONS).every(([direction, vector]) => {
-        return this.supportsNumberInDirection(
-          row + vector[0],
-          col + vector[1],
-          num,
-          opposite(direction as keyof AdjacencyTile),
-        )
-      })
-    })
-
-    const updated = this.updateCellPossibilities(row, col, newPossibleNums)
-    if (!updated) {
-      return false
-    }
-
-    modifiedCells.add(rowColKey(row, col))
-    // If we've collapsed to one possibility, mark as collapsed
-    if (cell.possibleNumbers.length === 1) {
-      cell.collapsed = true
-    }
-    // If we've collapsed to zero possibilities, we can't continue
-    if (cell.possibleNumbers.length === 0) {
-      // this.print()
-      console.error(`No possible numbers for cell ${row}, ${col}`)
-      throw new Error('No possible numbers')
-    }
-
-    return true
+  undoRandomSample(state: RandomSampleState) {
+    console.log('Undoing random sample')
+    this.undo(state.undoPropagateStack)
+    this.updateCellPossibilities(state.row, state.col, state.origCellState.possibleNumbers)
   }
 }
 
+/**
+ *
+ * @param adjacency
+ * @param entropyMap
+ * @param width
+ * @param height
+ * @returns coordinates of the cell with the lowest entropy. If there are ties,
+ * one will be randomly selected
+ */
 export const getLowestEntropy = (
   adjacency: Adjacency,
   entropyMap: CollapsibleCell[][],
   width: number,
   height: number,
+  sampleFunc: <T>(array: T[]) => T,
 ) => {
   // Start w/ the max number of tiles
   let minEntropySoFar = adjacency.getUsedTileNumbers().size
@@ -405,5 +433,9 @@ export const getLowestEntropy = (
       }
     }
   }
-  return _.sample(lowestCoord)
+
+  if (lowestCoord.length === 0) {
+    throw new Error('No lowest entropy')
+  }
+  return sampleFunc(lowestCoord)!
 }

@@ -26,4 +26,8 @@ export class UniqueArray<T> {
   get length() {
     return this.array.length
   }
+
+  toArray() {
+    return this.array
+  }
 }
