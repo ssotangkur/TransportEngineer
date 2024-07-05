@@ -95,8 +95,11 @@ export const adjCellDirAndCoordsInBounds = (
   )
 }
 
+const arrayEqualsAnyOrder = (a: number[], b: number[]) => {
+  return a.length === b.length && a.every((v) => b.includes(v))
+}
 export class PossibleTilesMap {
-  private possibleTiles: CollapsibleCell[][] = []
+  public possibleTiles: CollapsibleCell[][] = []
   private adjacency: Adjacency
   public collapsedCount = 0
   private numCells: number
@@ -207,7 +210,7 @@ export class PossibleTilesMap {
    */
   updateCellPossibilities(row: number, col: number, possibilities: number[]) {
     const cell = this.possibleTiles[row][col]
-    if (possibilities.length === cell.possibleNumbers.length) {
+    if (arrayEqualsAnyOrder(possibilities, cell.possibleNumbers)) {
       return undefined
     }
     const undoStep = new UndoPropagateStep(row, col, cell)
@@ -262,9 +265,6 @@ export class PossibleTilesMap {
       if (!propagateSuccess) {
         // If we can't propagate, we need to undo the propagation, then try
         // a different random sample
-
-        console.log('Failed to propagate, undoing prop stack')
-
         this.undo(undoStack)
       } else {
         // Save the current propagation stack so we can undo it if we need to
@@ -283,6 +283,7 @@ export class PossibleTilesMap {
   collapse(): number[][] {
     const startTime = Date.now()
     const undoStack: RandomSampleState[] = []
+    let popCount = 0
 
     let state = this.createRandomSampleState()
 
@@ -297,12 +298,26 @@ export class PossibleTilesMap {
         undoStack.push(state)
         state = this.createRandomSampleState()
       } else {
-        // If we failed to collapse, we need to undo the last state
-        if (undoStack.length === 0) {
-          throw new Error('Undo stack is empty but we need to pop a state')
+        // Perfect backtracking ends up being too slow. To backtrack one level,
+        // the entire possibility space for that level needs to be searched. To
+        // backtrack 2 levels, the entire possibility space of that level times
+        // the possibility space of the next levels needs to be searched
+        // (i.e exponential growth).
+        // The point where the conflict originated might be several levels back
+        // so it's much more efficient to jump down more and more levels until
+        // we find a level where we can make progress.
+        popCount++
+        const numToPop = popCount
+
+        for (let i = 0; i < Math.min(numToPop, undoStack.length); i++) {
+          state = undoStack.pop()!
+          // We need to undo the last propagation before we try a new random
+          this.undoRandomSample(state)
         }
-        console.log('Undoing last state')
-        state = undoStack.pop()!
+
+        console.log(
+          `Undoing last state, Pop count: ${popCount}, Final Undo stack size: ${undoStack.length}, Num to pop: ${numToPop}`,
+        )
       }
     }
 
@@ -378,7 +393,6 @@ export class PossibleTilesMap {
   }
 
   private undo(undoStack: UndoPropagateStep[]) {
-    console.log('Undoing prop stack')
     while (undoStack.length > 0) {
       const undoStep = undoStack.pop()!
       this.updateCellPossibilities(
@@ -390,7 +404,6 @@ export class PossibleTilesMap {
   }
 
   undoRandomSample(state: RandomSampleState) {
-    console.log('Undoing random sample')
     this.undo(state.undoPropagateStack)
     this.updateCellPossibilities(state.row, state.col, state.origCellState.possibleNumbers)
   }

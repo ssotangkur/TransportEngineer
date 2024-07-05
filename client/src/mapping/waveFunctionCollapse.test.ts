@@ -116,7 +116,7 @@ describe('PossibleTilesMap', () => {
     possible.print()
   })
 
-  it.only('collapseOnce', () => {
+  it('collapseOnce twice and undo twice should result in same possible map', () => {
     const example = [
       [1, 1, 1, 1, 1, 1],
       [1, 2, 3, 3, 4, 1],
@@ -128,26 +128,25 @@ describe('PossibleTilesMap', () => {
     const possible = new PossibleTilesMap(8, 8, example, sampleExactly([1]))
     possible.print()
 
-    console.log(`CollapsedCount: ${possible.collapsedCount}`)
+    const prevPossibleTiles = _.cloneDeep(possible.possibleTiles)
+    const prevCollapsedCount = possible.collapsedCount
 
     const rndSample1 = new RandomSampleState(4, 2, possible.getCell(4, 2), sampleExactly([1]))
     possible.collapseOnce(rndSample1)
     possible.print()
-    console.log(`CollapsedCount: ${possible.collapsedCount}`)
 
     const rndSample2 = new RandomSampleState(4, 4, possible.getCell(4, 4), sampleExactly([1]))
     possible.collapseOnce(rndSample2)
     possible.print()
-    console.log(`CollapsedCount: ${possible.collapsedCount}`)
 
     possible.undoRandomSample(rndSample2)
     possible.print()
-    console.log(`CollapsedCount: ${possible.collapsedCount}`)
 
     possible.undoRandomSample(rndSample1)
     possible.print()
 
-    console.log(`CollapsedCount: ${possible.collapsedCount}`)
+    expect(prevPossibleTiles).deep.equals(possible.possibleTiles)
+    expect(prevCollapsedCount).equals(possible.collapsedCount)
   })
 })
 
