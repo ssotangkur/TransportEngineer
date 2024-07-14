@@ -2,10 +2,41 @@
   "meta": {
     "version": "0.6.7"
   },
-  "savePath": "C:\\Users\\Sarit Sotangkur\\Documents\\TransportEngineer\\assets\\texturePacking",
-  "images": [],
+  "savePath": "../../sprites",
+  "images": [
+    {
+      "name": "manBlue_gun.png",
+      "path": "../../sprites/shooter/manBlue_gun.png",
+      "folder": ""
+    },
+    {
+      "name": "manBlue_hold.png",
+      "path": "../../sprites/shooter/manBlue_hold.png",
+      "folder": ""
+    },
+    {
+      "name": "manBlue_machine.png",
+      "path": "../../sprites/shooter/manBlue_machine.png",
+      "folder": ""
+    },
+    {
+      "name": "manBlue_reload.png",
+      "path": "../../sprites/shooter/manBlue_reload.png",
+      "folder": ""
+    },
+    {
+      "name": "manBlue_silencer.png",
+      "path": "../../sprites/shooter/manBlue_silencer.png",
+      "folder": ""
+    },
+    {
+      "name": "manBlue_stand.png",
+      "path": "../../sprites/shooter/manBlue_stand.png",
+      "folder": ""
+    }
+  ],
   "folders": [
-    "C:/Users/Sarit Sotangkur/Documents/TransportEngineer/assets/tiles/buildings/PNG"
+    "../../tiles/buildings/PNG"
   ],
   "packOptions": {
     "textureName": "texture",
@@ -19,7 +50,7 @@
     "filter": "none",
     "exporter": "Phaser 3",
     "fileName": "pack-result",
-    "savePath": "C:\\Users\\Sarit Sotangkur\\Documents\\TransportEngineer\\assets\\texturePacking",
+    "savePath": "../../sprites",
     "width": 2048,
     "height": 2048,
     "fixedSize": false,
