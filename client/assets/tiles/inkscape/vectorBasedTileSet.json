@@ -8,16 +8,10 @@
  "margin":0,
  "name":"vectorbased",
  "spacing":0,
- "tilecount":28,
+ "tilecount":36,
  "tiledversion":"1.11.0",
  "tileheight":128,
  "tiles":[
-        {
-         "id":2,
-         "image":"grass.png",
-         "imageheight":128,
-         "imagewidth":128
-        }, 
         {
          "id":4,
          "image":"sand.png",
@@ -25,38 +19,8 @@
          "imagewidth":128
         }, 
         {
-         "id":5,
-         "image":"grass-left.png",
-         "imageheight":128,
-         "imagewidth":128
-        }, 
-        {
-         "id":6,
-         "image":"grass-left-top.png",
-         "imageheight":128,
-         "imagewidth":128
-        }, 
-        {
-         "id":7,
-         "image":"grass-left-only.png",
-         "imageheight":128,
-         "imagewidth":128
-        }, 
-        {
-         "id":8,
-         "image":"grass-top-only.png",
-         "imageheight":128,
-         "imagewidth":128
-        }, 
-        {
          "id":9,
          "image":"sand-left-only.png",
-         "imageheight":128,
-         "imagewidth":128
-        }, 
-        {
-         "id":10,
-         "image":"water.png",
          "imageheight":128,
          "imagewidth":128
         }, 
@@ -99,6 +63,12 @@
         {
          "id":17,
          "image":"sand-bottom-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":10,
+         "image":"water.png",
          "imageheight":128,
          "imagewidth":128
         }, 
@@ -179,6 +149,84 @@
          "image":"mountain-top-right-corner.png",
          "imageheight":128,
          "imagewidth":128
+        }, 
+        {
+         "id":2,
+         "image":"grass.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":31,
+         "image":"grass-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":32,
+         "image":"grass-bottom.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":7,
+         "image":"grass-left.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":8,
+         "image":"grass-top.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":33,
+         "image":"grass-bottom-left.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":34,
+         "image":"grass-bottom-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":35,
+         "image":"grass-top-left.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":36,
+         "image":"grass-top-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":37,
+         "image":"grass-bottom-left-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":38,
+         "image":"grass-bottom-right-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":39,
+         "image":"grass-top-left-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":40,
+         "image":"grass-top-right-corner.png",
+         "imageheight":128,
+         "imagewidth":128
         }],
  "tilewidth":128,
  "type":"tileset",
@@ -193,8 +241,14 @@
                  "tile":-1
                 }, 
                 {
-                 "color":"#00ff00",
+                 "color":"#d3d5c8",
                  "name":"mountain",
+                 "probability":1,
+                 "tile":-1
+                }, 
+                {
+                 "color":"#23dd06",
+                 "name":"grass",
                  "probability":1,
                  "tile":-1
                 }],
@@ -203,8 +257,20 @@
          "type":"corner",
          "wangtiles":[
                 {
+                 "tileid":2,
+                 "wangid":[0, 3, 0, 3, 0, 3, 0, 3]
+                }, 
+                {
                  "tileid":4,
                  "wangid":[0, 1, 0, 1, 0, 1, 0, 1]
+                }, 
+                {
+                 "tileid":7,
+                 "wangid":[0, 0, 0, 0, 0, 3, 0, 3]
+                }, 
+                {
+                 "tileid":8,
+                 "wangid":[0, 3, 0, 0, 0, 0, 0, 3]
                 }, 
                 {
                  "tileid":9,
@@ -289,6 +355,46 @@
                 {
                  "tileid":30,
                  "wangid":[0, 2, 0, 0, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":31,
+                 "wangid":[0, 3, 0, 3, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":32,
+                 "wangid":[0, 0, 0, 3, 0, 3, 0, 0]
+                }, 
+                {
+                 "tileid":33,
+                 "wangid":[0, 0, 0, 3, 0, 3, 0, 3]
+                }, 
+                {
+                 "tileid":34,
+                 "wangid":[0, 3, 0, 3, 0, 3, 0, 0]
+                }, 
+                {
+                 "tileid":35,
+                 "wangid":[0, 3, 0, 0, 0, 3, 0, 3]
+                }, 
+                {
+                 "tileid":36,
+                 "wangid":[0, 3, 0, 3, 0, 0, 0, 3]
+                }, 
+                {
+                 "tileid":37,
+                 "wangid":[0, 0, 0, 0, 0, 3, 0, 0]
+                }, 
+                {
+                 "tileid":38,
+                 "wangid":[0, 0, 0, 3, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":39,
+                 "wangid":[0, 0, 0, 0, 0, 0, 0, 3]
+                }, 
+                {
+                 "tileid":40,
+                 "wangid":[0, 3, 0, 0, 0, 0, 0, 0]
                 }]
         }]
 }
