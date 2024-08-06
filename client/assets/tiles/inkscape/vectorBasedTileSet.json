@@ -238,19 +238,49 @@
                  "color":"#ff0000",
                  "name":"sand",
                  "probability":1,
-                 "tile":-1
+                 "properties":[
+                        {
+                         "name":"minHeight",
+                         "type":"float",
+                         "value":0.1
+                        }],
+                 "tile":4
                 }, 
                 {
                  "color":"#d3d5c8",
                  "name":"mountain",
                  "probability":1,
-                 "tile":-1
+                 "properties":[
+                        {
+                         "name":"minHeight",
+                         "type":"float",
+                         "value":0.5
+                        }],
+                 "tile":18
                 }, 
                 {
                  "color":"#23dd06",
                  "name":"grass",
                  "probability":1,
-                 "tile":-1
+                 "properties":[
+                        {
+                         "name":"minHeight",
+                         "type":"float",
+                         "value":0.2
+                        }],
+                 "tile":2
+                }, 
+                {
+                 "color":"#0055ff",
+                 "name":"water",
+                 "probability":1,
+                 "properties":[
+                        {
+                         "name":"minHeight",
+                         "type":"float",
+                         "value":0
+                        }],
+                 "tile":10
                 }],
          "name":"Unnamed Set",
          "tile":-1,
@@ -275,6 +305,10 @@
                 {
                  "tileid":9,
                  "wangid":[0, 0, 0, 0, 0, 1, 0, 1]
+                }, 
+                {
+                 "tileid":10,
+                 "wangid":[0, 4, 0, 4, 0, 4, 0, 4]
                 }, 
                 {
                  "tileid":11,

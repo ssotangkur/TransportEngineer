@@ -2,6 +2,13 @@ import { ASSETS_PATH } from 'src/constants'
 import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
 import { PossibleTilesMap } from './waveFunctionCollapse'
 import { EquilavencyGroups } from './equilavencyGroup'
+import { TiledJson } from './tiledTypes'
+import {
+  createHeightMap,
+  generateMapDataUsingNoise,
+  getTileIdForHeight,
+  normalize2DArray,
+} from './noiseGeneratedMap'
 
 const TILES_PATH = ASSETS_PATH + '/tiles'
 const TILE_SET_CACHE_ID = 'tileSetInfo'
@@ -26,37 +33,6 @@ export type TileMap = {
   data: number[][]
   tileWidth: number
   tileHeight: number
-}
-
-/**
- * Type for parsing Tiled JSON files
- */
-export type TiledJson = {
-  layers: {
-    data: number[]
-    height: number
-    width: number
-    name: string
-    id: number
-  }[]
-  tilesets: {
-    margin: number
-    spacing: number
-    name: string
-    image: string
-    firstgid: number
-    tileheight: number
-    tilewidth: number
-    tilecount: number
-    tiles: {
-      id: number
-      properties?: {
-        name: string
-        type: string
-        value: string
-      }[]
-    }[]
-  }[]
 }
 
 export type TiledData = {
@@ -170,8 +146,8 @@ export const createGeneratedMapLayerFromTileSetInfo = (
   tileSetInfo: TileSetInfo,
   scene: OrchestratableScene,
 ) => {
-  const data = generateMapDataFromTileSetInfo(width, height, tileSetInfo)
-  // possibleMap.print()
+  //const data = generateMapDataFromTileSetInfo(width, height, tileSetInfo)
+  const data = generateMapDataUsingNoise(width, height)
 
   const map = scene.make.tilemap({
     data,

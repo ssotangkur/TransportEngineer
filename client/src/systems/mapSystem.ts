@@ -6,6 +6,7 @@ import {
 } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
 import { Events } from 'src/events/events'
+import { generateMapDataUsingNoise } from 'src/mapping/noiseGeneratedMap'
 
 //const TILED_JSON_FILE = 'te.json'
 const TILED_JSON_FILE = 'grass_biome.json'
@@ -50,7 +51,7 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
         this.world.mapSystem.tileSetInfo = await loadTiledJson(TILED_JSON_FILE, this.scene)
         successCallback()
       } catch (error) {
-        failureCallback(error)
+        failureCallback()
       }
     })
   }
@@ -69,7 +70,8 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   private regenerateMap() {
     if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
-      const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
+      //const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
+      const data = generateMapDataUsingNoise(100, 100)
       this.world.mapSystem.map.putTilesAt(data, 0, 0)
     }
   }

@@ -19,7 +19,8 @@
   "include": [
     "src/**/*",
     "../common/src/entities/entityType.ts",
-    "../common/src/entities/componentType.ts"
+    "../common/src/entities/componentType.ts",
+    "../node_modules/phaser3-rex-plugins-types"
   ],
   "references": [
     {
