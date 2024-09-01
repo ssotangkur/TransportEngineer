@@ -1,9 +1,11 @@
 import _ from 'lodash'
 import { makeNoise2D } from 'open-simplex-noise'
+import { MultiLayerTile, TileLayer } from './multiLayerTile'
+import { TileSetInfo } from './tiledJsonParser'
 
 const OCTAVES = 4
 const DECAY_COEFF = 0.5
-const BASE_COORD_SCALE = 0.02
+const BASE_COORD_SCALE = 0.05
 
 export const createHeightMap = (
   width: number,
@@ -87,30 +89,138 @@ export const normalize2DArray = (data: number[][]) => {
   }
 }
 
-const heightsToId = [
-  [0.7, 71], // tree
-  [0.3, 1], // grass
-  [0, 62], // water
-]
-
-export const getTileIdForHeight = (height: number) => {
-  for (let i = 0; i < heightsToId.length; i++) {
-    const [minHeight, tileId] = heightsToId[i]
-    if (height >= minHeight) {
-      return tileId
-    }
-  }
-  return heightsToId[heightsToId.length - 1][1]
-}
-
-export const generateMapDataUsingNoise = (width: number, height: number) => {
-  const hData = createHeightMap(width, height)
+export const generateMapDataUsingNoise = (
+  width: number,
+  height: number,
+  tileSetInfo: TileSetInfo,
+) => {
+  // Add +1 to width & height for marching squares
+  const hData = createHeightMap(width + 1, height + 1)
 
   normalize2DArray(hData)
 
-  console.log(hData)
-  const data = hData.map((row) => {
-    return row.map(getTileIdForHeight)
+  // convert height map to "WangColor" map
+  const colorMapper = createColorMapper(tileSetInfo)
+  const colorMap = hData.map((row) => {
+    return row.map(colorMapper)
   })
-  return data
+
+  // From the color map, we use marching squares to find the correct tiles for each layer
+  const wangTileMapper = createWangTileMapper(tileSetInfo)
+  const mlTileMap: MultiLayerTile[][] = []
+  for (let r = 0; r < height; r++) {
+    const row: MultiLayerTile[] = []
+    for (let c = 0; c < width; c++) {
+      const tl = colorMap[r][c]
+      const tr = colorMap[r][c + 1]
+      const bl = colorMap[r + 1][c]
+      const br = colorMap[r + 1][c + 1]
+
+      row.push(wangTileMapper(tr, br, bl, tl))
+    }
+    mlTileMap.push(row)
+  }
+
+  return mlTileMap
+}
+
+export type WangColor = {
+  color: string
+  name: string
+  probability: number
+  id: number // Tiled uses index order as the id in their wang tile definitions
+  representativeTileId: number
+  minHeight: number
+  rank: number // The relative rank height where 0 is the lowest, 1 is next highest, and so on
+}
+
+const createColorMapper = (tilesetInfo: TileSetInfo) => {
+  const wangColors = tilesetInfo.colorInfo.colors
+  return (height: number): WangColor => {
+    for (let i = 0; i < wangColors.length; i++) {
+      const wangColor = wangColors[i]
+      if (height > wangColor.minHeight) {
+        return wangColor
+      }
+    }
+    return wangColors[wangColors.length - 1]
+  }
+}
+
+/**
+ * To make finding a specific wangtile easier, make a composite key
+ * Format
+ *    <TR>:<BR>:<BL>:<TL>
+ *
+ * where <TR> = Top Right Id, <BL> = Bottom Left Id, etc
+ *
+ */
+const createWangTileMapper = (tilesetInfo: TileSetInfo) => {
+  const wangTilesMap = tilesetInfo.colorInfo.wangTilesMap
+
+  const wangTileMapper = (
+    tr: WangColor,
+    br: WangColor,
+    bl: WangColor,
+    tl: WangColor,
+  ): MultiLayerTile => {
+    const colors: WangColor4 = [tr, br, bl, tl]
+    const ranks = colors.map((c) => c.rank)
+    const colorForRank: Record<number, WangColor> = {
+      [colors[0].rank]: tr,
+      [colors[1].rank]: br,
+      [colors[2].rank]: bl,
+      [colors[3].rank]: tl,
+    }
+    const min = Math.min(...ranks)
+    const max = Math.max(...ranks)
+
+    const results: TileLayer[] = []
+
+    // start at min layer with all 4 colors same
+    let mask: [boolean, boolean, boolean, boolean] = [true, true, true, true]
+    for (let rank = min; rank <= max; rank++) {
+      const rankColor = colorForRank[rank]
+      const colorsForLayer = mask.map((isMasked) => {
+        return isMasked ? rankColor : undefined
+      }) as OptionalWangColor4
+      const tileId = wangTilesMap.get(keyForColors(colorsForLayer))
+      if (!tileId) {
+        throw new Error(`Could not find tile for colors ${keyForColors(colorsForLayer)}`)
+      }
+
+      // find corner that is too low for next rank and set it's mask to false
+      let maskChanged = false
+      for (let i = 0; i < 4; i++) {
+        if (ranks[i] === rank) {
+          mask[i] = false
+          maskChanged = true
+        }
+      }
+
+      // only push if mask changed so we don't push colors that were skipped
+      if (maskChanged) {
+        results.push({ rank, tileId, color: colorForRank[rank] })
+      }
+    }
+    return { layers: results }
+  }
+  return wangTileMapper
+}
+
+type WangColor4 = [WangColor, WangColor, WangColor, WangColor]
+type OptionalWangColor4 = [
+  WangColor | undefined,
+  WangColor | undefined,
+  WangColor | undefined,
+  WangColor | undefined,
+]
+
+const keyForColors = ([tr, br, bl, tl]: OptionalWangColor4) => {
+  const trId = tr ? tr.id : 0
+  const brId = br ? br.id : 0
+  const blId = bl ? bl.id : 0
+  const tlId = tl ? tl.id : 0
+
+  return `${trId}:${brId}:${blId}:${tlId}`
 }

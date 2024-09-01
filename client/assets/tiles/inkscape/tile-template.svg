@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
-   sodipodi:docname="mountain.svg"
+   sodipodi:docname="tile-template.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -28,14 +28,14 @@
      labelstyle="below"
      inkscape:lockguides="false"
      inkscape:zoom="1.2823216"
-     inkscape:cx="616.07011"
-     inkscape:cy="277.23155"
-     inkscape:window-width="3840"
-     inkscape:window-height="2071"
-     inkscape:window-x="2391"
-     inkscape:window-y="-9"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer14">
+     inkscape:cx="405.12458"
+     inkscape:cy="301.40645"
+     inkscape:window-width="2431"
+     inkscape:window-height="1480"
+     inkscape:window-x="3057"
+     inkscape:window-y="276"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer13">
     <inkscape:page
        x="0"
        y="0"
@@ -178,6 +178,24 @@
        margin="0"
        bleed="0"
        inkscape:label="-bottom-right-corner" />
+    <inkscape:page
+       x="254.01788"
+       y="579.41785"
+       width="128"
+       height="128"
+       id="page15"
+       margin="0"
+       bleed="0"
+       inkscape:label="-top-left-bottom-right" />
+    <inkscape:page
+       x="448.30829"
+       y="579.41785"
+       width="128"
+       height="128"
+       id="page16"
+       margin="0"
+       bleed="0"
+       inkscape:label="-top-left-bottom-right" />
   </sodipodi:namedview>
   <defs
      id="defs1">

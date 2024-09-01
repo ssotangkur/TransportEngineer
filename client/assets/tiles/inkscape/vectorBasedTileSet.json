@@ -8,7 +8,7 @@
  "margin":0,
  "name":"vectorbased",
  "spacing":0,
- "tilecount":36,
+ "tilecount":46,
  "tiledversion":"1.11.0",
  "tileheight":128,
  "tiles":[
@@ -227,6 +227,66 @@
          "image":"grass-top-right-corner.png",
          "imageheight":128,
          "imagewidth":128
+        }, 
+        {
+         "id":41,
+         "image":"grass-top-left-bottom-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":42,
+         "image":"grass-top-right-bottom-left.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":43,
+         "image":"sand-bottom-left-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":44,
+         "image":"sand-bottom-right-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":45,
+         "image":"sand-top-left-bottom-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":46,
+         "image":"sand-top-left-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":47,
+         "image":"sand-top-right-bottom-left.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":48,
+         "image":"sand-top-right-corner.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":49,
+         "image":"mountain-top-left-bottom-right.png",
+         "imageheight":128,
+         "imagewidth":128
+        }, 
+        {
+         "id":50,
+         "image":"mountain-top-right-bottom-left.png",
+         "imageheight":128,
+         "imagewidth":128
         }],
  "tilewidth":128,
  "type":"tileset",
@@ -242,7 +302,7 @@
                         {
                          "name":"minHeight",
                          "type":"float",
-                         "value":0.1
+                         "value":0.2
                         }],
                  "tile":4
                 }, 
@@ -254,7 +314,7 @@
                         {
                          "name":"minHeight",
                          "type":"float",
-                         "value":0.5
+                         "value":0.8
                         }],
                  "tile":18
                 }, 
@@ -266,7 +326,7 @@
                         {
                          "name":"minHeight",
                          "type":"float",
-                         "value":0.2
+                         "value":0.3
                         }],
                  "tile":2
                 }, 
@@ -429,6 +489,46 @@
                 {
                  "tileid":40,
                  "wangid":[0, 3, 0, 0, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":41,
+                 "wangid":[0, 0, 0, 3, 0, 0, 0, 3]
+                }, 
+                {
+                 "tileid":42,
+                 "wangid":[0, 3, 0, 0, 0, 3, 0, 0]
+                }, 
+                {
+                 "tileid":43,
+                 "wangid":[0, 0, 0, 0, 0, 1, 0, 0]
+                }, 
+                {
+                 "tileid":44,
+                 "wangid":[0, 0, 0, 1, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":45,
+                 "wangid":[0, 0, 0, 1, 0, 0, 0, 1]
+                }, 
+                {
+                 "tileid":46,
+                 "wangid":[0, 0, 0, 0, 0, 0, 0, 1]
+                }, 
+                {
+                 "tileid":47,
+                 "wangid":[0, 1, 0, 0, 0, 1, 0, 0]
+                }, 
+                {
+                 "tileid":48,
+                 "wangid":[0, 1, 0, 0, 0, 0, 0, 0]
+                }, 
+                {
+                 "tileid":49,
+                 "wangid":[0, 0, 0, 2, 0, 0, 0, 2]
+                }, 
+                {
+                 "tileid":50,
+                 "wangid":[0, 2, 0, 0, 0, 2, 0, 0]
                 }]
         }]
 }

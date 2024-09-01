@@ -1,8 +1,7 @@
 import { ASSETS_PATH } from 'src/constants'
 import type { TiledTileSetJson } from './tiledTypes'
-import { TileSetInfo } from './tiledJsonParser'
 
-const TILES_PATH = ASSETS_PATH + '/tiles'
+const TILES_PATH = ASSETS_PATH + '/tiles/inkscape'
 
 /**
  * The file must be located in the /assets/tiles directory.

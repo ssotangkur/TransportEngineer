@@ -1,15 +1,14 @@
 import {
   TileSetInfo,
-  createGeneratedMapLayerFromTileSetInfo,
-  generateMapDataFromTileSetInfo,
-  loadTiledJson,
+  initializePhaserTileMap,
+  loadTiledTileSetJson,
+  updateMapDataFromTileSetJson,
 } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
 import { Events } from 'src/events/events'
-import { generateMapDataUsingNoise } from 'src/mapping/noiseGeneratedMap'
+import { TiledTileSetJson } from 'src/mapping/tiledTypes'
 
-//const TILED_JSON_FILE = 'te.json'
-const TILED_JSON_FILE = 'grass_biome.json'
+const TILED_TILESET_JSON_FILE = 'vectorBasedTileSet.json'
 
 export type MapInfoWorld = {
   mapInfoWorld: {
@@ -22,6 +21,7 @@ export type MapWorld = {
   mapSystem: {
     map?: Phaser.Tilemaps.Tilemap
     tileSetInfo?: TileSetInfo
+    tiledTileSetJson?: TiledTileSetJson
   }
 }
 
@@ -48,7 +48,10 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
   public preload() {
     this.scene.load.rexAwait(async (successCallback, failureCallback) => {
       try {
-        this.world.mapSystem.tileSetInfo = await loadTiledJson(TILED_JSON_FILE, this.scene)
+        this.world.mapSystem.tileSetInfo = await loadTiledTileSetJson(
+          TILED_TILESET_JSON_FILE,
+          this.scene,
+        )
         successCallback()
       } catch (error) {
         failureCallback()
@@ -70,9 +73,15 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   private regenerateMap() {
     if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
+      updateMapDataFromTileSetJson(
+        100,
+        100,
+        this.world.mapSystem.tileSetInfo,
+        this.world.mapSystem.map,
+      )
       //const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
-      const data = generateMapDataUsingNoise(100, 100)
-      this.world.mapSystem.map.putTilesAt(data, 0, 0)
+      // const data = generateMapDataUsingNoise(100, 100)
+      // this.world.mapSystem.map.putTilesAt(data, 0, 0)
     }
   }
 
@@ -81,13 +90,20 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       // const tiledData = createTiledMapLayer(this.world.mapSystem.tileSetInfo, this.scene)
       // this.world.mapSystem.map = tiledData.phaserTileMap
 
-      const generatedData = createGeneratedMapLayerFromTileSetInfo(
+      this.world.mapSystem.map = initializePhaserTileMap(
         100,
         100,
         this.world.mapSystem.tileSetInfo,
         this.scene,
       )
-      this.world.mapSystem.map = generatedData.phaserTileMap
+
+      updateMapDataFromTileSetJson(
+        100,
+        100,
+        this.world.mapSystem.tileSetInfo,
+        this.world.mapSystem.map,
+      )
+      // this.world.mapSystem.map.putTileAt(4, 0, 0, false, 'sand')
     }
   }
 

@@ -27,14 +27,16 @@ export type TiledTileJson = {
   properties?: TiledProperty[]
 }
 
+export type TiledWangColorJson = {
+  color: string
+  name: string
+  probability: number
+  tile: number
+  properties?: TiledProperty[]
+}
+
 export type TiledWangSetJson = {
-  colors: {
-    color: string
-    name: string
-    probability: number
-    tile: number
-    properties?: TiledProperty[]
-  }[]
+  colors: TiledWangColorJson[]
   name: string
   type: string
   wangtiles?: {
