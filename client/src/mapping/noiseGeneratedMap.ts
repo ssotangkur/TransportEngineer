@@ -5,7 +5,7 @@ import { TileSetInfo } from './tiledJsonParser'
 
 const OCTAVES = 4
 const DECAY_COEFF = 0.5
-const BASE_COORD_SCALE = 0.05
+const BASE_COORD_SCALE = 0.02
 
 export const createHeightMap = (
   width: number,
@@ -135,15 +135,9 @@ export type WangColor = {
 }
 
 const createColorMapper = (tilesetInfo: TileSetInfo) => {
-  const wangColors = tilesetInfo.colorInfo.colors
   return (height: number): WangColor => {
-    for (let i = 0; i < wangColors.length; i++) {
-      const wangColor = wangColors[i]
-      if (height > wangColor.minHeight) {
-        return wangColor
-      }
-    }
-    return wangColors[wangColors.length - 1]
+    const rankInfo = tilesetInfo.colorInfo.getRankForHeight(height)
+    return rankInfo.getColorForBiome()
   }
 }
 
@@ -156,8 +150,6 @@ const createColorMapper = (tilesetInfo: TileSetInfo) => {
  *
  */
 const createWangTileMapper = (tilesetInfo: TileSetInfo) => {
-  const wangTilesMap = tilesetInfo.colorInfo.wangTilesMap
-
   const wangTileMapper = (
     tr: WangColor,
     br: WangColor,
@@ -177,16 +169,28 @@ const createWangTileMapper = (tilesetInfo: TileSetInfo) => {
 
     const results: TileLayer[] = []
 
+    // See if there's an optimized tile with all 4 colors
+    const optimalKey = keyForColors(colors)
+    const tileId = tilesetInfo.colorInfo.getTileForKey(optimalKey)
+    if (tileId) {
+      results.push({ rank: max, tileId, color: colorForRank[max] })
+      return { layers: results }
+    }
+
     // start at min layer with all 4 colors same
     let mask: [boolean, boolean, boolean, boolean] = [true, true, true, true]
     for (let rank = min; rank <= max; rank++) {
       const rankColor = colorForRank[rank]
+      if (!rankColor) {
+        continue // skip if no color
+      }
       const colorsForLayer = mask.map((isMasked) => {
         return isMasked ? rankColor : undefined
       }) as OptionalWangColor4
-      const tileId = wangTilesMap.get(keyForColors(colorsForLayer))
+      const key = keyForColors(colorsForLayer)
+      const tileId = tilesetInfo.colorInfo.getTileForKey(key)
       if (!tileId) {
-        throw new Error(`Could not find tile for colors ${keyForColors(colorsForLayer)}`)
+        throw new Error(`Could not find tile for colors ${key}`)
       }
 
       // find corner that is too low for next rank and set it's mask to false

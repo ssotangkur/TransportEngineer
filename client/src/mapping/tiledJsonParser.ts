@@ -1,20 +1,31 @@
 import { ASSETS_PATH } from 'src/constants'
 import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
 import { EquilavencyGroups } from './equilavencyGroup'
-import { TiledProperty, TiledTileSetJson, TiledWangColorJson, TiledWangSetJson } from './tiledTypes'
+import { TiledTileSetJson, TiledWangColorJson, TiledWangSetJson } from './tiledTypes'
 import { generateMapDataUsingNoise, WangColor } from './noiseGeneratedMap'
 import _ from 'lodash'
+import { groupBy } from 'src/utils/groupBy'
 
-const TILES_PATH = ASSETS_PATH + '/tiles/inkscape'
+const TILES_PATH = ASSETS_PATH + '/tiles/lpc-terrains'
 const TILE_SET_CACHE_ID = 'tileSetInfo'
 
-export type ColorInfo = {
+export type RankInfo = {
+  rank: number
+  minHeight: number
   colors: WangColor[]
-  wangTilesMap: Map<string, number> // Maps composite key to tileId
+  getColorForBiome: (biome?: string) => WangColor
+}
+
+export type ColorInfo = {
+  ranks: RankInfo[] // In descending minHeight order
+  maxRank: number
+  // Use keyForWangId to generate a key
+  getTileForKey: (key: string) => number | undefined
+  getRankForHeight: (height: number) => RankInfo
 }
 
 export type TileSetInfo = {
-  tileSetImage: string
+  tileSetImage?: string
   tileSetName: string
   tileHeight: number
   tileWidth: number
@@ -60,6 +71,9 @@ export const loadTiledTileSetJson = async (
   const resp = await fetch(TILES_PATH + '/' + tiledTileSetJsonFile)
   const tileSet: TiledTileSetJson = await resp.json()
 
+  const ranks = parseRankInfos(tileSet.wangsets ?? [])
+  const maxRank = Math.max(...ranks.map((c) => c.rank))
+
   const tileSetInfo: TileSetInfo = {
     firstGid: tileSet.firstgid,
     tileSetImage: tileSet.image,
@@ -71,28 +85,89 @@ export const loadTiledTileSetJson = async (
     equivalencyGroups: new EquilavencyGroups(),
 
     colorInfo: {
-      colors: parseWangColors(tileSet.wangsets ?? []),
-      wangTilesMap: createWangTilesMap(tileSet),
+      ranks,
+      maxRank,
+      getTileForKey: createGetTileForKey(tileSet),
+      getRankForHeight: createGetRankForHeight(ranks),
     },
 
     tiledTileSetJson: tileSet,
   }
   // Compute equivalency groups
-  tileSet.tiles.forEach((tile) => {
-    const equivalenceGroup = tile.properties?.find((prop) => prop.name === 'equivalencyGroup')
-    if (equivalenceGroup) {
-      // Need to add firstgid so that these tile ids so match the tile ids in the map data
-      tileSetInfo.equivalencyGroups.add(tile.id + tileSet.firstgid, equivalenceGroup.value)
-    }
-  })
+  if (tileSet.tiles) {
+    tileSet.tiles.forEach((tile) => {
+      const equivalenceGroup = tile.properties?.find((prop) => prop.name === 'equivalencyGroup')
+      if (equivalenceGroup) {
+        // Need to add firstgid so that these tile ids so match the tile ids in the map data
+        tileSetInfo.equivalencyGroups.add(tile.id + tileSet.firstgid, equivalenceGroup.value)
+      }
+    })
+  }
 
   loadImages(tileSetInfo, scene)
 
   return tileSetInfo
 }
 
+const createGetRankForHeight = (rankInfos: RankInfo[]) => {
+  return (height: number): RankInfo => {
+    for (let i = 0; i < rankInfos.length; i++) {
+      const wangColor = rankInfos[i]
+      if (height > wangColor.minHeight) {
+        return wangColor
+      }
+    }
+    return rankInfos[rankInfos.length - 1]
+  }
+}
+
+type PartialWangColor = Omit<WangColor, 'rank'>
+
+const isPartialWangColor = (color: any): color is PartialWangColor => {
+  return color?.minHeight !== undefined
+}
+
+/**
+ * Parses out the rankInfos from the wangsets in descending order
+ * @param wangsets
+ * @returns
+ */
+const parseRankInfos = (wangsets: TiledWangSetJson[]): RankInfo[] => {
+  const partialWangColors = wangsets?.flatMap((wangSet) => {
+    return wangSet.colors
+      .map((color, index) => jsonColorToWangColor(color, index)) // Need to convert first since id is based on initial index position
+      .filter(isPartialWangColor) // Filter out colors that don't have minHeight
+  })
+
+  // Group colors that share the same minHeight
+  const wangColorsByMinHeight = groupBy(partialWangColors, (wc) => wc.minHeight)
+  const rankInfos = Array.from(wangColorsByMinHeight.entries())
+    .sort((a, b) => a[0] - b[0]) // sort ascending...
+    .map((tuple, index) => {
+      // so we can add "rank" completing the wangColor
+      const completedColors = tuple[1].map((wc) => {
+        return {
+          ...wc,
+          rank: index,
+        } as WangColor
+      })
+      return {
+        minHeight: tuple[0],
+        colors: completedColors,
+        rank: index,
+        getColorForBiome: () => completedColors[0], // @TODO implement this
+      } as RankInfo
+    })
+    .reverse() // reverse to get it in descending order
+
+  if (!rankInfos.length) {
+    throw new Error('No wangsets in tileset json')
+  }
+  return rankInfos
+}
+
 const loadImages = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
-  tileSetInfo.tiledTileSetJson.tiles.forEach((tile) => {
+  tileSetInfo.tiledTileSetJson.tiles?.forEach((tile) => {
     if (tile.image) {
       scene.load.image(tile.image, TILES_PATH + '/' + tile.image)
       // Do we need to add the image to the cache?
@@ -105,15 +180,30 @@ const loadImages = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
   }
 }
 
-const createWangTilesMap = (tilesetJson: TiledTileSetJson) => {
+const createGetTileForKey = (tilesetJson: TiledTileSetJson) => {
   // Map composite key to tileId
-  const wangTilesMap: Map<string, number> = new Map()
+  const wangTilesMap: Map<string, number[]> = new Map()
   tilesetJson.wangsets?.flatMap((wangSet) => {
     wangSet.wangtiles?.forEach((wangTile) => {
-      wangTilesMap.set(keyForWangId(wangTile.wangid), wangTile.tileid)
+      const key = keyForWangId(wangTile.wangid)
+      let tiles = wangTilesMap.get(key)
+      if (!tiles) {
+        tiles = []
+        wangTilesMap.set(key, tiles)
+      }
+      tiles.push(wangTile.tileid)
     })
   })
-  return wangTilesMap
+
+  const getTileForKey = (key: string) => {
+    const tiles = wangTilesMap.get(key)
+    if (!tiles || tiles.length === 0) {
+      return undefined
+    }
+    return _.sample(tiles)!
+  }
+
+  return getTileForKey
 }
 
 export const keyForWangId = (
@@ -123,35 +213,7 @@ export const keyForWangId = (
   return `${tr}:${br}:${bl}:${tl}`
 }
 
-const parseWangColors = (wangsets: TiledWangSetJson[]) => {
-  const wangColors =
-    wangsets
-      ?.flatMap((wangSet) => {
-        return wangSet.colors.map(jsonColorToWangColor)
-      })
-      .sort((a, b) => {
-        // sort ascending...
-        return a.minHeight - b.minHeight
-      })
-      .map((wc, rank) => {
-        // so we can add "rank"...
-        return {
-          ...wc,
-          rank,
-        } as WangColor
-      })
-      .reverse() ?? [] // finally, reverse to get it in descending order
-
-  if (!wangColors.length) {
-    throw new Error('No wangsets in tileset json')
-  }
-  return wangColors
-}
-
-const jsonColorToWangColor = (
-  jsonColor: TiledWangColorJson,
-  index: number,
-): Omit<WangColor, 'rank'> => {
+const jsonColorToWangColor = (jsonColor: TiledWangColorJson, index: number) => {
   const { color, name, probability } = jsonColor
   return {
     color,
@@ -159,52 +221,18 @@ const jsonColorToWangColor = (
     probability,
     id: index + 1, // id's start at 1 not 0 since 0 is treated as null in the json
     representativeTileId: jsonColor.tile,
-    minHeight: getMinHeightProperty(jsonColor.properties),
+    minHeight: getMinHeightProperty(jsonColor),
   }
 }
 
-const getMinHeightProperty = (props: TiledProperty[] | undefined) => {
+const getMinHeightProperty = (color: TiledWangColorJson): number | undefined => {
+  const props = color.properties
   const minHeightProp = props?.find((p) => p.name === 'minHeight')
   if (!minHeightProp) {
-    throw new Error('No minHeight property found.')
+    console.warn(`No minHeight property found for color: ${color.name}`)
   }
-  return minHeightProp.value as number
+  return (minHeightProp?.value as number) ?? undefined
 }
-
-// export const createTiledMapLayer = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
-//   // const layer0 = tileSetInfo.layers[0]
-//   const data = convert1DTo2DArray(layer0.data, layer0.width, layer0.height)
-//   const map = scene.make.tilemap({
-//     data,
-//     tileWidth: tileSetInfo.tileWidth,
-//     tileHeight: tileSetInfo.tileHeight,
-//   })
-//   const tileset = map.addTilesetImage(
-//     'tileset',
-//     tileSetInfo.tileSetImage,
-//     tileSetInfo.tileWidth,
-//     tileSetInfo.tileHeight,
-//     tileSetInfo.tileMargin,
-//     tileSetInfo.tileSpacing,
-//     tileSetInfo.firstGid,
-//   )
-//   if (tileset === null) {
-//     throw Error('tileset is null')
-//   }
-//   map.createLayer(0, tileset)
-//   return {
-//     phaserTileMap: map,
-//     mapData: data,
-//   }
-// }
-
-// let sampleIndex = 0
-// const sampleLast = <T>(arr: T[]) => {
-//   sampleIndex++
-//   const ans = arr[(sampleIndex + 7) % arr.length]
-
-//   return ans
-// }
 
 export const updateMapDataFromTileSetJson = (
   width: number,
@@ -214,33 +242,16 @@ export const updateMapDataFromTileSetJson = (
 ) => {
   const multiLayerMap = generateMapDataUsingNoise(width, height, tileSetInfo)
 
-  // const layer0 = tileSetInfo.layers[0]
-  // canonicalize the tile numbers using the equivalence groups
-  // const canonicalMap = layer0.data.map((tileNum) =>
-  //   tileSetInfo.equivalencyGroups.getCanonicalId(tileNum),
-  // )
-
   clearMap(width, height, map)
 
   for (let r = 0; r < height; r++) {
     for (let c = 0; c < width; c++) {
       const mlTile = multiLayerMap[r][c]
       mlTile.layers.forEach((layer) => {
-        // if (layer.color.name === 'water') {
-        //   map.putTileAt(10, c, r, false, layer.color.name)
-        // } else {
-        //   map.putTileAt(32, c, r, false, layer.color.name)
-        // }
         map.putTileAt(layer.tileId, c, r, false, layer.color.name)
       })
     }
   }
-  // map.putTileAt(4, 0, 0, false, 'sand')
-
-  // const exampleMap = convert1DTo2DArray(canonicalMap, layer0.width, layer0.height)
-  // const possibleMap = new PossibleTilesMap(width, height, exampleMap)
-  // const data = possibleMap.collapse()
-  // return data
 }
 
 export const clearMap = (width: number, height: number, map: Phaser.Tilemaps.Tilemap) => {
@@ -259,11 +270,6 @@ export const initializePhaserTileMap = (
   tileSetInfo: TileSetInfo,
   scene: OrchestratableScene,
 ) => {
-  // const map = scene.make.tilemap({
-  //   tileWidth: tileSetInfo.tileWidth,
-  //   tileHeight: tileSetInfo.tileHeight,
-  // })
-
   var mapData = new Phaser.Tilemaps.MapData({
     width,
     height,
@@ -278,19 +284,10 @@ export const initializePhaserTileMap = (
     renderOrder: 'right-down',
   })
 
-  // We can directly call the tileset parser
-  // tileSetInfo.tiledTileSetJson['firstgid'] = 0
-  // var sets = Phaser.Tilemaps.Parsers.Tiled.ParseTilesets({
-  //   tilesets: [tileSetInfo.tiledTileSetJson],
-  // }) as any
-
-  // mapData.tilesets = sets.tilesets
-  // mapData.imageCollections = sets.imageCollections
-  // mapData.tiles = Phaser.Tilemaps.Parsers.Tiled.BuildTilesetIndex(mapData)
-
   const map = new Phaser.Tilemaps.Tilemap(scene, mapData)
 
-  tileSetInfo.tiledTileSetJson.tiles.forEach((jsonTile) => {
+  // Add tileset images
+  tileSetInfo.tiledTileSetJson.tiles?.forEach((jsonTile) => {
     return map.addTilesetImage(
       jsonTile.image!,
       jsonTile.image!,
@@ -301,41 +298,31 @@ export const initializePhaserTileMap = (
       jsonTile.id,
     )
   })
+  const tileSetImage = tileSetInfo.tiledTileSetJson.image
+  if (tileSetImage) {
+    map.addTilesetImage(tileSetImage, tileSetImage, undefined, undefined, undefined, undefined, 0)
+  }
 
   // create layer for each color
-  const maxRank = Math.max(...tileSetInfo.colorInfo.colors.map((c) => c.rank))
-  tileSetInfo.colorInfo.colors.forEach((color) => {
-    map
-      .createBlankLayer(
-        color.name,
-        map.tilesets,
-        0,
-        0,
-        width,
-        height,
-        tileSetInfo.tileWidth,
-        tileSetInfo.tileHeight,
-      )
-      ?.setDepth(color.rank - maxRank) // Use negative depth for map so everything else can be positive
-  })
+  tileSetInfo.colorInfo.ranks
+    .flatMap((rank) => rank.colors)
+    .forEach((color) => {
+      map
+        .createBlankLayer(
+          color.name,
+          map.tilesets,
+          0,
+          0,
+          width,
+          height,
+          tileSetInfo.tileWidth,
+          tileSetInfo.tileHeight,
+        )
+        ?.setDepth(color.rank - tileSetInfo.colorInfo.maxRank) // Use negative depth for map so everything else can be positive
+    })
 
   return map
 }
-
-// export const createGeneratedMapLayerFromTileSetInfo = (
-//   width: number,
-//   height: number,
-//   tileSetInfo: TileSetInfo,
-//   scene: OrchestratableScene,
-// ) => {
-//   const data = generateMapDataUsingNoise(width, height, tileSetInfo)
-
-//   map.createLayer(0, tileset)
-//   return {
-//     phaserTileMap: map,
-//     mapData: data,
-//   }
-// }
 
 export const convert1DTo2DArray = (data: number[], width: number, height: number): number[][] => {
   const result = []

@@ -57,7 +57,7 @@ export type TiledTileSetJson = {
   tileheight: number
   tilewidth: number
   tilecount: number
-  tiles: TiledTileJson[]
+  tiles?: TiledTileJson[]
   type: string
   version: string
   wangsets?: TiledWangSetJson[]

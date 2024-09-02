@@ -8,7 +8,7 @@ import { BaseSystem } from './baseSystem'
 import { Events } from 'src/events/events'
 import { TiledTileSetJson } from 'src/mapping/tiledTypes'
 
-const TILED_TILESET_JSON_FILE = 'vectorBasedTileSet.json'
+const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
 
 export type MapInfoWorld = {
   mapInfoWorld: {
