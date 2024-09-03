@@ -2,9 +2,17 @@ import { ASSETS_PATH } from 'src/constants'
 import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
 import { EquilavencyGroups } from './equilavencyGroup'
 import { TiledTileSetJson, TiledWangColorJson, TiledWangSetJson } from './tiledTypes'
-import { generateMapDataUsingNoise, WangColor } from './noiseGeneratedMap'
+import {
+  createHeightMap,
+  createPrecipitationMap,
+  createTemperatureMap,
+  generateMapDataUsingNoise,
+  WangColor,
+} from './noiseGeneratedMap'
 import _ from 'lodash'
 import { groupBy } from 'src/utils/groupBy'
+import { MapWorld } from 'src/systems/mapSystem'
+import { createBiomeMap } from './biome'
 
 const TILES_PATH = ASSETS_PATH + '/tiles/lpc-terrains'
 const TILE_SET_CACHE_ID = 'tileSetInfo'
@@ -234,13 +242,18 @@ const getMinHeightProperty = (color: TiledWangColorJson): number | undefined => 
   return (minHeightProp?.value as number) ?? undefined
 }
 
-export const updateMapDataFromTileSetJson = (
-  width: number,
-  height: number,
-  tileSetInfo: TileSetInfo,
-  map: Phaser.Tilemaps.Tilemap,
-) => {
-  const multiLayerMap = generateMapDataUsingNoise(width, height, tileSetInfo)
+export const updateMapDataFromTileSetJson = (width: number, height: number, mapWorld: MapWorld) => {
+  const tileSetInfo = mapWorld.mapSystem.tileSetInfo
+  if (!tileSetInfo) {
+    return
+  }
+  const map = mapWorld.mapSystem.map
+  if (!map) {
+    return
+  }
+
+  const { multiLayerMap, biomeMap } = generateMapDataUsingNoise(width, height, tileSetInfo)
+  mapWorld.mapSystem.biomeMap = biomeMap
 
   clearMap(width, height, map)
 

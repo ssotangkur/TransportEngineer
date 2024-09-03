@@ -2,20 +2,78 @@ import _ from 'lodash'
 import { makeNoise2D } from 'open-simplex-noise'
 import { MultiLayerTile, TileLayer } from './multiLayerTile'
 import { TileSetInfo } from './tiledJsonParser'
+import { BiomeCell, createBiomeMap } from './biome'
 
-const OCTAVES = 4
-const DECAY_COEFF = 0.5
-const BASE_COORD_SCALE = 0.02
+export type MapInfo = {
+  width: number
+  height: number
+  biomeMap: BiomeCell[][]
+  multiLayerMap: MultiLayerTile[][]
+}
+
+const HEIGHT_MAP_CONFIG: NoiseMapConfig = {
+  baseCoordScale: 0.02,
+  octaves: 4,
+  decayCoeff: 0.5,
+  seedOffset: 1,
+}
+
+const PRECIPITATION_MAP_CONFIG: NoiseMapConfig = {
+  baseCoordScale: 0.02,
+  octaves: 4,
+  decayCoeff: 0.5,
+  seedOffset: 2,
+}
+
+const TEMPERATURE_MAP_CONFIG: NoiseMapConfig = {
+  baseCoordScale: 0.02,
+  octaves: 4,
+  decayCoeff: 0.5,
+  seedOffset: 3,
+}
+
+export type NoiseMapConfig = {
+  baseCoordScale: number
+  octaves: number
+  decayCoeff: number
+  seedOffset: number // Use a different seed offset when generating multiple noise maps at the same time
+}
 
 export const createHeightMap = (
   width: number,
   height: number,
   seedFnOrValue: number | (() => number) = () => Date.now(),
 ): number[][] => {
-  const seed = _.isFunction(seedFnOrValue) ? seedFnOrValue() : seedFnOrValue
+  return createNoiseMap(width, height, HEIGHT_MAP_CONFIG, seedFnOrValue)
+}
+
+export const createPrecipitationMap = (
+  width: number,
+  height: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+): number[][] => {
+  return createNoiseMap(width, height, PRECIPITATION_MAP_CONFIG, seedFnOrValue)
+}
+
+export const createTemperatureMap = (
+  width: number,
+  height: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+): number[][] => {
+  return createNoiseMap(width, height, TEMPERATURE_MAP_CONFIG, seedFnOrValue)
+}
+
+export const createNoiseMap = (
+  width: number,
+  height: number,
+  config: NoiseMapConfig,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+) => {
+  const { baseCoordScale, octaves, decayCoeff, seedOffset } = config
+  const seed = (_.isFunction(seedFnOrValue) ? seedFnOrValue() : seedFnOrValue) + seedOffset
   const noise2d = makeNoise2D(seed)
 
-  const octaveNoise = createOctaveNoiseFn(BASE_COORD_SCALE, OCTAVES, DECAY_COEFF, noise2d)
+  const octaveNoise = createOctaveNoiseFn(baseCoordScale, octaves, decayCoeff, noise2d)
 
   const result: number[][] = []
 
@@ -27,6 +85,8 @@ export const createHeightMap = (
 
     result.push(row)
   }
+
+  normalize2DArray(result)
 
   return result
 }
@@ -93,15 +153,13 @@ export const generateMapDataUsingNoise = (
   width: number,
   height: number,
   tileSetInfo: TileSetInfo,
-) => {
+): MapInfo => {
   // Add +1 to width & height for marching squares
-  const hData = createHeightMap(width + 1, height + 1)
-
-  normalize2DArray(hData)
+  const biomeMap = createBiomeMap(width + 1, height + 1)
 
   // convert height map to "WangColor" map
   const colorMapper = createColorMapper(tileSetInfo)
-  const colorMap = hData.map((row) => {
+  const colorMap = biomeMap.map((row) => {
     return row.map(colorMapper)
   })
 
@@ -121,7 +179,12 @@ export const generateMapDataUsingNoise = (
     mlTileMap.push(row)
   }
 
-  return mlTileMap
+  return {
+    biomeMap,
+    multiLayerMap: mlTileMap,
+    width,
+    height,
+  }
 }
 
 export type WangColor = {
@@ -135,8 +198,8 @@ export type WangColor = {
 }
 
 const createColorMapper = (tilesetInfo: TileSetInfo) => {
-  return (height: number): WangColor => {
-    const rankInfo = tilesetInfo.colorInfo.getRankForHeight(height)
+  return (biomeCell: BiomeCell): WangColor => {
+    const rankInfo = tilesetInfo.colorInfo.getRankForHeight(biomeCell.height)
     return rankInfo.getColorForBiome()
   }
 }

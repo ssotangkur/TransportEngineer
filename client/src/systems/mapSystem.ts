@@ -6,7 +6,7 @@ import {
 } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
 import { Events } from 'src/events/events'
-import { TiledTileSetJson } from 'src/mapping/tiledTypes'
+import { BiomeCell } from 'src/mapping/biome'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
 
@@ -21,7 +21,7 @@ export type MapWorld = {
   mapSystem: {
     map?: Phaser.Tilemaps.Tilemap
     tileSetInfo?: TileSetInfo
-    tiledTileSetJson?: TiledTileSetJson
+    biomeMap?: BiomeCell[][]
   }
 }
 
@@ -73,12 +73,7 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   private regenerateMap() {
     if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
-      updateMapDataFromTileSetJson(
-        100,
-        100,
-        this.world.mapSystem.tileSetInfo,
-        this.world.mapSystem.map,
-      )
+      updateMapDataFromTileSetJson(100, 100, this.world)
       //const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
       // const data = generateMapDataUsingNoise(100, 100)
       // this.world.mapSystem.map.putTilesAt(data, 0, 0)
@@ -97,12 +92,7 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
         this.scene,
       )
 
-      updateMapDataFromTileSetJson(
-        100,
-        100,
-        this.world.mapSystem.tileSetInfo,
-        this.world.mapSystem.map,
-      )
+      updateMapDataFromTileSetJson(100, 100, this.world)
       // this.world.mapSystem.map.putTileAt(4, 0, 0, false, 'sand')
     }
   }

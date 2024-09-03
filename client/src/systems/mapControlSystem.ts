@@ -2,6 +2,9 @@ import { MapWorld } from 'src/systems/mapSystem'
 import { BaseSystem } from './baseSystem'
 import { TimeWorld } from './timeSystem'
 import { MySmoothedKeyControl } from 'src/utils/mySmoothedKeyControl'
+import { SingletonWorld } from './singletonSystem'
+import { addComponent } from 'bitecs'
+import { DebugMapComponent, DebugMapMode, next } from 'src/components/debugMapComponent'
 
 export type MapControlWorld = {
   mapControl: {
@@ -19,8 +22,8 @@ export type DoubleClickWorld = {
   }
 }
 
-export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem<
-  MapWorld & TimeWorld,
+export class MapControl<WorldIn extends MapWorld & TimeWorld & SingletonWorld> extends BaseSystem<
+  MapWorld & TimeWorld & SingletonWorld,
   WorldIn,
   MapControlWorld
 > {
@@ -88,6 +91,15 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld> extends BaseSystem
 
       camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom
       camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom
+    })
+
+    // Update the MapDebugComponent singleton
+    const singletonEid = this.world.singleton.eid
+    addComponent(this.world, DebugMapComponent, singletonEid)
+    DebugMapComponent.mode[singletonEid] = DebugMapMode.Off
+    const mKey = this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.M)
+    mKey.on('up', () => {
+      DebugMapComponent.mode[singletonEid] = next(DebugMapComponent.mode[singletonEid])
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap

@@ -28,6 +28,7 @@ import { GroupRenderingSystem } from 'src/systems/groupSystem'
 import { TextureSystem } from 'src/systems/textureSystem'
 import { SingletonSystem } from 'src/systems/singletonSystem'
 import { MouseSystem } from 'src/systems/mouseSystem'
+import { DebugMapSystem } from 'src/systems/debugMapSystem'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
@@ -72,6 +73,7 @@ export class EntityEditorScene extends OrchestratableScene {
       .build(GroupRenderingSystem)
       .build(MoveComponentRemovalSystem)
       // .build(DebugSystem)
+      .build(DebugMapSystem)
       .instances()
   }
 
