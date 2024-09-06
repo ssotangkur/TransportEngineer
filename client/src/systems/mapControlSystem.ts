@@ -70,7 +70,7 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld & SingletonWorld> e
 
         if (deltaY > 0) {
           // Making zoom strength proportional to current zoom feels more natural
-          var newZoom = camera.zoom - 0.01 * camera.zoom
+          var newZoom = camera.zoom - 0.05 * camera.zoom
           if (newZoom > 0.1) {
             camera.zoom = newZoom
           }
@@ -78,7 +78,7 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld & SingletonWorld> e
 
         if (deltaY < 0) {
           // Making zoom strength proportional to current zoom feels more natural
-          var newZoom = camera.zoom + 0.01 * camera.zoom
+          var newZoom = camera.zoom + 0.05 * camera.zoom
           if (newZoom < 4.0) {
             camera.zoom = newZoom
           }

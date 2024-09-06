@@ -5,6 +5,7 @@ export const DebugMapMode = {
   HeightMap: 1,
   PrecipitationMap: 2,
   TemperatureMap: 3,
+  Biome: 4,
 } as const
 
 export const DebugMapComponent = defineComponent({

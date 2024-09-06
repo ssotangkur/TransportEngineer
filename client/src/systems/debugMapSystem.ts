@@ -3,7 +3,7 @@ import { BaseSystem } from './baseSystem'
 import { MapWorld } from './mapSystem'
 
 import { DebugMapComponent, DebugMapMode } from 'src/components/debugMapComponent'
-import { BiomeCell } from 'src/mapping/biome'
+import { Biome, BiomeCell } from 'src/mapping/biome'
 import { TileSetInfo } from 'src/mapping/tiledJsonParser'
 
 const mapDebugChangedQuery = defineQuery([Changed(DebugMapComponent)])
@@ -52,6 +52,8 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
           return Phaser.Display.Color.GetColor(0, 0, cell.precipitation * 255)
         case DebugMapMode.TemperatureMap:
           return Phaser.Display.Color.GetColor(0, cell.temperature * 255, 0)
+        case DebugMapMode.Biome:
+          return getColorForBiome(cell.biome)
         default:
           throw new Error(`Invalid mode ${mode}`)
       }
@@ -86,6 +88,11 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
       case DebugMapMode.TemperatureMap:
         text = 'Temperature Map'
         break
+      case DebugMapMode.Biome:
+        text = 'Biome Map'
+        break
+      default:
+        throw new Error(`Invalid mode ${mode}`)
     }
     this.gameObjs.push(this.scene.add.text(10, 10, text, { color: 'white' }).setDepth(10000))
   }
@@ -97,4 +104,35 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
     }
     this.gameObjs = []
   }
+}
+
+const getColorForBiome = (biome: Biome) => {
+  let color = '#0000ff'
+  switch (biome) {
+    case 'ocean':
+      color = '#0000ff'
+      break
+    case 'desert':
+      color = '#ffffcc'
+      break
+    case 'grassland':
+      color = '#73e600'
+      break
+    case 'forest':
+      color = '#006600'
+      break
+    case 'taiga':
+      color = '#993399'
+      break
+    case 'tundra':
+      color = '#ccffff'
+      break
+    case 'jungle':
+      color = '#bafc03'
+      break
+    default:
+      throw new Error(`Invalid biome ${biome}`)
+  }
+
+  return Phaser.Display.Color.ValueToColor(color).color
 }

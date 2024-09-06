@@ -1,4 +1,4 @@
-import { WangColor } from './noiseGeneratedMap'
+import { WangColor } from './mapGenerator'
 
 export type MultiLayerTile = {
   layers: TileLayer[]

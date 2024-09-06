@@ -26,6 +26,11 @@
                  "probability":1,
                  "properties":[
                         {
+                         "name":"biomes",
+                         "type":"string",
+                         "value":"grassland, forest, jungle, taiga"
+                        }, 
+                        {
                          "name":"minHeight",
                          "type":"float",
                          "value":0.4
@@ -92,6 +97,11 @@
                  "probability":1,
                  "properties":[
                         {
+                         "name":"biomes",
+                         "type":"string",
+                         "value":"ocean, grassland, forest"
+                        }, 
+                        {
                          "name":"minHeight",
                          "type":"float",
                          "value":0.5
@@ -102,12 +112,34 @@
                  "color":"#96ffa7",
                  "name":"Grass_Light",
                  "probability":1,
+                 "properties":[
+                        {
+                         "name":"biomes",
+                         "type":"string",
+                         "value":"jungle"
+                        }, 
+                        {
+                         "name":"minHeight",
+                         "type":"float",
+                         "value":0.5
+                        }],
                  "tile":324
                 }, 
                 {
                  "color":"#8e7848",
                  "name":"Grass_Dark",
                  "probability":1,
+                 "properties":[
+                        {
+                         "name":"biomes",
+                         "type":"string",
+                         "value":"taiga"
+                        }, 
+                        {
+                         "name":"minHeight",
+                         "type":"float",
+                         "value":0.5
+                        }],
                  "tile":327
                 }, 
                 {
@@ -127,6 +159,11 @@
                  "name":"Sand",
                  "probability":1,
                  "properties":[
+                        {
+                         "name":"biomes",
+                         "type":"string",
+                         "value":"desert, ocean, grassland, forest, jungle"
+                        }, 
                         {
                          "name":"minHeight",
                          "type":"float",

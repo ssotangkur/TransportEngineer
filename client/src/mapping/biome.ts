@@ -6,9 +6,67 @@
  * https://www.nature.com/scitable/knowledge/library/terrestrial-biomes-13236757/
  */
 
-import { createHeightMap, createPrecipitationMap, createTemperatureMap } from './noiseGeneratedMap'
+import { createNoiseMap, NoiseMapConfig } from './noiseGeneratedMap'
 
-export type Biome = 'ocean' | 'desert' | 'grassland' | 'forest' | 'jungle' | 'taiga' | 'tundra'
+const HEIGHT_MAP_CONFIG: NoiseMapConfig = {
+  baseCoordScale: 0.02,
+  octaves: 4,
+  decayCoeff: 0.5,
+  seedOffset: 1,
+}
+
+const PRECIPITATION_MAP_CONFIG: NoiseMapConfig = {
+  baseCoordScale: 0.02,
+  octaves: 4,
+  decayCoeff: 0.5,
+  seedOffset: 2,
+}
+
+const TEMPERATURE_MAP_CONFIG: NoiseMapConfig = {
+  baseCoordScale: 0.02,
+  octaves: 4,
+  decayCoeff: 0.5,
+  seedOffset: 3,
+}
+
+export const createHeightMap = (
+  width: number,
+  height: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+): number[][] => {
+  return createNoiseMap(width, height, HEIGHT_MAP_CONFIG, seedFnOrValue)
+}
+
+export const createPrecipitationMap = (
+  width: number,
+  height: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+): number[][] => {
+  return createNoiseMap(width, height, PRECIPITATION_MAP_CONFIG, seedFnOrValue)
+}
+
+export const createTemperatureMap = (
+  width: number,
+  height: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+): number[][] => {
+  return createNoiseMap(width, height, TEMPERATURE_MAP_CONFIG, seedFnOrValue)
+}
+
+export const ALL_BIOMES = [
+  'ocean',
+  'desert',
+  'grassland',
+  'forest',
+  'jungle',
+  'taiga',
+  'tundra',
+] as const
+export type Biome = (typeof ALL_BIOMES)[number]
+
+export const isBiome = (biome: string): biome is Biome => {
+  return ALL_BIOMES.includes(biome as Biome)
+}
 
 export type TemperatureZone = 'arctic' | 'sub-arctic' | 'temperate' | 'tropical'
 

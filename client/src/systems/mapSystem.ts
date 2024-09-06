@@ -10,6 +10,9 @@ import { BiomeCell } from 'src/mapping/biome'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
 
+const MAP_WIDTH = 256 // Only use these constants here, all other places should have this passed in
+const MAP_HEIGHT = 256
+
 export type MapInfoWorld = {
   mapInfoWorld: {
     tilesheetUrl: string
@@ -73,7 +76,7 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   private regenerateMap() {
     if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
-      updateMapDataFromTileSetJson(100, 100, this.world)
+      updateMapDataFromTileSetJson(MAP_WIDTH, MAP_HEIGHT, this.world)
       //const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
       // const data = generateMapDataUsingNoise(100, 100)
       // this.world.mapSystem.map.putTilesAt(data, 0, 0)
@@ -86,13 +89,13 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       // this.world.mapSystem.map = tiledData.phaserTileMap
 
       this.world.mapSystem.map = initializePhaserTileMap(
-        100,
-        100,
+        MAP_WIDTH,
+        MAP_HEIGHT,
         this.world.mapSystem.tileSetInfo,
         this.scene,
       )
 
-      updateMapDataFromTileSetJson(100, 100, this.world)
+      updateMapDataFromTileSetJson(MAP_WIDTH, MAP_HEIGHT, this.world)
       // this.world.mapSystem.map.putTileAt(4, 0, 0, false, 'sand')
     }
   }
