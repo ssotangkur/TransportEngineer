@@ -134,28 +134,6 @@ const createWangTileMapper = (tilesetInfo: TileSetInfo) => {
         }
         results.push({ rank, tileId, color: rankColor })
       })
-      // const colorsForLayer = mask.map((isMasked) => {
-      //   return isMasked ? rankColors : undefined
-      // }) as OptionalWangColor4
-      // const key = keyForColors(colorsForLayer)
-      // const tileId = tilesetInfo.colorInfo.getTileForKey(key)
-      // if (!tileId) {
-      //   throw new Error(`Could not find tile for colors ${key}`)
-      // }
-
-      // // find corner that is too low for next rank and set it's mask to false
-      // let maskChanged = false
-      // for (let i = 0; i < 4; i++) {
-      //   if (ranks[i] === rank) {
-      //     mask[i] = false
-      //     maskChanged = true
-      //   }
-      // }
-
-      // // only push if mask changed so we don't push colors that were skipped
-      // if (maskChanged) {
-      //   results.push({ rank, tileId, color: colorsForRank[rank] })
-      // }
     }
     return { layers: results }
   }
