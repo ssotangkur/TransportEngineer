@@ -1,3 +1,4 @@
+import { groupBy } from 'src/utils/groupBy'
 import { Biome, BiomeCell, createBiomeMap } from './biome'
 import { MultiLayerTile, TileLayer } from './multiLayerTile'
 import { TileSetInfo } from './tiledJsonParser'
@@ -85,12 +86,8 @@ const createWangTileMapper = (tilesetInfo: TileSetInfo) => {
   ): MultiLayerTile => {
     const colors: WangColor4 = [tr, br, bl, tl]
     const ranks = colors.map((c) => c.rank)
-    const colorForRank: Record<number, WangColor> = {
-      [colors[0].rank]: tr,
-      [colors[1].rank]: br,
-      [colors[2].rank]: bl,
-      [colors[3].rank]: tl,
-    }
+    const colorsForRank: Map<number, WangColor[]> = groupBy(colors, (c) => c.rank)
+
     const min = Math.min(...ranks)
     const max = Math.max(...ranks)
 
@@ -100,39 +97,65 @@ const createWangTileMapper = (tilesetInfo: TileSetInfo) => {
     const optimalKey = keyForColors(colors)
     const tileId = tilesetInfo.colorInfo.getTileForKey(optimalKey)
     if (tileId) {
-      results.push({ rank: max, tileId, color: colorForRank[max] })
+      results.push({ rank: max, tileId, color: colorsForRank.get(max)![0] })
       return { layers: results }
     }
 
-    // start at min layer with all 4 colors same
+    // start at min rank, for each rank
     let mask: [boolean, boolean, boolean, boolean] = [true, true, true, true]
     for (let rank = min; rank <= max; rank++) {
-      const rankColor = colorForRank[rank]
-      if (!rankColor) {
+      const rankColors = colorsForRank.get(rank) ?? []
+      if (rankColors.length === 0) {
         continue // skip if no color
       }
-      const colorsForLayer = mask.map((isMasked) => {
-        return isMasked ? rankColor : undefined
-      }) as OptionalWangColor4
-      const key = keyForColors(colorsForLayer)
-      const tileId = tilesetInfo.colorInfo.getTileForKey(key)
-      if (!tileId) {
-        throw new Error(`Could not find tile for colors ${key}`)
-      }
+      rankColors.forEach((rankColor, indexInRank) => {
+        // Find the tile just for this color
+        const colorSeq = colors.map((c, index) => {
+          if (c === rankColor) {
+            mask[index] = false // Mark this color as used
+            return c
+          }
+          return undefined
+        }) as OptionalWangColor4
 
-      // find corner that is too low for next rank and set it's mask to false
-      let maskChanged = false
-      for (let i = 0; i < 4; i++) {
-        if (ranks[i] === rank) {
-          mask[i] = false
-          maskChanged = true
+        // On the bottom layer (to cover any gaps) we must populate all 4 corners
+        // Last color in rank fills out whatever corners are missing
+        if (rank === min && indexInRank === rankColors.length - 1) {
+          mask.forEach((isMasked, index) => {
+            if (isMasked) {
+              colorSeq[index] = rankColor
+            }
+          })
         }
-      }
+        const key = keyForColors(colorSeq)
+        const tileId = tilesetInfo.colorInfo.getTileForKey(key)
+        if (!tileId) {
+          throw new Error(`Could not find tile for colors ${key}`)
+        }
+        results.push({ rank, tileId, color: rankColor })
+      })
+      // const colorsForLayer = mask.map((isMasked) => {
+      //   return isMasked ? rankColors : undefined
+      // }) as OptionalWangColor4
+      // const key = keyForColors(colorsForLayer)
+      // const tileId = tilesetInfo.colorInfo.getTileForKey(key)
+      // if (!tileId) {
+      //   throw new Error(`Could not find tile for colors ${key}`)
+      // }
 
-      // only push if mask changed so we don't push colors that were skipped
-      if (maskChanged) {
-        results.push({ rank, tileId, color: colorForRank[rank] })
-      }
+      // // find corner that is too low for next rank and set it's mask to false
+      // let maskChanged = false
+      // for (let i = 0; i < 4; i++) {
+      //   if (ranks[i] === rank) {
+      //     mask[i] = false
+      //     maskChanged = true
+      //   }
+      // }
+
+      // // only push if mask changed so we don't push colors that were skipped
+      // if (maskChanged) {
+      //   results.push({ rank, tileId, color: colorsForRank[rank] })
+      // }
     }
     return { layers: results }
   }
