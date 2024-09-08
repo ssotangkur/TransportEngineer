@@ -1,5 +1,6 @@
 import type { IWorld } from 'bitecs'
 import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
+import { EventName, Events } from 'src/events/events'
 
 /**
  * Subclasses should define their own type for the world they want to support.
@@ -68,6 +69,14 @@ export abstract class BaseSystem<
   }
   error(...args: any[]) {
     this._log(console.error, ...args)
+  }
+
+  /**
+   * Helper method to register a subscription to an event and automatically unsubscribe when the scene is destroyed
+   */
+  subUnsub(event: EventName, cb: () => void) {
+    Events.on(event, cb)
+    this.scene.events.on('destroy', () => Events.off(event, cb))
   }
 }
 

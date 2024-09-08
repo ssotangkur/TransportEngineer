@@ -2,7 +2,7 @@ import { Changed, IWorld, defineQuery } from 'bitecs'
 import { BaseSystem } from './baseSystem'
 import { MapWorld } from './mapSystem'
 
-import { DebugMapComponent, DebugMapMode } from 'src/components/debugMapComponent'
+import { DebugMapComponent, DebugMapMode, DebugMapModes } from 'src/components/debugMapComponent'
 import { Biome, BiomeCell } from 'src/mapping/biome'
 import { TileSetInfo } from 'src/mapping/tiledJsonParser'
 
@@ -13,10 +13,41 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
   WorldIn,
   IWorld
 > {
-  private gameObjs: Phaser.GameObjects.GameObject[] = []
+  private renderTextures: Phaser.GameObjects.RenderTexture[] = []
+  private created: boolean = false
 
   createWorld(_worldIn: IWorld): IWorld {
     return {}
+  }
+
+  private forEachRenderTexture(
+    mapFunc: (key: DebugMapModes, value: Phaser.GameObjects.RenderTexture, index: number) => void,
+  ) {
+    this.renderTextures.forEach((rt, index) => mapFunc(index as DebugMapModes, rt, index))
+  }
+
+  preload(): void {
+    this.subUnsub('mapUpdated', () => {
+      this.onMapUpdated()
+    })
+  }
+
+  create(): void {
+    if (this.created) {
+      return
+    }
+    Object.values(DebugMapMode).forEach((mode) => {
+      if (mode === DebugMapMode.Off) {
+        return
+      }
+      this.renderTextures[mode] = this.scene.add
+        .renderTexture(0, 0, 257, 257)
+        .setScale(32, 32) // Y coordinates seem flipped so we flip the scale to compensate
+        .setPosition(128 * 32 - 16, 128 * 32 - 16)
+        .setVisible(false)
+        .setDepth(10000)
+    })
+    this.created = true
   }
 
   update() {
@@ -27,83 +58,95 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
       return
     }
 
-    let mode: number = DebugMapMode.Off
+    let mode: DebugMapModes = DebugMapMode.Off
     this.forEidIn(mapDebugChangedQuery, (eid) => {
-      mode = DebugMapComponent.mode[eid]
+      mode = DebugMapComponent.mode[eid] as DebugMapModes
 
-      this.clearGameObjects()
-      if (mode !== DebugMapMode.Off) {
-        this.initializeRects(biomeMap, map, tileSetInfo, mode)
+      this.forEachRenderTexture((_, rt) => {
+        rt.setVisible(false)
+      })
+
+      if (mode === DebugMapMode.Off) {
+        return
+      }
+
+      let text = ''
+      switch (mode) {
+        case DebugMapMode.HeightMap:
+          text = 'Height Map'
+          break
+        case DebugMapMode.PrecipitationMap:
+          text = 'Precipitation Map'
+          break
+        case DebugMapMode.TemperatureMap:
+          text = 'Temperature Map'
+          break
+        case DebugMapMode.Biome:
+          text = 'Biome Map'
+          break
+        default:
+          throw new Error(`Invalid mode ${mode}`)
+      }
+
+      this.renderTextures[mode].setVisible(true)
+      // this.text.push(this.scene.add.text(10, 10, text, { color: 'white' }).setDepth(10000))
+    })
+  }
+
+  private onMapUpdated() {
+    console.log('Map updated')
+
+    this.create() // MapSystem may call us before we get a chance to create()
+
+    const biomeMap = this.world.mapSystem.biomeMap
+    if (!biomeMap) {
+      this.debug('No biomeMap, exiting')
+      return
+    }
+    const width = biomeMap[0].length
+    const height = biomeMap.length
+
+    const scaleX = this.world.mapSystem.tileSetInfo!.tileWidth
+    const scaleY = this.world.mapSystem.tileSetInfo!.tileHeight
+
+    this.forEachRenderTexture((mode, rt) => {
+      // rt.setScale(scaleX, scaleY)
+      // rt.setSize(width, height)
+      rt.clear()
+
+      const getColor = (cell: BiomeCell) => {
+        switch (mode) {
+          case DebugMapMode.HeightMap:
+            return Phaser.Display.Color.GetColor(cell.height * 255, 0, 0)
+          case DebugMapMode.PrecipitationMap:
+            return Phaser.Display.Color.GetColor(0, 0, cell.precipitation * 255)
+          case DebugMapMode.TemperatureMap:
+            return Phaser.Display.Color.GetColor(0, cell.temperature * 255, 0)
+          case DebugMapMode.Biome:
+            return getColorForBiome(cell.biome)
+          default:
+            throw new Error(`Invalid mode ${mode}`)
+        }
+      }
+
+      for (let r = 0; r < biomeMap.length; r++) {
+        for (let c = 0; c < biomeMap[r].length; c++) {
+          const cell = biomeMap[r][c]
+          // const worldPos = map.tileToWorldXY(c, r)!
+          const color = getColor(cell)
+          rt.fill(color, undefined, c, r, 1, 1)
+        }
       }
     })
   }
 
-  private initializeRects(
-    biomeMap: BiomeCell[][],
-    map: Phaser.Tilemaps.Tilemap,
-    tileSetInfo: TileSetInfo,
-    mode: number,
-  ) {
-    const getColor = (cell: BiomeCell) => {
-      switch (mode) {
-        case DebugMapMode.HeightMap:
-          return Phaser.Display.Color.GetColor(cell.height * 255, 0, 0)
-        case DebugMapMode.PrecipitationMap:
-          return Phaser.Display.Color.GetColor(0, 0, cell.precipitation * 255)
-        case DebugMapMode.TemperatureMap:
-          return Phaser.Display.Color.GetColor(0, cell.temperature * 255, 0)
-        case DebugMapMode.Biome:
-          return getColorForBiome(cell.biome)
-        default:
-          throw new Error(`Invalid mode ${mode}`)
-      }
-    }
-
-    const width = tileSetInfo.tileWidth
-    const halfWidth = width / 2
-    const height = tileSetInfo.tileHeight
-    const halfHeight = height / 2
-
-    for (let r = 0; r < biomeMap.length; r++) {
-      for (let c = 0; c < biomeMap[r].length; c++) {
-        const cell = biomeMap[r][c]
-        const worldPos = map.tileToWorldXY(c, r)!
-        const color = getColor(cell)
-        const rect = this.scene.add
-          .rectangle(worldPos.x - halfWidth, worldPos.y - halfHeight, width, height, color)
-          .setOrigin(0, 0)
-          .setDepth(10000)
-        this.gameObjs.push(rect)
-      }
-    }
-
-    let text = ''
-    switch (mode) {
-      case DebugMapMode.HeightMap:
-        text = 'Height Map'
-        break
-      case DebugMapMode.PrecipitationMap:
-        text = 'Precipitation Map'
-        break
-      case DebugMapMode.TemperatureMap:
-        text = 'Temperature Map'
-        break
-      case DebugMapMode.Biome:
-        text = 'Biome Map'
-        break
-      default:
-        throw new Error(`Invalid mode ${mode}`)
-    }
-    this.gameObjs.push(this.scene.add.text(10, 10, text, { color: 'white' }).setDepth(10000))
-  }
-
-  private clearGameObjects() {
-    for (let i = 0; i < this.gameObjs.length; i++) {
-      const obj = this.gameObjs[i]
-      obj.destroy()
-    }
-    this.gameObjs = []
-  }
+  // private clearGameObjects() {
+  //   for (let i = 0; i < this.gameObjs.length; i++) {
+  //     const obj = this.gameObjs[i]
+  //     obj.destroy()
+  //   }
+  //   this.gameObjs = []
+  // }
 }
 
 const getColorForBiome = (biome: Biome) => {

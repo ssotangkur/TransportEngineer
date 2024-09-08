@@ -99,6 +99,7 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld & SingletonWorld> e
     DebugMapComponent.mode[singletonEid] = DebugMapMode.Off
     const mKey = this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.M)
     mKey.on('up', () => {
+      console.log('MapDebugComponent.mode', DebugMapComponent.mode[singletonEid])
       DebugMapComponent.mode[singletonEid] = next(DebugMapComponent.mode[singletonEid])
     })
 

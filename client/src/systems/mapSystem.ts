@@ -60,26 +60,20 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
         failureCallback()
       }
     })
+
+    this.subUnsub('regenerateMap', () => {
+      this.regenerateMap()
+    })
   }
 
   public create() {
     this.createMap()
-    const regenMapClosure = () => {
-      this.regenerateMap()
-    }
-    Events.on('regenerateMap', regenMapClosure)
-    const unsubscribe = () => {
-      Events.off('regenerateMap', regenMapClosure)
-    }
-    this.scene.events.on('destroy', unsubscribe)
   }
 
   private regenerateMap() {
     if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
       updateMapDataFromTileSetJson(MAP_WIDTH, MAP_HEIGHT, this.world)
-      //const data = generateMapDataFromTileSetInfo(100, 100, this.world.mapSystem.tileSetInfo)
-      // const data = generateMapDataUsingNoise(100, 100)
-      // this.world.mapSystem.map.putTilesAt(data, 0, 0)
+      Events.emit('mapUpdated')
     }
   }
 
@@ -96,7 +90,7 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
       )
 
       updateMapDataFromTileSetJson(MAP_WIDTH, MAP_HEIGHT, this.world)
-      // this.world.mapSystem.map.putTileAt(4, 0, 0, false, 'sand')
+      Events.emit('mapUpdated')
     }
   }
 

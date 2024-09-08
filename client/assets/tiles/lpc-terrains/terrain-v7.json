@@ -21,7 +21,7 @@
                  "tile":97
                 }, 
                 {
-                 "color":"#00ff00",
+                 "color":"#926c42",
                  "name":"Dirt_Brown",
                  "probability":1,
                  "properties":[
@@ -50,7 +50,7 @@
                  "tile":106
                 }, 
                 {
-                 "color":"#00e9ff",
+                 "color":"#867e7f",
                  "name":"Rock_Gray",
                  "probability":1,
                  "properties":[
@@ -92,7 +92,7 @@
                  "tile":124
                 }, 
                 {
-                 "color":"#b4a8ff",
+                 "color":"#2f8136",
                  "name":"Grass",
                  "probability":1,
                  "properties":[
@@ -109,7 +109,7 @@
                  "tile":321
                 }, 
                 {
-                 "color":"#96ffa7",
+                 "color":"#397e00",
                  "name":"Grass_Light",
                  "probability":1,
                  "properties":[
@@ -126,7 +126,7 @@
                  "tile":324
                 }, 
                 {
-                 "color":"#8e7848",
+                 "color":"#004337",
                  "name":"Grass_Dark",
                  "probability":1,
                  "properties":[
@@ -155,7 +155,7 @@
                  "tile":333
                 }, 
                 {
-                 "color":"#00000000",
+                 "color":"#f8d6a3",
                  "name":"Sand",
                  "probability":1,
                  "properties":[
@@ -172,7 +172,7 @@
                  "tile":336
                 }, 
                 {
-                 "color":"#8b2442",
+                 "color":"#f4f6fa",
                  "name":"Snow_1",
                  "probability":1,
                  "properties":[
@@ -214,7 +214,7 @@
                  "tile":545
                 }, 
                 {
-                 "color":"#c855f9",
+                 "color":"#156c99",
                  "name":"Water",
                  "probability":1,
                  "properties":[
@@ -226,7 +226,7 @@
                  "tile":548
                 }, 
                 {
-                 "color":"#ddf407",
+                 "color":"#062240",
                  "name":"Water_Deep",
                  "probability":1,
                  "properties":[

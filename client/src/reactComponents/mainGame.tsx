@@ -5,7 +5,6 @@ import { PhaserAdapter } from './phaserAdapter'
 const mainGameConfig: Omit<Phaser.Types.Core.GameConfig, 'parent'> = {
   title: 'TransportEngineer',
   url: 'https://github.com/ssotangkur/TransportEngineer',
-  version: '2.0',
   type: Phaser.AUTO,
   scene: [MenuScene],
   input: {

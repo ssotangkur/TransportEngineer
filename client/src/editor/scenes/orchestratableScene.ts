@@ -1,4 +1,5 @@
 import { processNextSceneCommands } from './sceneOrchestrator'
+import Phaser from 'phaser'
 
 export class OrchestratableScene extends Phaser.Scene {
   constructor(public name: string) {

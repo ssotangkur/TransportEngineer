@@ -16,14 +16,14 @@ const HEIGHT_MAP_CONFIG: NoiseMapConfig = {
 }
 
 const PRECIPITATION_MAP_CONFIG: NoiseMapConfig = {
-  baseCoordScale: 0.02,
+  baseCoordScale: 0.005,
   octaves: 4,
   decayCoeff: 0.5,
   seedOffset: 2,
 }
 
 const TEMPERATURE_MAP_CONFIG: NoiseMapConfig = {
-  baseCoordScale: 0.02,
+  baseCoordScale: 0.005,
   octaves: 4,
   decayCoeff: 0.5,
   seedOffset: 3,

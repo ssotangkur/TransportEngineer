@@ -11,11 +11,15 @@ import { ALL_BIOMES, Biome, isBiome } from './biome'
 const TILES_PATH = ASSETS_PATH + '/tiles/lpc-terrains'
 const TILE_SET_CACHE_ID = 'tileSetInfo'
 
+/**
+ * RankInfo's should be specific to a single biome.
+ * All the colors in the rankInfo should be compatible with the same biome.
+ */
 export type RankInfo = {
   rank: number
   minHeight: number
   colors: WangColor[]
-  getColorForBiome: (biome: Biome) => WangColor
+  getColor: () => WangColor
 }
 
 export type ColorInfo = {
@@ -93,7 +97,7 @@ export const loadTiledTileSetJson = async (
       ranksByBiome,
       maxRank,
       getTileForKey: createGetTileForKey(tileSet),
-      getRankForHeightAndBiome: createGetRankForHeight(ranksByBiome),
+      getRankForHeightAndBiome: createGetRankForHeightAndBiome(ranksByBiome),
     },
 
     tiledTileSetJson: tileSet,
@@ -114,7 +118,7 @@ export const loadTiledTileSetJson = async (
   return tileSetInfo
 }
 
-const createGetRankForHeight = (ranksByBiome: Map<Biome, RankInfo[]>) => {
+const createGetRankForHeightAndBiome = (ranksByBiome: Map<Biome, RankInfo[]>) => {
   return (height: number, biome: Biome): RankInfo => {
     const rankInfos = ranksByBiome.get(biome)
     if (!rankInfos) {
@@ -164,7 +168,7 @@ const parseRankInfos = (wangsets: TiledWangSetJson[]) => {
         minHeight: tuple[0],
         colors: completedColors,
         rank: index,
-        getColorForBiome: createGetColorForBiome(completedColors), // @TODO implement this
+        getColor: createGetColorForBiome(completedColors), // @TODO implement this
       } as RankInfo
     })
     .reverse() // reverse to get it in descending order
@@ -190,14 +194,10 @@ const parseRankInfos = (wangsets: TiledWangSetJson[]) => {
 }
 
 const createGetColorForBiome = (colorsInRank: WangColor[]) => {
-  const getColorForBiome = (biome: Biome): WangColor => {
-    const color = colorsInRank.find((c) => c.biomes.includes(biome))
-    if (!color) {
-      throw new Error(`Could not find color for biome ${biome}`)
-    }
-    return color
+  const getColor = (): WangColor => {
+    return colorsInRank[0]
   }
-  return getColorForBiome
+  return getColor
 }
 
 const loadImages = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {

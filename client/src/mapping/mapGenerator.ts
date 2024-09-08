@@ -65,7 +65,7 @@ const createColorMapper = (tilesetInfo: TileSetInfo) => {
       biomeCell.height,
       biomeCell.biome,
     )
-    return rankInfo.getColorForBiome(biomeCell.biome)
+    return rankInfo.getColor()
   }
 }
 

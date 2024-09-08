@@ -8,6 +8,8 @@ export const DebugMapMode = {
   Biome: 4,
 } as const
 
+export type DebugMapModes = (typeof DebugMapMode)[keyof typeof DebugMapMode]
+
 export const DebugMapComponent = defineComponent({
   mode: Types.ui8,
 })
