@@ -41,9 +41,7 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
         return
       }
       this.renderTextures[mode] = this.scene.add
-        .renderTexture(0, 0, 257, 257)
-        .setScale(32, 32) // Y coordinates seem flipped so we flip the scale to compensate
-        .setPosition(128 * 32 - 16, 128 * 32 - 16)
+        .renderTexture(0, 0)
         .setVisible(false)
         .setDepth(10000)
     })
@@ -110,8 +108,9 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
     const scaleY = this.world.mapSystem.tileSetInfo!.tileHeight
 
     this.forEachRenderTexture((mode, rt) => {
-      // rt.setScale(scaleX, scaleY)
-      // rt.setSize(width, height)
+      rt.setScale(scaleX, scaleY)
+      rt.setSize(width, height)
+      rt.setPosition((width / 2) * scaleX - scaleX / 2, (height / 2) * scaleY - scaleY / 2)
       rt.clear()
 
       const getColor = (cell: BiomeCell) => {
