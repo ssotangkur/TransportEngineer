@@ -24,6 +24,7 @@ export type TiledTileJson = {
   image?: string
   imageheight?: number
   imagewidth?: number
+  probability?: number
   properties?: TiledProperty[]
 }
 

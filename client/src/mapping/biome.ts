@@ -12,6 +12,7 @@ const HEIGHT_MAP_CONFIG: NoiseMapConfig = {
   baseCoordScale: 0.02,
   octaves: 4,
   decayCoeff: 0.5,
+  rangeFactor: 0.7,
   seedOffset: 1,
 }
 
@@ -19,6 +20,7 @@ const PRECIPITATION_MAP_CONFIG: NoiseMapConfig = {
   baseCoordScale: 0.005,
   octaves: 4,
   decayCoeff: 0.5,
+  rangeFactor: 0.7,
   seedOffset: 2,
 }
 
@@ -26,31 +28,22 @@ const TEMPERATURE_MAP_CONFIG: NoiseMapConfig = {
   baseCoordScale: 0.005,
   octaves: 4,
   decayCoeff: 0.5,
+  rangeFactor: 0.7,
   seedOffset: 3,
 }
 
-export const createHeightMap = (
-  width: number,
-  height: number,
-  seedFnOrValue: number | (() => number) = () => Date.now(),
-): number[][] => {
-  return createNoiseMap(width, height, HEIGHT_MAP_CONFIG, seedFnOrValue)
+export const createHeightMap = (seedFnOrValue: number | (() => number) = () => Date.now()) => {
+  return createNoiseMap(HEIGHT_MAP_CONFIG, seedFnOrValue)
 }
 
 export const createPrecipitationMap = (
-  width: number,
-  height: number,
   seedFnOrValue: number | (() => number) = () => Date.now(),
-): number[][] => {
-  return createNoiseMap(width, height, PRECIPITATION_MAP_CONFIG, seedFnOrValue)
+) => {
+  return createNoiseMap(PRECIPITATION_MAP_CONFIG, seedFnOrValue)
 }
 
-export const createTemperatureMap = (
-  width: number,
-  height: number,
-  seedFnOrValue: number | (() => number) = () => Date.now(),
-): number[][] => {
-  return createNoiseMap(width, height, TEMPERATURE_MAP_CONFIG, seedFnOrValue)
+export const createTemperatureMap = (seedFnOrValue: number | (() => number) = () => Date.now()) => {
+  return createNoiseMap(TEMPERATURE_MAP_CONFIG, seedFnOrValue)
 }
 
 export const ALL_BIOMES = [
@@ -96,17 +89,17 @@ export type BiomeCell = {
 }
 
 export const createBiomeMap = (width: number, height: number) => {
-  const heightMap = createHeightMap(width, height)
-  const temperatureMap = createTemperatureMap(width, height)
-  const precipitationMap = createPrecipitationMap(width, height)
+  const heightMap = createHeightMap()
+  const temperatureMap = createTemperatureMap()
+  const precipitationMap = createPrecipitationMap()
 
   const result: BiomeCell[][] = []
   for (let r = 0; r < height; r++) {
     const row: BiomeCell[] = []
     for (let c = 0; c < width; c++) {
-      const height = heightMap[r][c]
-      const temperature = temperatureMap[r][c]
-      const precipitation = precipitationMap[r][c]
+      const height = heightMap(c, r)
+      const temperature = temperatureMap(c, r)
+      const precipitation = precipitationMap(c, r)
       const biomeCell = getBiomeCell(height, temperature, precipitation)
       row.push(biomeCell)
     }

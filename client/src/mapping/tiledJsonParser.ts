@@ -23,10 +23,10 @@ export type RankInfo = {
 }
 
 export type ColorInfo = {
-  ranks: RankInfo[] // In descending minHeight order
+  allColors: WangColor[] // In descending minHeight order
   ranksByBiome: Map<Biome, RankInfo[]>
   maxRank: number
-  // Use keyForWangId to generate a key
+  // Use keyForWangId to generate a key, randomly chooses tile base on probability
   getTileForKey: (key: string) => number | undefined
   getRankForHeightAndBiome: (height: number, biome: Biome) => RankInfo
 }
@@ -49,6 +49,13 @@ export type TileSetInfo = {
   colorInfo: ColorInfo
 
   tiledTileSetJson: TiledTileSetJson
+
+  getTileInfo: (tileId: number) => TileInfo
+}
+
+export type TileInfo = {
+  tileId: number
+  probability: number
 }
 
 export type TileMap = {
@@ -78,9 +85,11 @@ export const loadTiledTileSetJson = async (
   const resp = await fetch(TILES_PATH + '/' + tiledTileSetJsonFile)
   const tileSet: TiledTileSetJson = await resp.json()
 
-  const { rankInfos, ranksByBiome } = parseRankInfos(tileSet.wangsets ?? [])
+  const { ranksByBiome, allColors } = parseRankInfos(tileSet.wangsets ?? [])
 
-  const maxRank = Math.max(...rankInfos.map((c) => c.rank))
+  const maxRank = Math.max(...allColors.map((c) => c.rank))
+
+  const getTileInfo = createGetTileInfo(tileSet)
 
   const tileSetInfo: TileSetInfo = {
     firstGid: tileSet.firstgid,
@@ -93,12 +102,14 @@ export const loadTiledTileSetJson = async (
     equivalencyGroups: new EquilavencyGroups(),
 
     colorInfo: {
-      ranks: rankInfos,
+      allColors,
       ranksByBiome,
       maxRank,
-      getTileForKey: createGetTileForKey(tileSet),
+      getTileForKey: createGetTileForKey(tileSet, getTileInfo),
       getRankForHeightAndBiome: createGetRankForHeightAndBiome(ranksByBiome),
     },
+
+    getTileInfo,
 
     tiledTileSetJson: tileSet,
   }
@@ -116,6 +127,27 @@ export const loadTiledTileSetJson = async (
   loadImages(tileSetInfo, scene)
 
   return tileSetInfo
+}
+
+const createGetTileInfo = (tilesetJson: TiledTileSetJson) => {
+  const tileInfos = new Map<number, TileInfo>()
+  tilesetJson.tiles?.forEach((tile) => {
+    tileInfos.set(tile.id, {
+      tileId: tile.id,
+      probability: tile.probability ?? 1,
+    })
+  })
+
+  const getTileInfo = (tileId: number) => {
+    let tileInfo = tileInfos.get(tileId)
+    if (!tileInfo) {
+      tileInfo = { tileId, probability: 1 }
+      tileInfos.set(tileId, tileInfo)
+    }
+    return tileInfo
+  }
+
+  return getTileInfo
 }
 
 const createGetRankForHeightAndBiome = (ranksByBiome: Map<Biome, RankInfo[]>) => {
@@ -154,9 +186,9 @@ const parseRankInfos = (wangsets: TiledWangSetJson[]) => {
 
   // Group colors that share the same minHeight
   const wangColorsByMinHeight = groupBy(partialWangColors, (wc) => wc.minHeight)
-  const rankInfos = Array.from(wangColorsByMinHeight.entries())
+  const wangColorsWithRanks = Array.from(wangColorsByMinHeight.entries())
     .sort((a, b) => a[0] - b[0]) // sort ascending...
-    .map((tuple, index) => {
+    .flatMap((tuple, index) => {
       // so we can add "rank" completing the wangColor
       const completedColors = tuple[1].map((wc) => {
         return {
@@ -164,33 +196,46 @@ const parseRankInfos = (wangsets: TiledWangSetJson[]) => {
           rank: index,
         } as WangColor
       })
-      return {
-        minHeight: tuple[0],
-        colors: completedColors,
-        rank: index,
-        getColor: createGetColorForBiome(completedColors), // @TODO implement this
-      } as RankInfo
+      return completedColors
     })
     .reverse() // reverse to get it in descending order
 
-  if (!rankInfos.length) {
+  if (!wangColorsWithRanks.length) {
     throw new Error('No wangsets in tileset json')
   }
 
-  const ranksByBiome: Map<Biome, RankInfo[]> = new Map()
-  rankInfos.forEach((rankInfo) => {
-    rankInfo.colors.forEach((color) => {
-      color.biomes.forEach((biome) => {
-        const ranks = ranksByBiome.get(biome) ?? []
-        if (!ranks.length) {
-          ranksByBiome.set(biome, ranks)
-        }
-        ranks.push(rankInfo)
-      })
+  // Group colors by Biome, some colors may be in multiple biomes
+  const colorsByBiome: Map<Biome, WangColor[]> = new Map()
+  wangColorsWithRanks.forEach((color) => {
+    color.biomes.forEach((biome) => {
+      const colors = colorsByBiome.get(biome) ?? []
+      if (!colors.length) {
+        colorsByBiome.set(biome, colors)
+      }
+      colors.push(color)
     })
   })
 
-  return { ranksByBiome, rankInfos }
+  // Create a rankInfo[] for each biome
+  const ranksByBiome: Map<Biome, RankInfo[]> = new Map()
+  colorsByBiome.forEach((colors, biome) => {
+    const colorsByRank = groupBy(colors, (c) => c.rank)
+    const rankInfos = Array.from(colorsByRank.entries())
+      .map(([rank, colorsInRank]) => {
+        const rankInfo: RankInfo = {
+          rank,
+          colors: colorsInRank,
+          getColor: createGetColorForBiome(colorsInRank),
+          minHeight: colorsInRank[0].minHeight,
+        }
+        return rankInfo
+      })
+      .sort((a, b) => b.rank - a.rank) // sort in descending order
+
+    ranksByBiome.set(biome, rankInfos)
+  })
+
+  return { ranksByBiome, allColors: wangColorsWithRanks }
 }
 
 const createGetColorForBiome = (colorsInRank: WangColor[]) => {
@@ -214,9 +259,12 @@ const loadImages = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
   }
 }
 
-const createGetTileForKey = (tilesetJson: TiledTileSetJson) => {
+const createGetTileForKey = (
+  tilesetJson: TiledTileSetJson,
+  getTileInfo: (tileId: number) => TileInfo,
+) => {
   // Map composite key to tileId
-  const wangTilesMap: Map<string, number[]> = new Map()
+  const wangTilesMap: Map<string, TileInfo[]> = new Map()
   tilesetJson.wangsets?.flatMap((wangSet) => {
     wangSet.wangtiles?.forEach((wangTile) => {
       const key = keyForWangId(wangTile.wangid)
@@ -225,7 +273,7 @@ const createGetTileForKey = (tilesetJson: TiledTileSetJson) => {
         tiles = []
         wangTilesMap.set(key, tiles)
       }
-      tiles.push(wangTile.tileid)
+      tiles.push(getTileInfo(wangTile.tileid))
     })
   })
 
@@ -234,7 +282,7 @@ const createGetTileForKey = (tilesetJson: TiledTileSetJson) => {
     if (!tiles || tiles.length === 0) {
       return undefined
     }
-    return _.sample(tiles)!
+    return sampleTile(tiles)
   }
 
   return getTileForKey
@@ -344,24 +392,39 @@ export const initializePhaserTileMap = (
   }
 
   // create layer for each color
-  tileSetInfo.colorInfo.ranks
-    .flatMap((rank) => rank.colors)
-    .forEach((color) => {
-      map
-        .createBlankLayer(
-          color.name,
-          map.tilesets,
-          0,
-          0,
-          width,
-          height,
-          tileSetInfo.tileWidth,
-          tileSetInfo.tileHeight,
-        )
-        ?.setDepth(color.rank - tileSetInfo.colorInfo.maxRank) // Use negative depth for map so everything else can be positive
-    })
+  tileSetInfo.colorInfo.allColors.forEach((color) => {
+    map
+      .createBlankLayer(
+        color.name,
+        map.tilesets,
+        0,
+        0,
+        width,
+        height,
+        tileSetInfo.tileWidth,
+        tileSetInfo.tileHeight,
+      )
+      ?.setDepth(color.rank - tileSetInfo.colorInfo.maxRank) // Use negative depth for map so everything else can be positive
+  })
 
   return map
+}
+
+/**
+ * Returns a random tile from the list of tiles based on the probabilities of those tiles
+ * @param tiles
+ */
+const sampleTile = (tiles: TileInfo[]) => {
+  const totalProbability = tiles.reduce((acc, cur) => acc + cur.probability, 0)
+  const random = Math.random() * totalProbability
+  let runningTotal = 0
+  for (const tile of tiles) {
+    runningTotal += tile.probability
+    if (random <= runningTotal) {
+      return tile.tileId
+    }
+  }
+  throw Error('No tiles to sample from.')
 }
 
 export const convert1DTo2DArray = (data: number[], width: number, height: number): number[][] => {

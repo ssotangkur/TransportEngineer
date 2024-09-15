@@ -4,7 +4,6 @@ import { MapWorld } from './mapSystem'
 
 import { DebugMapComponent, DebugMapMode, DebugMapModes } from 'src/components/debugMapComponent'
 import { Biome, BiomeCell } from 'src/mapping/biome'
-import { TileSetInfo } from 'src/mapping/tiledJsonParser'
 
 const mapDebugChangedQuery = defineQuery([Changed(DebugMapComponent)])
 
