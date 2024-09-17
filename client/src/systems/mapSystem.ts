@@ -2,22 +2,21 @@ import {
   TileSetInfo,
   initializePhaserTileMap,
   loadTiledTileSetJson,
-  updateMapDataFromTileSetJson,
+  updateMapDataFromMultiLayerMap,
 } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
 import { Events } from 'src/events/events'
 import { BiomeCell } from 'src/mapping/biome'
+import { generateMapDataUsingNoise } from 'src/mapping/mapGenerator'
+import { IWorld } from 'bitecs'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
 
-const MAP_WIDTH = 256 // Only use these constants here, all other places should have this passed in
-const MAP_HEIGHT = 256
+const MAP_WIDTH = 4 // Only use these constants here, all other places should have this passed in
+const MAP_HEIGHT = 4
 
-export type MapInfoWorld = {
-  mapInfoWorld: {
-    tilesheetUrl: string
-    tilemapJsonPath: string
-  }
+export type MapInfo = {
+  seed: number
 }
 
 export type MapWorld = {
@@ -25,6 +24,7 @@ export type MapWorld = {
     map?: Phaser.Tilemaps.Tilemap
     tileSetInfo?: TileSetInfo
     biomeMap?: BiomeCell[][]
+    mapInfo: MapInfo
   }
 }
 
@@ -36,14 +36,14 @@ export type MapWorld = {
  *
  * tilesheetUrl should point to the extruded image, not the original
  */
-export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
-  MapInfoWorld,
-  WorldIn,
-  MapWorld
-> {
+export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldIn, MapWorld> {
   createWorld(_worldIn: WorldIn) {
     const mapWorld: MapWorld = {
-      mapSystem: {},
+      mapSystem: {
+        mapInfo: {
+          seed: Date.now(),
+        },
+      },
     }
     return mapWorld
   }
@@ -68,30 +68,49 @@ export class MapSystem<WorldIn extends MapInfoWorld> extends BaseSystem<
 
   public create() {
     this.createMap()
+
+    // TESTING
+    this.scene.cameras.main.on(Phaser.Cameras.Scene2D.Events.PAN_COMPLETE, () => {
+      console.log('pan complete')
+    })
   }
 
   private regenerateMap() {
-    if (this.world.mapSystem.tileSetInfo && this.world.mapSystem.map) {
-      updateMapDataFromTileSetJson(MAP_WIDTH, MAP_HEIGHT, this.world)
-      Events.emit('mapUpdated')
-    }
+    this.updateMap()
   }
 
   private createMap() {
     if (this.world.mapSystem.tileSetInfo) {
-      // const tiledData = createTiledMapLayer(this.world.mapSystem.tileSetInfo, this.scene)
-      // this.world.mapSystem.map = tiledData.phaserTileMap
-
       this.world.mapSystem.map = initializePhaserTileMap(
         MAP_WIDTH,
         MAP_HEIGHT,
         this.world.mapSystem.tileSetInfo,
         this.scene,
       )
-
-      updateMapDataFromTileSetJson(MAP_WIDTH, MAP_HEIGHT, this.world)
-      Events.emit('mapUpdated')
+      this.updateMap()
     }
+  }
+
+  private updateMap() {
+    const tileSetInfo = this.world.mapSystem.tileSetInfo
+    if (!tileSetInfo) {
+      return
+    }
+    const map = this.world.mapSystem.map
+    if (!map) {
+      return
+    }
+
+    const { multiLayerMap, biomeMap } = generateMapDataUsingNoise(
+      MAP_WIDTH,
+      MAP_HEIGHT,
+      tileSetInfo,
+    )
+    this.world.mapSystem.biomeMap = biomeMap
+
+    updateMapDataFromMultiLayerMap(MAP_WIDTH, MAP_HEIGHT, map, multiLayerMap)
+
+    Events.emit('mapUpdated')
   }
 
   public get heightInPixels() {

@@ -32,18 +32,28 @@ const TEMPERATURE_MAP_CONFIG: NoiseMapConfig = {
   seedOffset: 3,
 }
 
-export const createHeightMap = (seedFnOrValue: number | (() => number) = () => Date.now()) => {
-  return createNoiseMap(HEIGHT_MAP_CONFIG, seedFnOrValue)
+export const createHeightMap = (
+  offsetX: number,
+  offsetY: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+) => {
+  return createNoiseMap(HEIGHT_MAP_CONFIG, offsetX, offsetY, seedFnOrValue)
 }
 
 export const createPrecipitationMap = (
+  offsetX: number,
+  offsetY: number,
   seedFnOrValue: number | (() => number) = () => Date.now(),
 ) => {
-  return createNoiseMap(PRECIPITATION_MAP_CONFIG, seedFnOrValue)
+  return createNoiseMap(PRECIPITATION_MAP_CONFIG, offsetX, offsetY, seedFnOrValue)
 }
 
-export const createTemperatureMap = (seedFnOrValue: number | (() => number) = () => Date.now()) => {
-  return createNoiseMap(TEMPERATURE_MAP_CONFIG, seedFnOrValue)
+export const createTemperatureMap = (
+  offsetX: number,
+  offsetY: number,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+) => {
+  return createNoiseMap(TEMPERATURE_MAP_CONFIG, offsetX, offsetY, seedFnOrValue)
 }
 
 export const ALL_BIOMES = [
@@ -88,10 +98,16 @@ export type BiomeCell = {
   temperatureZone: TemperatureZone
 }
 
-export const createBiomeMap = (width: number, height: number) => {
-  const heightMap = createHeightMap()
-  const temperatureMap = createTemperatureMap()
-  const precipitationMap = createPrecipitationMap()
+export const createBiomeMap = (
+  width: number,
+  height: number,
+  offsetX = 0,
+  offsetY = 0,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
+) => {
+  const heightMap = createHeightMap(offsetX, offsetY, seedFnOrValue)
+  const temperatureMap = createTemperatureMap(offsetX, offsetY, seedFnOrValue)
+  const precipitationMap = createPrecipitationMap(offsetX, offsetY, seedFnOrValue)
 
   const result: BiomeCell[][] = []
   for (let r = 0; r < height; r++) {

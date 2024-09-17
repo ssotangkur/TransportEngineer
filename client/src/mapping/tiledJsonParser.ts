@@ -7,6 +7,7 @@ import { groupBy } from 'src/utils/groupBy'
 import { MapWorld } from 'src/systems/mapSystem'
 import { generateMapDataUsingNoise, WangColor } from './mapGenerator'
 import { ALL_BIOMES, Biome, isBiome } from './biome'
+import { MultiLayerTile } from './multiLayerTile'
 
 const TILES_PATH = ASSETS_PATH + '/tiles/lpc-terrains'
 const TILE_SET_CACHE_ID = 'tileSetInfo'
@@ -317,19 +318,12 @@ const getMinHeightProperty = (color: TiledWangColorJson): number | undefined => 
   return (minHeightProp?.value as number) ?? undefined
 }
 
-export const updateMapDataFromTileSetJson = (width: number, height: number, mapWorld: MapWorld) => {
-  const tileSetInfo = mapWorld.mapSystem.tileSetInfo
-  if (!tileSetInfo) {
-    return
-  }
-  const map = mapWorld.mapSystem.map
-  if (!map) {
-    return
-  }
-
-  const { multiLayerMap, biomeMap } = generateMapDataUsingNoise(width, height, tileSetInfo)
-  mapWorld.mapSystem.biomeMap = biomeMap
-
+export const updateMapDataFromMultiLayerMap = (
+  width: number,
+  height: number,
+  map: Phaser.Tilemaps.Tilemap,
+  multiLayerMap: MultiLayerTile[][],
+) => {
   clearMap(width, height, map)
 
   for (let r = 0; r < height; r++) {
@@ -357,6 +351,8 @@ export const initializePhaserTileMap = (
   height: number,
   tileSetInfo: TileSetInfo,
   scene: OrchestratableScene,
+  offsetWorldX: number = 0,
+  offsetWorldY: number = 0,
 ) => {
   var mapData = new Phaser.Tilemaps.MapData({
     width,
@@ -397,8 +393,8 @@ export const initializePhaserTileMap = (
       .createBlankLayer(
         color.name,
         map.tilesets,
-        0,
-        0,
+        offsetWorldX,
+        offsetWorldY,
         width,
         height,
         tileSetInfo.tileWidth,

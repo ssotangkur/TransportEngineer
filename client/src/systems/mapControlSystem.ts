@@ -104,22 +104,15 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld & SingletonWorld> e
     })
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
-    if (this.world.mapSystem.map) {
-      //let { width, height } = this.scene.sys.game.scale.gameSize
-      camera.useBounds = true
-      // camera.setBounds(
-      //   -width,
-      //   -height,
-      //   this.world.mapSystem.map.widthInPixels + 20 * width,
-      //   this.world.mapSystem.map.heightInPixels + 20 * height,
-      // )
-      camera.setBounds(
-        0,
-        0,
-        this.world.mapSystem.map.widthInPixels,
-        this.world.mapSystem.map.heightInPixels,
-      )
-    }
+    // if (this.world.mapSystem.map) {
+    //   camera.useBounds = true
+    //   camera.setBounds(
+    //     0,
+    //     0,
+    //     this.world.mapSystem.map.widthInPixels,
+    //     this.world.mapSystem.map.heightInPixels,
+    //   )
+    // }
   }
 
   update(_time: number, delta: number): void {

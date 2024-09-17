@@ -29,6 +29,8 @@ import { TextureSystem } from 'src/systems/textureSystem'
 import { SingletonSystem } from 'src/systems/singletonSystem'
 import { MouseSystem } from 'src/systems/mouseSystem'
 import { DebugMapSystem } from 'src/systems/debugMapSystem'
+import { ChunkVisibilitySystem } from 'src/systems/chunkVisibilitySystem'
+import { ChunkRenderingSystem } from 'src/systems/chunkRenderingSystem'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
@@ -56,6 +58,8 @@ export class EntityEditorScene extends OrchestratableScene {
       .build(MouseSystem)
       .build(TextureSystem)
       .build(MapSystem)
+      .build(ChunkVisibilitySystem)
+      .build(ChunkRenderingSystem)
       .build(MapControl)
       .build(ShooterSpawnSystem)
       .build(PlayerSpawnSystem)

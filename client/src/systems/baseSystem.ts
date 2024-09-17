@@ -11,7 +11,7 @@ import { EventName, Events } from 'src/events/events'
  * The WorldIn type allows the subclass to force a certain type of world is
  * provided to them in the constructor.
  *
- * The WorldOut type allows the subclass to say what world type they have added
+ * The WorldAdded type allows the subclass to say what world type they have added
  * to the world.
  */
 export abstract class BaseSystem<

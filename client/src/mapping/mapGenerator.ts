@@ -14,9 +14,12 @@ export const generateMapDataUsingNoise = (
   width: number,
   height: number,
   tileSetInfo: TileSetInfo,
+  offsetTileX: number = 0,
+  offsetTileY: number = 0,
+  seedFnOrValue: number | (() => number) = () => Date.now(),
 ): MapInfo => {
   // Add +1 to width & height for marching squares
-  const biomeMap = createBiomeMap(width + 1, height + 1)
+  const biomeMap = createBiomeMap(width + 1, height + 1, offsetTileX, offsetTileY, seedFnOrValue)
 
   // convert height map to "WangColor" map
   const colorMapper = createColorMapper(tileSetInfo)

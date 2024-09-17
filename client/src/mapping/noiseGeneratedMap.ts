@@ -13,13 +13,23 @@ export type NoiseMapConfig = {
 
 export const createNoiseMap = (
   config: NoiseMapConfig,
+  offsetX: number,
+  offsetY: number,
   seedFnOrValue: number | (() => number) = () => Date.now(),
 ) => {
   const { baseCoordScale, octaves, decayCoeff, seedOffset, rangeFactor } = config
   const seed = (_.isFunction(seedFnOrValue) ? seedFnOrValue() : seedFnOrValue) + seedOffset
   const noise2d = makeNoise2D(seed)
 
-  const octaveNoise = createOctaveNoiseFn(baseCoordScale, octaves, decayCoeff, noise2d, rangeFactor)
+  const octaveNoise = createOctaveNoiseFn(
+    baseCoordScale,
+    octaves,
+    decayCoeff,
+    noise2d,
+    offsetX,
+    offsetY,
+    rangeFactor,
+  )
 
   return octaveNoise
 }
@@ -33,6 +43,8 @@ export const createOctaveNoiseFn = (
   octaves: number,
   decayCoeff: number,
   noiseFn: (x: number, y: number) => number,
+  offsetX: number,
+  offsetY: number,
   rangeFactor = 1,
 ) => {
   let octaveRange = 1
@@ -52,8 +64,8 @@ export const createOctaveNoiseFn = (
     let sum = 0
 
     for (let o = 0; o < octaves; o++) {
-      let noiseX = x * baseCoordScale * octaveCoeff
-      let noiseY = y * baseCoordScale * octaveCoeff
+      let noiseX = (x + offsetX) * baseCoordScale * octaveCoeff
+      let noiseY = (y + offsetY) * baseCoordScale * octaveCoeff
 
       sum += noiseFn(noiseX, noiseY) * intensityCoeff
 
