@@ -26,8 +26,8 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
   }
 
   preload(): void {
-    this.subUnsub('mapUpdated', () => {
-      this.onMapUpdated()
+    this.subUnsub('mapInfoUpdated', () => {
+      this.onMapInfoUpdated()
     })
   }
 
@@ -49,9 +49,8 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
 
   update() {
     const biomeMap = this.world.mapSystem.biomeMap
-    const map = this.world.mapSystem.map
-    const tileSetInfo = this.world.mapSystem.tileSetInfo
-    if (!biomeMap || !map || !tileSetInfo) {
+    const tileSetInfo = this.world.mapSystem.mapInfo.tileSetInfo
+    if (!biomeMap || !tileSetInfo) {
       return
     }
 
@@ -90,8 +89,8 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
     })
   }
 
-  private onMapUpdated() {
-    console.log('Map updated')
+  private onMapInfoUpdated() {
+    console.log('MapInfo updated')
 
     this.create() // MapSystem may call us before we get a chance to create()
 

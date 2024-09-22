@@ -39,12 +39,12 @@ export class TileToWorldTranslationSystem<WorldIn extends MapWorld> extends Base
       addComponent(this.world, WorldPositionComponent, eid)
     })
 
-    const map = this.world.mapSystem.map
-    if (map != undefined) {
+    const mapInfo = this.world.mapSystem.mapInfo
+    if (mapInfo.tileSetInfo != undefined) {
       const posEids = tilePositionQuery(this.world)
       posEids.forEach((eid) => {
-        WorldPositionComponent.x[eid] = map.tileToWorldX(TilePositionComponent.x[eid])!
-        WorldPositionComponent.y[eid] = map.tileToWorldX(TilePositionComponent.y[eid])!
+        WorldPositionComponent.x[eid] = mapInfo.tileToWorldX(TilePositionComponent.x[eid])!
+        WorldPositionComponent.y[eid] = mapInfo.tileToWorldX(TilePositionComponent.y[eid])!
       })
     }
 
@@ -60,11 +60,11 @@ export class TileToWorldTranslationSystem<WorldIn extends MapWorld> extends Base
       addComponent(this.world, WorldTargetComponent, eid)
     })
 
-    if (map != undefined) {
+    if (mapInfo.tileSetInfo != undefined) {
       const targetEids = tileTargetQuery(this.world)
       targetEids.forEach((eid) => {
-        WorldTargetComponent.x[eid] = map.tileToWorldX(TileTargetComponent.x[eid])!
-        WorldTargetComponent.y[eid] = map.tileToWorldX(TileTargetComponent.y[eid])!
+        WorldTargetComponent.x[eid] = mapInfo.tileToWorldX(TileTargetComponent.x[eid])!
+        WorldTargetComponent.y[eid] = mapInfo.tileToWorldX(TileTargetComponent.y[eid])!
       })
     }
 

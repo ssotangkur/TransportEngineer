@@ -38,7 +38,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld & TextureWorld> extends 
   IWorld
 > {
   createWorld(_worldIn: WorldIn): IWorld {
-    return _worldIn;
+    return _worldIn
   }
 
   create() {
@@ -83,7 +83,6 @@ export class PlayerMovementSystem<WorldIn extends MapWorld & SingletonWorld> ext
   }
 
   update(_time: number, delta: number) {
-
     const singletonEid = this.world.singleton.eid
     const isDoubleClick = !!MouseDoubleClickComponent.isDoubleClick[singletonEid]
 
@@ -91,8 +90,16 @@ export class PlayerMovementSystem<WorldIn extends MapWorld & SingletonWorld> ext
       if (isDoubleClick) {
         addComponent(this.world, TileTargetComponent, eid)
         // Whatever the current mouse position is, make that the target position
-        TileTargetComponent.x[eid] = this.world.mapSystem.map?.worldToTileX(WorldPositionComponent.x[singletonEid], false) ?? 0
-        TileTargetComponent.y[eid] = this.world.mapSystem.map?.worldToTileY(WorldPositionComponent.y[singletonEid], false) ?? 0
+        TileTargetComponent.x[eid] =
+          this.world.mapSystem.mapInfo.worldToTileX(
+            WorldPositionComponent.x[singletonEid],
+            false,
+          ) ?? 0
+        TileTargetComponent.y[eid] =
+          this.world.mapSystem.mapInfo.worldToTileY(
+            WorldPositionComponent.y[singletonEid],
+            false,
+          ) ?? 0
       }
     })
 

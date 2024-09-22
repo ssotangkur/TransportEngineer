@@ -1,23 +1,13 @@
-import {
-  TileSetInfo,
-  initializePhaserTileMap,
-  loadTiledTileSetJson,
-  updateMapDataFromMultiLayerMap,
-} from 'src/mapping/tiledJsonParser'
+import { TileSetInfo, loadTiledTileSetJson } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
-import { Events } from 'src/events/events'
 import { BiomeCell } from 'src/mapping/biome'
-import { generateMapDataUsingNoise } from 'src/mapping/mapGenerator'
 import { IWorld } from 'bitecs'
+import { addTileSetInfo, emptyMapInfo, MapInfo } from 'src/utils/mapInfo'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
 
 const MAP_WIDTH = 4 // Only use these constants here, all other places should have this passed in
 const MAP_HEIGHT = 4
-
-export type MapInfo = {
-  seed: number
-}
 
 export type MapWorld = {
   mapSystem: {
@@ -40,9 +30,7 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
   createWorld(_worldIn: WorldIn) {
     const mapWorld: MapWorld = {
       mapSystem: {
-        mapInfo: {
-          seed: Date.now(),
-        },
+        mapInfo: emptyMapInfo(Date.now()),
       },
     }
     return mapWorld
@@ -54,6 +42,10 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
         this.world.mapSystem.tileSetInfo = await loadTiledTileSetJson(
           TILED_TILESET_JSON_FILE,
           this.scene,
+        )
+        this.world.mapSystem.mapInfo = addTileSetInfo(
+          this.world.mapSystem.mapInfo,
+          this.world.mapSystem.tileSetInfo,
         )
         successCallback()
       } catch (error) {
@@ -68,11 +60,6 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
 
   public create() {
     this.createMap()
-
-    // TESTING
-    this.scene.cameras.main.on(Phaser.Cameras.Scene2D.Events.PAN_COMPLETE, () => {
-      console.log('pan complete')
-    })
   }
 
   private regenerateMap() {
@@ -80,15 +67,15 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
   }
 
   private createMap() {
-    if (this.world.mapSystem.tileSetInfo) {
-      this.world.mapSystem.map = initializePhaserTileMap(
-        MAP_WIDTH,
-        MAP_HEIGHT,
-        this.world.mapSystem.tileSetInfo,
-        this.scene,
-      )
-      this.updateMap()
-    }
+    // if (this.world.mapSystem.tileSetInfo) {
+    //   this.world.mapSystem.map = initializePhaserTileMap(
+    //     MAP_WIDTH,
+    //     MAP_HEIGHT,
+    //     this.world.mapSystem.tileSetInfo,
+    //     this.scene,
+    //   )
+    //   this.updateMap()
+    // }
   }
 
   private updateMap() {
@@ -96,28 +83,20 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
     if (!tileSetInfo) {
       return
     }
-    const map = this.world.mapSystem.map
-    if (!map) {
-      return
-    }
+    // const map = this.world.mapSystem.map
+    // if (!map) {
+    //   return
+    // }
 
-    const { multiLayerMap, biomeMap } = generateMapDataUsingNoise(
-      MAP_WIDTH,
-      MAP_HEIGHT,
-      tileSetInfo,
-    )
-    this.world.mapSystem.biomeMap = biomeMap
+    // const { multiLayerMap, biomeMap } = generateMapDataUsingNoise(
+    //   MAP_WIDTH,
+    //   MAP_HEIGHT,
+    //   tileSetInfo,
+    // )
+    // this.world.mapSystem.biomeMap = biomeMap
 
-    updateMapDataFromMultiLayerMap(MAP_WIDTH, MAP_HEIGHT, map, multiLayerMap)
+    // updateMapDataFromMultiLayerMap(MAP_WIDTH, MAP_HEIGHT, map, multiLayerMap)
 
-    Events.emit('mapUpdated')
-  }
-
-  public get heightInPixels() {
-    return this.world.mapSystem.map?.heightInPixels ?? 0
-  }
-
-  public get widthInPixels() {
-    return this.world.mapSystem.map?.widthInPixels ?? 0
+    // Events.emit('mapUpdated')
   }
 }

@@ -1,5 +1,15 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.words": ["Orchestratable"]
+  "cSpell.words": ["Orchestratable"],
+  "typescript.preferences.organizeImports": {
+    "quoteStyle": "single",
+    "memberSorting": "alphabetical",
+    "groupNamespaceImports": true,
+    "removeUnused": true,
+    "removeRedundant": true,
+    "caseSensitiveSort": false,
+    "importOrderCaseInsensitive": true,
+    "importOrderSeparation": false
+  }
 }
