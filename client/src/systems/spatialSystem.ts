@@ -127,11 +127,19 @@ export class SpatialSystem<WorldIn extends MapWorld & ChunkWorld> extends BaseSy
 
 
 
+ const QUAD_TREE_CHUNK_SIZE = 256
+/**
+ * Note: These chunks can be different than the ones in the tileset
+ */
 export class ChunkableQuadTree {
 
   private chunksToTreeMap: Map<string, QuadTree> = new Map()
 
   constructor(private maxPerNode: number, private maxDepth: number, private tileWidth: number, private tileHeight: number) {}
+
+  chunkKey(x: number, y: number) {
+    return `${x},${y}`
+  }
 
   add(eid: number) {
     const { x, y } = getChunkForWorldPosition(WorldPositionComponent.x[eid], WorldPositionComponent.y[eid], this.tileWidth, this.tileHeight)
@@ -148,3 +156,4 @@ export class ChunkableQuadTree {
     }
     tree.addEntity(eid)
   }
+
