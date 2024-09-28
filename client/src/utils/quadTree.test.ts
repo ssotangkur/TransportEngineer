@@ -66,7 +66,10 @@ describe('quadTree', () => {
     const qt = new QuadTree(bounds, 10, 5)
     qt.addEntity(eid)
 
-    expect(qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 2, 2))).toEqual([eid])
+    const found = new Set<number>()
+    qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 2, 2), found)
+
+    expect(Array.from(found).sort()).toEqual([eid])
   })
 
   it('does not add an entity outside the bounds', () => {
@@ -77,7 +80,10 @@ describe('quadTree', () => {
     const qt = new QuadTree(bounds, 10, 5)
     qt.addEntity(eid)
 
-    expect(qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 10, 10))).toEqual([])
+    const found = new Set<number>()
+    qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 10, 10), found)
+
+    expect(Array.from(found).sort()).toEqual([])
   })
 
   it('adds 100 entities within the bounds', () => {
@@ -96,7 +102,10 @@ describe('quadTree', () => {
     console.log(`Size: ${qt.size()}`)
     console.log(`NodeCount: ${qt.nodeCount()}`)
 
-    expect(qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 10, 10)).sort()).toEqual(entities.sort())
+    const found = new Set<number>()
+    qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 10, 10), found)
+
+    expect(Array.from(found).sort()).toEqual(entities.sort())
   })
 
   it('finds entities in specific rect', () => {
@@ -130,8 +139,9 @@ describe('quadTree', () => {
       qt.addEntity(eid)
     }
 
-    const found = qt.findEntities(searchRect)
-    expect(found.sort()).toEqual(entitiesToFind.sort())
+    const found = new Set<number>()
+    qt.findEntities(searchRect, found)
+    expect(Array.from(found).sort()).toEqual(entitiesToFind.sort())
   })
 
   const addAndPrintEntities = (entities: number[], qt: QuadTree) => {
@@ -187,7 +197,10 @@ describe('quadTree', () => {
     console.log(`Node Count: ${qt.nodeCount()}`)
     console.log(`Size: ${qt.size()}`)
 
-    expect(qt.findEntities(bounds).sort()).toEqual(entitiesToFind.sort())
+    const found = new Set<number>()
+    qt.findEntities(bounds, found)
+
+    expect(Array.from(found).sort()).toEqual(entitiesToFind.sort())
   })
 
   it('collapses nodes', () => {

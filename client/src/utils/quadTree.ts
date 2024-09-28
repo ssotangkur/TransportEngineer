@@ -30,8 +30,8 @@ export class QuadTree {
     }
   }
 
-  findEntities(rect: G.Rectangle): number[] {
-    return this.root?.find(rect) ?? []
+  findEntities(rect: G.Rectangle, foundEntities: Set<number>) {
+    this.root?.find(rect, foundEntities)
   }
 
   print() {
@@ -274,35 +274,24 @@ class Node {
     this.entities = undefined
   }
 
-  find(rect: G.Rectangle): number[] {
+  find(rect: G.Rectangle, foundEntities: Set<number>) {
     if (!intersects(this.bounds, rect)) {
-      return []
+      return
     }
     if (this.entities) {
-      const results: number[] = []
       this.entities.forEach((eid) => {
         const x = WorldPositionComponent.x[eid]
         const y = WorldPositionComponent.y[eid]
         if (rect.contains(x, y)) {
-          results.push(eid)
+          foundEntities.add(eid)
         }
       })
-      return results
     }
-    const results = []
-    if (this.tl) {
-      results.push(...this.tl.find(rect))
-    }
-    if (this.tr) {
-      results.push(...this.tr.find(rect))
-    }
-    if (this.bl) {
-      results.push(...this.bl.find(rect))
-    }
-    if (this.br) {
-      results.push(...this.br.find(rect))
-    }
-    return results
+
+    this.tl?.find(rect, foundEntities)
+    this.tr?.find(rect, foundEntities)
+    this.bl?.find(rect, foundEntities)
+    this.br?.find(rect, foundEntities)
   }
 
   isEmptyLeaf(): boolean {
