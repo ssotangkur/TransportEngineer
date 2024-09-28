@@ -34,19 +34,25 @@ export class QuadTree {
     return this.root?.find(rect) ?? []
   }
 
-  print() {
-    // Since we can't stringify a Set, we convert it to an array which is able to be stringified
-    // const replacer = (key: string, value: any) => {
-    //   if (key === 'parent') {
-    //     return undefined // avoid circular references
-    //   }
-    //   if (key !== 'entities') {
-    //     return value
-    //   }
-    //   return value !== undefined ? Array.from(value) : value
-    // }
-    // console.log(JSON.stringify(this.root, replacer, 2))
+  updateEntity(eid: number) {
+    const nodeSet = this.entityNodeMap.get(eid)
+    if (nodeSet === undefined) {
+      return
+    }
 
+    const x = WorldPositionComponent.x[eid]
+    const y = WorldPositionComponent.y[eid]
+
+    let isOutsideTree = false
+    for (const node of nodeSet) {
+      if(!node.update(eid, x, y, this.maxPerNode, this.maxDepth, this.entityNodeMap)) {
+        isOutsideTree = true
+      }
+    }
+
+  }
+
+  print() {  
     this.root?.print(1)
   }
 
@@ -272,6 +278,32 @@ class Node {
     })
     this.entities?.clear()
     this.entities = undefined
+  }
+
+  /**
+   * 
+   * @returns true if we successfully updated the entity. If the 
+   * entity moves completely outside the bounds of root node, we return false
+   */
+  update(eid: number, x: number, y: number, maxPerNode: number, maxDepth: number, entityNodeMap: Map<number, Set<Node>>): boolean {
+    if (this.bounds.contains(x, y)) {
+      if (this.entities?.has(eid)) {
+        // we are leaf and entity hasn't left
+        return true
+      }
+      // else, we are the containing parent interior node so we can
+      // just try adding it
+      this.add(eid, x, y, maxPerNode, maxDepth, entityNodeMap)
+      return true
+    }
+    // Entity has moved outside this node
+    // Remove entity from this node and call update on parent
+    this.entities?.delete(eid)
+    if(!this.parent) {
+      // Entity has moved outside root
+      return false;
+    }
+    return this.parent.update(eid, x, y, maxPerNode, maxDepth, entityNodeMap)
   }
 
   find(rect: G.Rectangle): number[] {

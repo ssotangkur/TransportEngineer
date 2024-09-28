@@ -110,17 +110,17 @@ export class SpatialSystem<WorldIn extends MapWorld & ChunkWorld> extends BaseSy
       const worldHeight = SpriteComponent.height[eid]
       const width = this.world.mapSystem.mapInfo.worldToTileX(worldWidth) ?? 0
       const height = this.world.mapSystem.mapInfo.worldToTileY(worldHeight) ?? 0
-      client.position.set(x, y)
-      client.dimensions = [width, height]
-      grid.UpdateClient(client)
+      // client.position.set(x, y)
+      // client.dimensions = [width, height]
+      // grid.UpdateClient(client)
     })
 
     this.forEidIn(this.spatialExit, (eid) => {
-      const client = clients.get(eid)
-      if (!client) {
-        return
-      }
-      grid.Remove(client)
+      // const client = clients.get(eid)
+      // if (!client) {
+      //   return
+      // }
+      // grid.Remove(client)
     })
   }
 }
@@ -128,6 +128,7 @@ export class SpatialSystem<WorldIn extends MapWorld & ChunkWorld> extends BaseSy
 
 
  const QUAD_TREE_CHUNK_SIZE = 256
+ const INV_QUAD_TREE_CHUNK_SIZE = 1 / QUAD_TREE_CHUNK_SIZE
 /**
  * Note: These chunks can be different than the ones in the tileset
  */
@@ -135,20 +136,19 @@ export class ChunkableQuadTree {
 
   private chunksToTreeMap: Map<string, QuadTree> = new Map()
 
-  constructor(private maxPerNode: number, private maxDepth: number, private tileWidth: number, private tileHeight: number) {}
+  constructor(private maxPerNode: number, private maxDepth: number) {}
 
   chunkKey(x: number, y: number) {
     return `${x},${y}`
   }
 
   add(eid: number) {
-    const { x, y } = getChunkForWorldPosition(WorldPositionComponent.x[eid], WorldPositionComponent.y[eid], this.tileWidth, this.tileHeight)
+    const { x, y } = this.getChunkForWorldPosition(WorldPositionComponent.x[eid], WorldPositionComponent.y[eid])
     const key = chunkKey(x, y)
     let tree = this.chunksToTreeMap.get(key)
     if (!tree) {
-      
       tree = new QuadTree(
-        new Phaser.Geom.Rectangle(x, y, this.chunkWorldWidth, this.chunkWorldHeight),
+        new Phaser.Geom.Rectangle(x, y, QUAD_TREE_CHUNK_SIZE, QUAD_TREE_CHUNK_SIZE),
         this.maxPerNode,
         this.maxDepth
       )
@@ -157,3 +157,14 @@ export class ChunkableQuadTree {
     tree.addEntity(eid)
   }
 
+  getChunkForWorldPosition(x: number, y: number) {
+    return {
+      x: Math.floor(x * INV_QUAD_TREE_CHUNK_SIZE),
+      y: Math.floor(y * INV_QUAD_TREE_CHUNK_SIZE),
+    }
+  }
+
+  update(eid: number) {
+  }
+
+}
