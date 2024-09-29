@@ -1,4 +1,4 @@
-import { ComponentType, IWorld, addComponent, defineQuery, enterQuery, exitQuery } from 'bitecs'
+import { IWorld, addComponent, defineQuery, enterQuery } from 'bitecs'
 import { SpatialWorld } from './spatialSystem'
 import { BaseSystem } from './baseSystem'
 import { BoidComponent } from 'src/components/boidComponent'
@@ -6,18 +6,15 @@ import {
   AccelerationSumComponent,
   MoveableComponent,
   SpatialComponent,
-  TileMoveComponent,
   TilePositionComponent,
   VelocityComponent,
 } from 'src/components/positionComponent'
-import { Client } from 'src/utils/spatialHashGrid/spatialHashGrid'
 import {
   addAcceleration,
   newVec2FromComp,
-  setCompFromVec2,
   setVec2FromComp,
-  sumCompFromVec2,
 } from 'src/utils/vectors'
+import { aabbByCenter } from 'src/utils/aabb'
 
 const perceptionDistance = 3
 const separationDistance = 0.5
@@ -32,6 +29,11 @@ export const boidQuery = defineQuery([
 const boidEnter = enterQuery(boidQuery)
 
 type Vector2 = Phaser.Math.Vector2
+
+export type Client = {
+  eid: number
+  position: Phaser.Math.Vector2
+}
 
 export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
   SpatialWorld,
@@ -190,10 +192,24 @@ export class BoidSystem<WorldIn extends SpatialWorld> extends BaseSystem<
     return steering
   }
 
-  _findOthersInRange(eid: number, pos: Vector2, range: number) {
-    const clients =
-      this.world.spatialWorld.spatialHashGrid?.FindNear(pos, [range * 2, range * 2]) ?? []
-    return clients.filter((client) => client.eid !== eid && client.position.distance(pos) < range)
+  _findOthersInRange(eid: number, pos: Vector2, range: number): Client[] {
+    const foundEids = new Set<number>()
+    this.world.spatialWorld.spatialStruct.find(aabbByCenter(pos.x, pos.y, range * 2, range * 2), foundEids)
+
+    return Array.from(foundEids)
+      .filter((foundEid) => {
+        if(eid === foundEid) {
+          return false
+        }
+        const pos = newVec2FromComp(TilePositionComponent, foundEid)
+        return pos.distance(pos) < range
+      })
+      .map((foundEid) => {
+        return {
+          eid: foundEid,
+          position: newVec2FromComp(TilePositionComponent, foundEid),
+        }
+      })
   }
 
   _attachComponentsToShooters() {

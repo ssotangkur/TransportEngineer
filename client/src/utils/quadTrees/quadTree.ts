@@ -1,7 +1,7 @@
 import { WorldPositionComponent } from 'src/components/positionComponent'
 
 import G = Phaser.Geom
-import { AABB } from './aabb'
+import { AABB } from '../aabb'
 
 export class QuadTree {
   private root: Node | undefined
