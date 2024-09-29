@@ -9,9 +9,8 @@ import {
 import { SpriteComponent } from 'src/components/spriteComponent'
 import { ChunkComponent } from 'src/components/chunkComponent'
 import { QuadTree } from 'src/utils/quadTree'
-import { ChunkInfo, chunkKey, ChunkWorld, getChunkForWorldPosition } from './chunkVisibilitySystem'
-import { key2d } from 'src/utils/keys'
-import { CHUNK_SIZE } from 'src/constants'
+import { ChunkInfo, chunkKey, ChunkWorld } from './chunkVisibilitySystem'
+import { AABB } from 'src/utils/aabb'
 
 export type SpatialWorld = {
   spatialWorld: {
@@ -21,10 +20,6 @@ export type SpatialWorld = {
 }
 
 export const spatialQuery = defineQuery([SpatialComponent, WorldPositionComponent, SpriteComponent])
-
-const chunkQuery = defineQuery([ChunkComponent])
-const chunkEnter = enterQuery(chunkQuery)
-const chunkExit = exitQuery(chunkQuery)
 
 const throwError = () => {
   throw new Error(`Function called before initialization.`)
@@ -49,44 +44,6 @@ export class SpatialSystem<WorldIn extends MapWorld & ChunkWorld> extends BaseSy
     }
   }
 
-  create(): void {
-    this.subUnsub('chunkInfoUpdated', (chunkInfo) => {
-      this.onChunkInfoUpdate(chunkInfo)
-    })
-  }
-
-  onChunkInfoUpdate(chunkInfo: ChunkInfo) {
-    this.chunkInfo = chunkInfo
-
-    this.world.spatialWorld.find = (searchRect: Phaser.Geom.Rectangle) => {
-      // Find all chunks that intersect the search rect
-      const { getChunkForWorldPosition, chunkKey } = chunkInfo
-      const minChunk = getChunkForWorldPosition(searchRect.x, searchRect.y)
-      const maxChunk = getChunkForWorldPosition(
-        searchRect.x + searchRect.width,
-        searchRect.y + searchRect.height,
-      )
-
-      const chunkXMin = minChunk.x
-      const chunkXMax = maxChunk.x
-      const chunkYMin = minChunk.y
-      const chunkYMax = maxChunk.y
-
-      const found: number[] = []
-      for (let x = chunkXMin; x <= chunkXMax; x++) {
-        for (let y = chunkYMin; y <= chunkYMax; y++) {
-          const key = chunkKey(x, y)
-          const tree = this.world.spatialWorld.chunksToTreeMap.get(key)
-          if (tree) {
-            found.push(...tree.findEntities(searchRect))
-          }
-        }
-      }
-
-      return found
-    }
-  }
-
   preload(): void {}
 
   update(_time: number, _delta: number): void {
@@ -107,17 +64,17 @@ export class SpatialSystem<WorldIn extends MapWorld & ChunkWorld> extends BaseSy
       const worldHeight = SpriteComponent.height[eid]
       const width = this.world.mapSystem.mapInfo.worldToTileX(worldWidth) ?? 0
       const height = this.world.mapSystem.mapInfo.worldToTileY(worldHeight) ?? 0
-      client.position.set(x, y)
-      client.dimensions = [width, height]
-      grid.UpdateClient(client)
+      // client.position.set(x, y)
+      // client.dimensions = [width, height]
+      // grid.UpdateClient(client)
     })
 
     this.forEidIn(this.spatialExit, (eid) => {
-      const client = clients.get(eid)
-      if (!client) {
-        return
-      }
-      grid.Remove(client)
+      // const client = clients.get(eid)
+      // if (!client) {
+      //   return
+      // }
+      // grid.Remove(client)
     })
   }
 }
@@ -128,21 +85,21 @@ const INV_QUAD_TREE_CHUNK_SIZE = 1 / QUAD_TREE_CHUNK_SIZE
  * Note: These chunks can be different than the ones in the tileset
  */
 export class ChunkableQuadTree {
-  private chunksToTreeMap: Map<number, QuadTree> = new Map()
+  private chunksToTreeMap: Map<string, QuadTree> = new Map()
+  private entityToChunkMap = new EntityChunkMapping()
 
-  constructor(
-    private maxPerNode: number,
-    private maxDepth: number,
-    private tileWidth: number,
-    private tileHeight: number,
-  ) {}
+  constructor(private maxPerNode: number, private maxDepth: number) {}
+
+  chunkKey(x: number, y: number) {
+    return `${x},${y}`
+  }
 
   add(eid: number) {
     const { chunkX, chunkY } = this.getChunkForWorldPosition(
       WorldPositionComponent.x[eid],
       WorldPositionComponent.y[eid],
     )
-    const key = key2d(chunkX, chunkY)
+    const key = chunkKey(chunkX, chunkY)
     let tree = this.chunksToTreeMap.get(key)
     if (!tree) {
       tree = new QuadTree(
@@ -158,6 +115,7 @@ export class ChunkableQuadTree {
       this.chunksToTreeMap.set(key, tree)
     }
     tree.addEntity(eid)
+    this.entityToChunkMap.setEntityChunkMapping(eid, key)
   }
 
   remove(eid: number) {
@@ -165,9 +123,10 @@ export class ChunkableQuadTree {
       WorldPositionComponent.x[eid],
       WorldPositionComponent.y[eid],
     )
-    const key = key2d(chunkX, chunkY)
+    const key = chunkKey(chunkX, chunkY)
     const tree = this.chunksToTreeMap.get(key)
     tree?.removeEntity(eid)
+    this.entityToChunkMap.removeEntityChunkMapping(eid)
 
     // @TODO: remove empty chunks
   }
@@ -184,7 +143,7 @@ export class ChunkableQuadTree {
 
     for (let x = chunkXMin; x <= chunkXMax; x++) {
       for (let y = chunkYMin; y <= chunkYMax; y++) {
-        const key = key2d(x, y)
+        const key = chunkKey(x, y)
         const tree = this.chunksToTreeMap.get(key)
         tree?.findEntities(rect, foundEntities)
       }
@@ -195,5 +154,55 @@ export class ChunkableQuadTree {
     const chunkX = Math.floor(x * INV_QUAD_TREE_CHUNK_SIZE)
     const chunkY = Math.floor(y * INV_QUAD_TREE_CHUNK_SIZE)
     return { chunkX, chunkY }
+  }
+
+  update(eid: number) {
+    const { chunkX, chunkY } = this.getChunkForWorldPosition(
+      WorldPositionComponent.x[eid],
+      WorldPositionComponent.y[eid],
+    )
+    const key = chunkKey(chunkX, chunkY)
+
+    const chunks = this.entityToChunkMap.get(eid)
+
+    if (!chunks) {
+      throw new Error("Trying to update entity, but it doesn't have a previous chunk")
+    }
+
+    // if entity's previous chunk is the same, we can just update it
+    if (chunks?.includes(key)) {
+      const tree = this.chunksToTreeMap.get(key)
+      tree?.updateEntity(eid)
+    } else {
+      // else, we must remove it from the old chunk and add it to the new chunk
+      for (const cKey of chunks) {
+        const tree = this.chunksToTreeMap.get(cKey)
+        tree?.removeEntity(eid)
+      }
+      this.add(eid)
+    }
+  }
+}
+
+class EntityChunkMapping {
+  private entityToChunkMap = new Map<number, string[]>()
+
+  setEntityChunkMapping(eid: number, chunkKey: string) {
+    const chunks = this.entityToChunkMap.get(eid)
+    if (!chunks) {
+      this.entityToChunkMap.set(eid, [chunkKey])
+      return
+    }
+    if (!chunks.includes(chunkKey)) {
+      chunks.push(chunkKey)
+    }
+  }
+
+  removeEntityChunkMapping(eid: number) {
+    this.entityToChunkMap.delete(eid)
+  }
+
+  get(eid: number) {
+    return this.entityToChunkMap.get(eid)
   }
 }

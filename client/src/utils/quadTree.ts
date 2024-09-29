@@ -1,12 +1,13 @@
 import { WorldPositionComponent } from 'src/components/positionComponent'
 
 import G = Phaser.Geom
+import { AABB } from './aabb'
 
 export class QuadTree {
   private root: Node | undefined
   private entityNodeMap = new Map<number, Set<Node>>()
 
-  constructor(private bounds: G.Rectangle, private maxPerNode: number, private maxDepth: number) {}
+  constructor(private bounds: AABB, private maxPerNode: number, private maxDepth: number) {}
 
   addEntity(eid: number) {
     const x = WorldPositionComponent.x[eid]
@@ -30,23 +31,28 @@ export class QuadTree {
     }
   }
 
-  findEntities(rect: G.Rectangle, foundEntities: Set<number>) {
+  findEntities(rect: AABB, foundEntities: Set<number>) {
     this.root?.find(rect, foundEntities)
   }
 
-  print() {
-    // Since we can't stringify a Set, we convert it to an array which is able to be stringified
-    // const replacer = (key: string, value: any) => {
-    //   if (key === 'parent') {
-    //     return undefined // avoid circular references
-    //   }
-    //   if (key !== 'entities') {
-    //     return value
-    //   }
-    //   return value !== undefined ? Array.from(value) : value
-    // }
-    // console.log(JSON.stringify(this.root, replacer, 2))
+  updateEntity(eid: number) {
+    const nodeSet = this.entityNodeMap.get(eid)
+    if (nodeSet === undefined) {
+      return
+    }
 
+    const x = WorldPositionComponent.x[eid]
+    const y = WorldPositionComponent.y[eid]
+
+    let isOutsideTree = false
+    for (const node of nodeSet) {
+      if (!node.update(eid, x, y, this.maxPerNode, this.maxDepth, this.entityNodeMap)) {
+        isOutsideTree = true
+      }
+    }
+  }
+
+  print() {
     this.root?.print(1)
   }
 
@@ -86,7 +92,7 @@ class Node {
 
   entities: Set<number> | undefined
 
-  constructor(private bounds: G.Rectangle, private parent?: Node) {}
+  constructor(private bounds: AABB, private parent?: Node) {}
 
   /**
    *
@@ -123,20 +129,14 @@ class Node {
         const boundsX = this.bounds.x
         const boundsY = this.bounds.y
 
-        this.tl = new Node(new G.Rectangle(boundsX, boundsY, halfWidth, halfHeight), this)
+        this.tl = new Node(new AABB(boundsX, boundsY, halfWidth, halfHeight), this)
         this.tl.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
-        this.tr = new Node(
-          new G.Rectangle(boundsX + halfWidth, boundsY, halfWidth, halfHeight),
-          this,
-        )
+        this.tr = new Node(new AABB(boundsX + halfWidth, boundsY, halfWidth, halfHeight), this)
         this.tr.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
-        this.bl = new Node(
-          new G.Rectangle(boundsX, boundsY + halfHeight, halfWidth, halfHeight),
-          this,
-        )
+        this.bl = new Node(new AABB(boundsX, boundsY + halfHeight, halfWidth, halfHeight), this)
         this.bl.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
         this.br = new Node(
-          new G.Rectangle(boundsX + halfWidth, boundsY + halfHeight, halfWidth, halfHeight),
+          new AABB(boundsX + halfWidth, boundsY + halfHeight, halfWidth, halfHeight),
           this,
         )
         this.br.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
@@ -274,7 +274,40 @@ class Node {
     this.entities = undefined
   }
 
-  find(rect: G.Rectangle, foundEntities: Set<number>) {
+  /**
+   *
+   * @returns true if we successfully updated the entity. If the
+   * entity moves completely outside the bounds of root node, we return false
+   */
+  update(
+    eid: number,
+    x: number,
+    y: number,
+    maxPerNode: number,
+    maxDepth: number,
+    entityNodeMap: Map<number, Set<Node>>,
+  ): boolean {
+    if (this.bounds.contains(x, y)) {
+      if (this.entities?.has(eid)) {
+        // we are leaf and entity hasn't left
+        return true
+      }
+      // else, we are the containing parent interior node so we can
+      // just try adding it
+      this.add(eid, x, y, maxPerNode, maxDepth, entityNodeMap)
+      return true
+    }
+    // Entity has moved outside this node
+    // Remove entity from this node and call update on parent
+    this.entities?.delete(eid)
+    if (!this.parent) {
+      // Entity has moved outside root
+      return false
+    }
+    return this.parent.update(eid, x, y, maxPerNode, maxDepth, entityNodeMap)
+  }
+
+  find(rect: AABB, foundEntities: Set<number>) {
     if (!intersects(this.bounds, rect)) {
       return
     }
@@ -356,7 +389,7 @@ class Node {
   }
 }
 
-export const intersects = (a: G.Rectangle, b: G.Rectangle) => {
+export const intersects = (a: AABB, b: AABB) => {
   return (
     a.x <= b.x + b.width && a.x + a.width >= b.x && a.y <= b.y + b.height && a.y + a.height >= b.y
   )
