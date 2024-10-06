@@ -10,10 +10,10 @@ import { AABB, aabbByCenter } from 'src/utils/aabb'
 import { ChunkableQuadTree } from 'src/utils/quadTrees/chunkableQuadTree'
 
 export interface SpatialDataStruct {
-  add: (eid: number, aabb: AABB) => void
+  add: (eid: number) => void
   remove: (eid: number) => void
   find: (searchRect: AABB, foundEntities: Set<number>) => void
-  update: (eid: number, aabb: AABB) => void
+  update: (eid: number) => void
 }
 
 export type SpatialWorld = {
@@ -43,23 +43,14 @@ export class SpatialSystem<WorldIn extends IWorld> extends BaseSystem<
   preload(): void {}
 
   update(_time: number, _delta: number): void {
-
     const spatial = this.world.spatialWorld.spatialStruct
 
     this.forEidIn(this.spatialEnter, (eid) => {
-      const x = WorldPositionComponent.x[eid]
-      const y = WorldPositionComponent.y[eid]
-      const worldWidth = SpriteComponent.width[eid]
-      const worldHeight = SpriteComponent.height[eid]
-      spatial.add(eid, aabbByCenter(x, y, worldWidth, worldHeight))
+      spatial.add(eid)
     })
-    
+
     this.forEidIn(spatialQuery, (eid) => {
-      const x = TilePositionComponent.x[eid]
-      const y = TilePositionComponent.y[eid]
-      const worldWidth = SpriteComponent.width[eid]
-      const worldHeight = SpriteComponent.height[eid]
-      spatial.update(eid, aabbByCenter(x, y, worldWidth, worldHeight))
+      spatial.update(eid)
     })
 
     this.forEidIn(this.spatialExit, (eid) => {
@@ -67,4 +58,3 @@ export class SpatialSystem<WorldIn extends IWorld> extends BaseSystem<
     })
   }
 }
-

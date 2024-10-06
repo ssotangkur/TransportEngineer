@@ -9,7 +9,12 @@ export class QuadTree {
 
   constructor(private bounds: AABB, private maxPerNode: number, private maxDepth: number) {}
 
-  addEntity(eid: number) {
+  /**
+   *
+   * @param eid
+   * @returns true if the entity was added
+   */
+  addEntity(eid: number): boolean {
     const x = WorldPositionComponent.x[eid]
     const y = WorldPositionComponent.y[eid]
 
@@ -17,28 +22,49 @@ export class QuadTree {
       this.root = new Node(this.bounds)
     }
 
-    this.root.add(eid, x, y, this.maxPerNode, this.maxDepth, this.entityNodeMap)
+    if (this.root.add(eid, x, y, this.maxPerNode, this.maxDepth, this.entityNodeMap)) {
+      return true
+    }
+    return false
   }
 
-  removeEntity(eid: number) {
+  /**
+   * Returns the number of entities in the tree
+   */
+  get length() {
+    return this.entityNodeMap.size
+  }
+
+  removeEntity(eid: number): boolean {
+    let removed = false
     const nodes = this.entityNodeMap.get(eid)
     if (nodes === undefined) {
-      return
+      return removed
     }
 
     for (const node of nodes) {
-      node.remove(eid, this.entityNodeMap, this.maxPerNode)
+      removed = node.remove(eid, this.entityNodeMap, this.maxPerNode) || removed
     }
+
+    return removed
   }
 
   findEntities(rect: AABB, foundEntities: Set<number>) {
     this.root?.find(rect, foundEntities)
   }
 
-  updateEntity(eid: number) {
+  /**
+   * Updates the position of an entity in the tree,
+   * and returns true if the entity is still in the tree. If it returns
+   * false, the entity has moved outside the tree so the entity should also
+   * be updated in the destination tree.
+   * @param eid
+   * @returns false if the entity moved outside the tree
+   */
+  updateEntity(eid: number): boolean {
     const nodeSet = this.entityNodeMap.get(eid)
     if (nodeSet === undefined) {
-      return
+      return true // we don't know about this entity, but it's not outside the tree
     }
 
     const x = WorldPositionComponent.x[eid]
@@ -46,10 +72,10 @@ export class QuadTree {
 
     let isOutsideTree = false
     for (const node of nodeSet) {
-      if (!node.update(eid, x, y, this.maxPerNode, this.maxDepth, this.entityNodeMap)) {
-        isOutsideTree = true
-      }
+      isOutsideTree =
+        !node.update(eid, x, y, this.maxPerNode, this.maxDepth, this.entityNodeMap) || isOutsideTree
     }
+    return !isOutsideTree
   }
 
   print() {
@@ -110,17 +136,17 @@ class Node {
     maxPerNode: number,
     depthRemaining: number,
     entityNodeMap: Map<number, Set<Node>>,
-  ) {
+  ): boolean {
     if (!this.bounds.contains(x, y)) {
       // Not in my quadrant, so do nothing
-      return
+      return false
     }
     // No children? Then we are a leaf, see if we have space to add
     if (!this.tl) {
       if (!this.entities) {
         this.entities = new Set([eid])
         addEntityNode(entityNodeMap, eid, this)
-        return
+        return true
       }
       if (this.entities.size >= maxPerNode && depthRemaining > 0) {
         // At capacity, need to make children distribute exiting entities to them
@@ -180,17 +206,18 @@ class Node {
           )
         })
         this.entities = undefined // We're no longer holding entities
-        return
+        return true
       }
       this.entities.add(eid) // We'll push even if the array is full if we're at max depth
       addEntityNode(entityNodeMap, eid, this)
-      return
+      return true
     }
     // We have children, so add to them
     this.tl.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
     this.tr!.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
     this.bl!.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
     this.br!.add(eid, x, y, maxPerNode, depthRemaining - 1, entityNodeMap)
+    return true // Assume we must have added since it is within our bounds
   }
 
   /**
@@ -198,17 +225,20 @@ class Node {
    * as the leaves become empty.
    * @param eid
    * @param entityNodeMap
+   * @param maxPerNode
+   * @returns true if we removed an entity, false if we didn't
    */
-  remove(eid: number, entityNodeMap: Map<number, Set<Node>>, maxPerNode: number) {
+  remove(eid: number, entityNodeMap: Map<number, Set<Node>>, maxPerNode: number): boolean {
+    let deleted = false
     if (this.entities) {
-      this.entities.delete(eid)
+      deleted = this.entities.delete(eid)
       removeEntityNode(entityNodeMap, eid, this)
       if (this.entities.size === 0) {
         this.entities = undefined
-        // I'm empty, recurse up the parent who will check if my siblings are empty too
-        if (this.parent) {
-          this.parent.remove(eid, entityNodeMap, maxPerNode)
-        }
+      }
+      if (this.parent) {
+        // Recurse up parent to see if we can collapse
+        deleted = this.parent.remove(eid, entityNodeMap, maxPerNode) || deleted
       }
     } else {
       // I'm not a leaf, but need to check if all my children can fit in me
@@ -223,7 +253,7 @@ class Node {
         this.bl!.isInterior() ||
         this.br!.isInterior()
       ) {
-        return
+        return deleted
       }
 
       // Count how many entities are in my children, we know they are all leaves
@@ -251,10 +281,11 @@ class Node {
         this.br = undefined
 
         if (this.parent) {
-          this.parent.remove(eid, entityNodeMap, maxPerNode)
+          deleted = this.parent.remove(eid, entityNodeMap, maxPerNode) || deleted
         }
       }
     }
+    return deleted
   }
 
   /**
@@ -276,8 +307,8 @@ class Node {
 
   /**
    *
-   * @returns true if we successfully updated the entity. If the
-   * entity moves completely outside the bounds of root node, we return false
+   * @returns true unless the entity moves completely outside
+   * the bounds of root node, we return false
    */
   update(
     eid: number,
@@ -299,7 +330,9 @@ class Node {
     }
     // Entity has moved outside this node
     // Remove entity from this node and call update on parent
-    this.entities?.delete(eid)
+    if (this.entities?.delete(eid)) {
+      removeEntityNode(entityNodeMap, eid, this)
+    }
     if (!this.parent) {
       // Entity has moved outside root
       return false

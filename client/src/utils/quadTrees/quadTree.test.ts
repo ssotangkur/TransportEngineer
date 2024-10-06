@@ -1,49 +1,50 @@
 import { describe, expect, it } from 'vitest'
-import { intersects, QuadTree } from './quadTree'
 import { createWorld } from 'bitecs'
 import { addComponent } from 'bitecs'
 import { WorldPositionComponent } from 'src/components/positionComponent'
 import { addEntity } from 'bitecs'
+import { AABB } from '../aabb'
+import { intersects, QuadTree } from './quadTree'
 
 describe('intersects', () => {
   it('returns true if a and b intersect', () => {
-    const a = new Phaser.Geom.Rectangle(0, 0, 10, 10)
-    const b = new Phaser.Geom.Rectangle(5, 5, 10, 10)
+    const a = new AABB(0, 0, 10, 10)
+    const b = new AABB(5, 5, 10, 10)
     expect(intersects(a, b)).toEqual(true)
     expect(intersects(b, a)).toEqual(true)
   })
 
   it('returns false if a and b do not intersect', () => {
-    const a = new Phaser.Geom.Rectangle(0, 0, 1, 1)
-    const b = new Phaser.Geom.Rectangle(2, 2, 1, 1)
+    const a = new AABB(0, 0, 1, 1)
+    const b = new AABB(2, 2, 1, 1)
     expect(intersects(a, b)).toEqual(false)
     expect(intersects(b, a)).toEqual(false)
   })
 
   it('returns true if a and b intersect partially', () => {
-    const a = new Phaser.Geom.Rectangle(0, 0, 2, 2)
-    const b = new Phaser.Geom.Rectangle(1, 1, 2, 2)
+    const a = new AABB(0, 0, 2, 2)
+    const b = new AABB(1, 1, 2, 2)
     expect(intersects(a, b)).toEqual(true)
     expect(intersects(b, a)).toEqual(true)
   })
 
   it('returns true if a and b intersect corner to corner', () => {
-    const a = new Phaser.Geom.Rectangle(0, 0, 1, 1)
-    const b = new Phaser.Geom.Rectangle(1, 1, 1, 1)
+    const a = new AABB(0, 0, 1, 1)
+    const b = new AABB(1, 1, 1, 1)
     expect(intersects(a, b)).toEqual(true)
     expect(intersects(b, a)).toEqual(true)
   })
 
   it('returns true if a and b intersect on horizontal edge', () => {
-    const a = new Phaser.Geom.Rectangle(0, 0, 1, 1)
-    const b = new Phaser.Geom.Rectangle(0, 1, 1, 1)
+    const a = new AABB(0, 0, 1, 1)
+    const b = new AABB(0, 1, 1, 1)
     expect(intersects(a, b)).toEqual(true)
     expect(intersects(b, a)).toEqual(true)
   })
 
   it('returns true if a and b intersect on vertical edge', () => {
-    const a = new Phaser.Geom.Rectangle(0, 0, 1, 1)
-    const b = new Phaser.Geom.Rectangle(1, 0, 1, 1)
+    const a = new AABB(0, 0, 1, 1)
+    const b = new AABB(1, 0, 1, 1)
     expect(intersects(a, b)).toEqual(true)
     expect(intersects(b, a)).toEqual(true)
   })
@@ -59,7 +60,7 @@ describe('quadTree', () => {
   }
 
   it('adds an entity within the bounds', () => {
-    const bounds = new Phaser.Geom.Rectangle(0, 0, 10, 10)
+    const bounds = new AABB(0, 0, 10, 10)
     const world = createWorld({})
     const eid = addEntityAt(world, 1, 1)
 
@@ -67,13 +68,13 @@ describe('quadTree', () => {
     qt.addEntity(eid)
 
     const found = new Set<number>()
-    qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 2, 2), found)
+    qt.findEntities(new AABB(0, 0, 2, 2), found)
 
     expect(Array.from(found).sort()).toEqual([eid])
   })
 
   it('does not add an entity outside the bounds', () => {
-    const bounds = new Phaser.Geom.Rectangle(0, 0, 10, 10)
+    const bounds = new AABB(0, 0, 10, 10)
     const world = createWorld({})
     const eid = addEntityAt(world, 11, 11)
 
@@ -81,13 +82,13 @@ describe('quadTree', () => {
     qt.addEntity(eid)
 
     const found = new Set<number>()
-    qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 10, 10), found)
+    qt.findEntities(new AABB(0, 0, 10, 10), found)
 
     expect(Array.from(found).sort()).toEqual([])
   })
 
   it('adds 100 entities within the bounds', () => {
-    const bounds = new Phaser.Geom.Rectangle(0, 0, 10, 10)
+    const bounds = new AABB(0, 0, 10, 10)
     const world = createWorld({})
     const entities: number[] = []
     for (let i = 0; i < 100; i++) {
@@ -103,18 +104,18 @@ describe('quadTree', () => {
     console.log(`NodeCount: ${qt.nodeCount()}`)
 
     const found = new Set<number>()
-    qt.findEntities(new Phaser.Geom.Rectangle(0, 0, 10, 10), found)
+    qt.findEntities(new AABB(0, 0, 10, 10), found)
 
     expect(Array.from(found).sort()).toEqual(entities.sort())
   })
 
   it('finds entities in specific rect', () => {
-    const bounds = new Phaser.Geom.Rectangle(0, 0, 16, 16)
+    const bounds = new AABB(0, 0, 16, 16)
     const world = createWorld({})
     const entitiesToFind: number[] = []
     const entitiesToNotFind: number[] = []
 
-    const searchRect = new Phaser.Geom.Rectangle(10, 10, 1, 1)
+    const searchRect = new AABB(10, 10, 1, 1)
     for (let i = 0; i < 10; i++) {
       const pt = searchRect.getRandomPoint()
       entitiesToFind.push(addEntityAt(world, pt.x, pt.y))
@@ -169,7 +170,7 @@ describe('quadTree', () => {
   }
 
   it('deletes entities', () => {
-    const bounds = new Phaser.Geom.Rectangle(0, 0, 16, 16)
+    const bounds = new AABB(0, 0, 16, 16)
     const world = createWorld({})
     const entitiesToFind: number[] = []
     const entitiesToDelete: number[] = []
@@ -204,7 +205,7 @@ describe('quadTree', () => {
   })
 
   it('collapses nodes', () => {
-    const bounds = new Phaser.Geom.Rectangle(0, 0, 16, 16)
+    const bounds = new AABB(0, 0, 16, 16)
     const world = createWorld({})
     const entitiesToFind: number[] = []
     const entitiesToDelete: number[] = []
@@ -228,7 +229,7 @@ describe('quadTree', () => {
     // This will cause the node to split
     addAndPrintEntities(entitiesToDelete, qt)
 
-    expect(qt.nodeCount()).toEqual(5)
+    expect(qt.nodeCount()).toEqual(17)
 
     // Deleting one should collapse the node
     deleteAndPrintEntities(entitiesToDelete, qt)

@@ -1,14 +1,13 @@
-import { WorldPositionComponent } from "src/components/positionComponent"
-import { AABB } from "../aabb"
-import { QuadTree } from "./quadTree"
-import { SpatialDataStruct } from "src/systems/spatialSystem"
+import { AABB, getAabbFromEntity } from '../aabb'
+import { QuadTree } from './quadTree'
+import { SpatialDataStruct } from 'src/systems/spatialSystem'
 
-const QUAD_TREE_CHUNK_SIZE = 256
-const INV_QUAD_TREE_CHUNK_SIZE = 1 / QUAD_TREE_CHUNK_SIZE
+export const QUAD_TREE_CHUNK_SIZE = 256
+export const INV_QUAD_TREE_CHUNK_SIZE = 1 / QUAD_TREE_CHUNK_SIZE
 /**
  * Note: These chunks can be different than the ones in the tileset
  */
-export class ChunkableQuadTree implements SpatialDataStruct{
+export class ChunkableQuadTree implements SpatialDataStruct {
   private chunksToTreeMap: Map<string, QuadTree> = new Map()
   private entityToChunkMap = new EntityChunkMapping()
 
@@ -18,7 +17,7 @@ export class ChunkableQuadTree implements SpatialDataStruct{
     return `${x},${y}`
   }
 
-  add(eid: number, aabb: AABB) {
+  add(eid: number, aabb: AABB = getAabbFromEntity(eid)) {
     const center = aabb.centerPoint()
     const { chunkX, chunkY } = this.getChunkForWorldPosition(center.x, center.y)
     const key = this.chunkKey(chunkX, chunkY)
@@ -41,16 +40,15 @@ export class ChunkableQuadTree implements SpatialDataStruct{
   }
 
   remove(eid: number) {
-    const { chunkX, chunkY } = this.getChunkForWorldPosition(
-      WorldPositionComponent.x[eid],
-      WorldPositionComponent.y[eid],
-    )
-    const key = this.chunkKey(chunkX, chunkY)
-    const tree = this.chunksToTreeMap.get(key)
-    tree?.removeEntity(eid)
-    this.entityToChunkMap.removeEntityChunkMapping(eid)
-
-    // @TODO: remove empty chunks
+    this.entityToChunkMap.get(eid)?.forEach((chunkKey) => {
+      const tree = this.chunksToTreeMap.get(chunkKey)
+      tree?.removeEntity(eid)
+      // Delete empty chunks
+      if (tree?.length === 0) {
+        this.chunksToTreeMap.delete(chunkKey)
+      }
+    })
+    this.entityToChunkMap.removeAllMappingsForEntity(eid)
   }
 
   find(rect: AABB, foundEntities: Set<number>) {
@@ -78,7 +76,7 @@ export class ChunkableQuadTree implements SpatialDataStruct{
     return { chunkX, chunkY }
   }
 
-  update(eid: number, aabb: AABB) {
+  update(eid: number, aabb: AABB = getAabbFromEntity(eid)) {
     const center = aabb.centerPoint()
     const { chunkX, chunkY } = this.getChunkForWorldPosition(center.x, center.y)
     const key = this.chunkKey(chunkX, chunkY)
@@ -89,16 +87,23 @@ export class ChunkableQuadTree implements SpatialDataStruct{
       throw new Error("Trying to update entity, but it doesn't have a previous chunk")
     }
 
-    // if entity's previous chunk is the same, we can just update it
-    if (chunks?.includes(key)) {
-      const tree = this.chunksToTreeMap.get(key)
-      tree?.updateEntity(eid)
-    } else {
-      // else, we must remove it from the old chunk and add it to the new chunk
-      for (const cKey of chunks) {
-        const tree = this.chunksToTreeMap.get(cKey)
-        tree?.removeEntity(eid)
+    // for each tree that this entity was in:
+    // - try to update it (it will be removed if it's no longer in the tree)
+    // - if it's not in the tree, remove the mapping
+    for (const chunkKey of chunks) {
+      const tree = this.chunksToTreeMap.get(chunkKey)
+      if (tree && !tree.updateEntity(eid)) {
+        // entity no longer in the tree
+        this.entityToChunkMap.removeEntityChunkMapping(eid, chunkKey)
+        if (tree.length === 0) {
+          this.chunksToTreeMap.delete(chunkKey)
+        }
       }
+    }
+    // We've updated all previously known chunks.
+    // Now check if the entity is in a new chunk
+    if (!chunks?.includes(key)) {
+      // the entity moved to a new chunk, so we need to add it
       this.add(eid, aabb)
     }
   }
@@ -118,8 +123,22 @@ class EntityChunkMapping {
     }
   }
 
-  removeEntityChunkMapping(eid: number) {
+  removeAllMappingsForEntity(eid: number) {
     this.entityToChunkMap.delete(eid)
+  }
+
+  removeEntityChunkMapping(eid: number, chunkKey: string) {
+    const chunks = this.entityToChunkMap.get(eid)
+    if (!chunks) {
+      return
+    }
+    const index = chunks.indexOf(chunkKey)
+    if (index !== -1) {
+      chunks.splice(index, 1)
+    }
+    if (chunks.length === 0) {
+      this.entityToChunkMap.delete(eid)
+    }
   }
 
   get(eid: number) {
