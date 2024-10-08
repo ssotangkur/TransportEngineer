@@ -1,10 +1,4 @@
-import {
-  IWorld,
-  addComponent,
-  defineQuery,
-  enterQuery,
-  removeComponent,
-} from 'bitecs'
+import { IWorld, addComponent, defineQuery, enterQuery, removeComponent } from 'bitecs'
 import { BaseSystem } from './baseSystem'
 import {
   AccelerationComponent,
@@ -114,6 +108,9 @@ export class MoveResolutionSystem<WorldIn extends IWorld> extends BaseSystem<
         velocity.set(0, 0)
       }
 
+      // Limit velocity to component's max speed
+      velocity.limit(MoveableComponent.maxSpeed[eid])
+
       // Save this velocity, before we convert to tick
       setCompFromVec2(VelocityComponent, eid, velocity)
 
@@ -143,11 +140,11 @@ export class MoveResolutionSystem<WorldIn extends IWorld> extends BaseSystem<
       let desired = 0
       if (accel.length() >= 0.5) {
         desired = accel.angle()
-        AngleComponent.desiredAngle[eid] = desired 
+        AngleComponent.desiredAngle[eid] = desired
       } else {
         desired = AngleComponent.desiredAngle[eid]
       }
-      
+
       let angle = AngleComponent.radians[eid]
       //let angVelocity = AngularVelocityComponent.w[eid] * 0.001 * delta
       let angVelocity = AngularVelocityComponent.w[eid]
@@ -165,7 +162,6 @@ export class MoveResolutionSystem<WorldIn extends IWorld> extends BaseSystem<
           AngleComponent.radians[eid] = angle + maxDeltaAngleThisTick
           AngularVelocityComponent.w[eid] = newAngVelocity
         }
-        
       } else {
         let newAngVelocity = angVelocity - maxAlpha
         let maxDeltaAngleThisTick = newAngVelocity * deltaSeconds
@@ -177,7 +173,6 @@ export class MoveResolutionSystem<WorldIn extends IWorld> extends BaseSystem<
           AngleComponent.radians[eid] = angle + maxDeltaAngleThisTick
           AngularVelocityComponent.w[eid] = newAngVelocity
         }
-        
       }
       // angVelocity += alpha
       // angVelocity = Phaser.Math.Clamp(angVelocity, -maxW, maxW)

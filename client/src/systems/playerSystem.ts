@@ -52,7 +52,7 @@ export class PlayerSpawnSystem<WorldIn extends MapWorld & TextureWorld> extends 
     MoveableComponent.maxSpeed[eid] = 10
     addComponent(this.world, AngleComponent, eid)
     AngleComponent.radians[eid] = 0
-    addComponent(this.world, SpatialComponent, eid)
+    //addComponent(this.world, SpatialComponent, eid)
 
     //TEMP
     addComponent(this.world, GroupComponent, eid)

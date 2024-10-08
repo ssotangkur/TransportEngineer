@@ -1,12 +1,8 @@
 import { defineQuery, enterQuery, exitQuery, IWorld } from 'bitecs'
 import { BaseSystem } from './baseSystem'
-import {
-  SpatialComponent,
-  TilePositionComponent,
-  WorldPositionComponent,
-} from 'src/components/positionComponent'
+import { SpatialComponent, WorldPositionComponent } from 'src/components/positionComponent'
 import { SpriteComponent } from 'src/components/spriteComponent'
-import { AABB, aabbByCenter } from 'src/utils/aabb'
+import { AABB } from 'src/utils/aabb'
 import { ChunkableQuadTree } from 'src/utils/quadTrees/chunkableQuadTree'
 
 export interface SpatialDataStruct {

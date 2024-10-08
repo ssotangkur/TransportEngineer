@@ -66,37 +66,12 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
     this.updateMap()
   }
 
-  private createMap() {
-    // if (this.world.mapSystem.tileSetInfo) {
-    //   this.world.mapSystem.map = initializePhaserTileMap(
-    //     MAP_WIDTH,
-    //     MAP_HEIGHT,
-    //     this.world.mapSystem.tileSetInfo,
-    //     this.scene,
-    //   )
-    //   this.updateMap()
-    // }
-  }
+  private createMap() {}
 
   private updateMap() {
     const tileSetInfo = this.world.mapSystem.tileSetInfo
     if (!tileSetInfo) {
       return
     }
-    // const map = this.world.mapSystem.map
-    // if (!map) {
-    //   return
-    // }
-
-    // const { multiLayerMap, biomeMap } = generateMapDataUsingNoise(
-    //   MAP_WIDTH,
-    //   MAP_HEIGHT,
-    //   tileSetInfo,
-    // )
-    // this.world.mapSystem.biomeMap = biomeMap
-
-    // updateMapDataFromMultiLayerMap(MAP_WIDTH, MAP_HEIGHT, map, multiLayerMap)
-
-    // Events.emit('mapUpdated')
   }
 }

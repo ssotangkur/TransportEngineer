@@ -21,8 +21,8 @@ export type ClockWorld = {
 }
 
 const MAX_SPAWN_COUNT = 100
-const MAX_INITIAL_SPEED = 3
-const MAX_SPEED = 4.0 // tiles per sec
+const MAX_INITIAL_SPEED = 8.0
+const MAX_SPEED = 8.0 // tiles per sec
 const MAX_ACCEL = 0.5 // tiles/s^2
 
 /**
@@ -61,12 +61,12 @@ export class ShooterSpawnSystem<I extends MapWorld & TextureWorld> extends BaseS
       if (this.world.shooterSpawnSystem.spawnCount < MAX_SPAWN_COUNT) {
         const eid = addEntity(this.world)
         addComponent(this.world, TilePositionComponent, eid)
-        TilePositionComponent.x[eid] = 20 * Math.random()
-        TilePositionComponent.y[eid] = 20 * Math.random()
+        TilePositionComponent.x[eid] = 100 * Math.random()
+        TilePositionComponent.y[eid] = 100 * Math.random()
         this.world.textureWorld.textureManager.setShooterTexture(eid)
         addComponent(this.world, ShooterComponent, eid)
         addComponent(this.world, VelocityComponent, eid)
-        const v = randomVector(Math.random() * MAX_INITIAL_SPEED)
+        const v = randomVector(MAX_INITIAL_SPEED)
         setCompFromVec2(VelocityComponent, eid, v)
         addComponent(this.world, AngleComponent, eid)
         addComponent(this.world, AngularVelocityComponent, eid)
