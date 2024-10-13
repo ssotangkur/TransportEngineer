@@ -26,17 +26,15 @@ const ContainerDiv = styled.div`
 
 export type PhaserAdapterProps = {
   config: ModifiedGameConfig
-  onGameCreated?: (game: Phaser.Game) => void
 }
 
-export const PhaserAdapter = ({ config, onGameCreated }: PhaserAdapterProps) => {
+export const PhaserAdapter = ({ config }: PhaserAdapterProps) => {
   const container = React.useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     if (container?.current) {
       const game = new Phaser.Game(mergeGameConfig(config, container.current))
       ;(window as any)._game = game
-      onGameCreated?.(game)
     }
 
     return () => {

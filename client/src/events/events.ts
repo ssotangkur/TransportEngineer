@@ -16,6 +16,9 @@ export interface EventCallbacks {
   'EntityTypeList:EntitySelected': (entityType: EntityType) => void
   addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => void
   removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => void
+
+  // Emitted when the step time had been calculated
+  updateStepTime: (stepTimeMs: number) => void
 }
 
 export type EventName = keyof EventCallbacks

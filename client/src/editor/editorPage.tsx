@@ -3,7 +3,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex'
 import styled from 'styled-components'
 import '../reset.css' // Undo default stylings
 import 'react-reflex/styles.css'
-import { EditorGame } from './editor'
+import { MainGame } from '../game/mainGame'
 import 'phaser'
 import { Tab, Tabs } from './widgets/tabs'
 import { EntityTypeEditor } from './widgets/entityTypeEditor'
@@ -22,7 +22,7 @@ export const EditorPage = () => {
     <FullPageDiv>
       <ReflexContainer orientation='vertical' style={{ height: '100%' }}>
         <ReflexElement flex={4} className='noscroll'>
-          <EditorGame />
+          <MainGame />
         </ReflexElement>
         <ReflexSplitter />
         <ReflexElement flex={1} className='noscroll'>

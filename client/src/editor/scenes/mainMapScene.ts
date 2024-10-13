@@ -31,17 +31,19 @@ import { MouseSystem } from 'src/systems/mouseSystem'
 import { DebugMapSystem } from 'src/systems/debugMapSystem'
 import { ChunkVisibilitySystem } from 'src/systems/chunkVisibilitySystem'
 import { ChunkRenderingSystem } from 'src/systems/chunkRenderingSystem'
+import { UpdateTimerSystem } from 'src/systems/updateTimerSystem'
+import { MapUIScene } from 'src/scenes/mapUI/mapUIScene'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
 
-export class EntityEditorScene extends OrchestratableScene {
+export class MainMapScene extends OrchestratableScene {
   private world
 
   private systems
 
   constructor() {
-    super('editor')
+    super('editor', [MapUIScene]) // Add dependent scenes here
 
     this.world = createWorld({
       time: 0,
@@ -55,6 +57,7 @@ export class EntityEditorScene extends OrchestratableScene {
     this.systems = new SystemBuilderClass(this, this.world)
       .build(SingletonSystem)
       .build(TimeSystem)
+      .build(UpdateTimerSystem)
       .build(MouseSystem)
       .build(TextureSystem)
       .build(MapSystem)

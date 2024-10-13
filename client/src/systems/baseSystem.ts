@@ -1,6 +1,5 @@
 import type { IWorld } from 'bitecs'
-import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
-import { EventCallbacks, EventName, Events } from 'src/events/events'
+import { EventCallbacks, Events } from 'src/events/events'
 
 /**
  * Subclasses should define their own type for the world they want to support.
@@ -21,7 +20,7 @@ export abstract class BaseSystem<
 > {
   public world: WorldRequired & WorldAdded
 
-  constructor(protected scene: OrchestratableScene, protected worldIn: WorldIn) {
+  constructor(protected scene: Phaser.Scene, protected worldIn: WorldIn) {
     this.world = this.mergeWorlds(worldIn, this.createWorld(worldIn))
   }
 
@@ -87,7 +86,7 @@ type TWorldNew<B> = B extends BaseSystem<IWorld, IWorld, infer O> ? O : never
 
 export class SystemBuilderClass<InitialWorldIn extends IWorld> {
   constructor(
-    private scene: OrchestratableScene,
+    private scene: Phaser.Scene,
     private world: InitialWorldIn,
     private internalInstances: BaseSystem<any, any, any>[] = [],
     private systemClasses = new Set<any>(),
@@ -97,7 +96,7 @@ export class SystemBuilderClass<InitialWorldIn extends IWorld> {
     WorldRequired extends InitialWorldIn,
     WorldIn extends WorldRequired & InitialWorldIn,
     S extends BaseSystem<InitialWorldIn, WorldIn, any>,
-  >(systemClass: new (scene: OrchestratableScene, world: InitialWorldIn) => S) {
+  >(systemClass: new (scene: Phaser.Scene, world: InitialWorldIn) => S) {
     if (this.systemClasses.has(systemClass)) {
       throw new Error('Attempted to add duplicate system')
     }
