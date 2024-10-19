@@ -102,17 +102,6 @@ export class MapControl<WorldIn extends MapWorld & TimeWorld & SingletonWorld> e
       console.log('MapDebugComponent.mode', DebugMapComponent.mode[singletonEid])
       DebugMapComponent.mode[singletonEid] = next(DebugMapComponent.mode[singletonEid])
     })
-
-    // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
-    // if (this.world.mapSystem.map) {
-    //   camera.useBounds = true
-    //   camera.setBounds(
-    //     0,
-    //     0,
-    //     this.world.mapSystem.map.widthInPixels,
-    //     this.world.mapSystem.map.heightInPixels,
-    //   )
-    // }
   }
 
   update(_time: number, delta: number): void {

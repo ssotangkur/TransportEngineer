@@ -34,7 +34,8 @@ export class ChunkRenderingSystem<WorldIn extends MapWorld & SingletonWorld> ext
 
   update(_time: number, _delta: number): void {
     const tileSetInfo = this.world.mapSystem.tileSetInfo
-    if (!tileSetInfo) {
+    const colorMap = this.world.mapSystem.colorMap
+    if (!tileSetInfo || !colorMap) {
       return
     }
 
@@ -59,13 +60,16 @@ export class ChunkRenderingSystem<WorldIn extends MapWorld & SingletonWorld> ext
       )
       this.chunkKeyToMapMap.set(key, map)
 
+      // Translate coordinates of biomeMap by offset
+      const translatedBiomeMap = (r: number, c: number) => {
+        return colorMap(r + offsetTileY, c + offsetTileX)
+      }
+
       const { multiLayerMap } = generateMapDataUsingNoise(
         CHUNK_SIZE,
         CHUNK_SIZE,
         tileSetInfo,
-        offsetTileX,
-        offsetTileY,
-        this.world.mapSystem.mapInfo.seed,
+        translatedBiomeMap,
       )
 
       updateMapDataFromMultiLayerMap(CHUNK_SIZE, CHUNK_SIZE, map, multiLayerMap)

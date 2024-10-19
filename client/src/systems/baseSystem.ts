@@ -1,5 +1,6 @@
 import type { IWorld } from 'bitecs'
-import { EventCallbacks, Events } from 'src/events/events'
+import { EventCallbacks } from 'src/events/events'
+import { subUnsub } from 'src/utils/subUnsub'
 
 /**
  * Subclasses should define their own type for the world they want to support.
@@ -77,8 +78,7 @@ export abstract class BaseSystem<
     event: EventName,
     cb: EventCallbacks[EventName],
   ) {
-    Events.on(event, cb)
-    this.scene.events.on('destroy', () => Events.off(event, cb))
+    subUnsub(this.scene, event, cb)
   }
 }
 

@@ -17,5 +17,3 @@ export const loadTiledTileSetJson = async (
   const tiledJson: TiledTileSetJson = await resp.json()
   return tiledJson
 }
-
-export const parseTiledTileSetJson = (tileSetJson: TiledTileSetJson) => {}

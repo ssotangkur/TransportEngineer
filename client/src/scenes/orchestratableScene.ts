@@ -1,15 +1,5 @@
-import { processNextSceneCommands } from './sceneOrchestrator'
+import { Events } from 'src/events/events'
 import Phaser from 'phaser'
-
-/**
- * Phaser allows the key to be embedded in the scene config or defined
- * externally. This makes it confusing to know which key takes precedence.
- *
- */
-export type KeyedScene = {
-  key: string
-  scene: Phaser.Types.Scenes.SceneType
-}
 
 /**
  * This represents a top level scene that is responsible for adding
@@ -77,7 +67,9 @@ export class OrchestratableScene extends Phaser.Scene {
     // Add dependent scenes, which instantiates them
     this.dependentSceneInstances = (this.dependentScenes ?? [])
       .map((scene) => {
-        return this.scene.add('', scene, true)
+        // Note: we pass "this" as the parent scene which the dependent scenes
+        // can get through their init() and create() methods
+        return this.scene.add('', scene, true, this)
       })
       .filter((scene): scene is Phaser.Scene => {
         if (!scene) {
@@ -101,5 +93,52 @@ export class OrchestratableScene extends Phaser.Scene {
   update(time: number, delta: number) {
     super.update(time, delta)
     processNextSceneCommands(this)
+  }
+}
+
+export type SceneCommand = {
+  type: 'switch' | 'pause'
+  source: '*' | string
+  target: string
+}
+
+export const createSwitchCommand = (target: string): SceneCommand => {
+  return {
+    type: 'switch',
+    source: '*',
+    target,
+  }
+}
+
+const sceneCommandQueue: SceneCommand[] = []
+
+Events.on('unpause', () => {
+  sceneCommandQueue.push(createSwitchCommand('editor'))
+})
+Events.on('pause', () => {
+  sceneCommandQueue.push(createSwitchCommand('pause'))
+})
+Events.on('boot', () => {
+  sceneCommandQueue.push(createSwitchCommand('boot'))
+})
+
+export const processNextSceneCommands = (scene: OrchestratableScene) => {
+  const command = sceneCommandQueue.pop()
+  if (!command) {
+    return
+  }
+
+  if (command.source === '*' || command.source === scene.name) {
+    switch (command.type) {
+      case 'switch':
+        scene.scene.switch(command.target)
+        break
+      case 'pause':
+        scene.scene.pause(command.target)
+        break
+    }
+  } else {
+    // commands not related to this scene should be pushed back onto the queue
+    sceneCommandQueue.push(command)
   }
 }

@@ -99,8 +99,8 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
       this.debug('No biomeMap, exiting')
       return
     }
-    const width = biomeMap[0].length
-    const height = biomeMap.length
+    const width = 100
+    const height = 100
 
     const scaleX = this.world.mapSystem.tileSetInfo!.tileWidth
     const scaleY = this.world.mapSystem.tileSetInfo!.tileHeight
@@ -126,24 +126,15 @@ export class DebugMapSystem<WorldIn extends MapWorld> extends BaseSystem<
         }
       }
 
-      for (let r = 0; r < biomeMap.length; r++) {
-        for (let c = 0; c < biomeMap[r].length; c++) {
-          const cell = biomeMap[r][c]
-          // const worldPos = map.tileToWorldXY(c, r)!
+      for (let r = 0; r < height; r++) {
+        for (let c = 0; c < width; c++) {
+          const cell = biomeMap(r, c)
           const color = getColor(cell)
           rt.fill(color, undefined, c, r, 1, 1)
         }
       }
     })
   }
-
-  // private clearGameObjects() {
-  //   for (let i = 0; i < this.gameObjs.length; i++) {
-  //     const obj = this.gameObjs[i]
-  //     obj.destroy()
-  //   }
-  //   this.gameObjs = []
-  // }
 }
 
 const getColorForBiome = (biome: Biome) => {

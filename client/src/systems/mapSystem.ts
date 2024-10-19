@@ -1,19 +1,20 @@
 import { TileSetInfo, loadTiledTileSetJson } from 'src/mapping/tiledJsonParser'
 import { BaseSystem } from './baseSystem'
-import { BiomeCell } from 'src/mapping/biome'
+import { BiomeCell, createBiomeMap } from 'src/mapping/biome'
 import { IWorld } from 'bitecs'
 import { addTileSetInfo, emptyMapInfo, MapInfo } from 'src/utils/mapInfo'
+import { createColorMapper, WangColor } from 'src/mapping/mapGenerator'
+import { Events } from 'src/events/events'
+import { AABB } from 'src/utils/aabb'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
-
-const MAP_WIDTH = 4 // Only use these constants here, all other places should have this passed in
-const MAP_HEIGHT = 4
 
 export type MapWorld = {
   mapSystem: {
     map?: Phaser.Tilemaps.Tilemap
     tileSetInfo?: TileSetInfo
-    biomeMap?: BiomeCell[][]
+    biomeMap?: (r: number, c: number) => BiomeCell
+    colorMap?: (r: number, c: number) => WangColor
     mapInfo: MapInfo
   }
 }
@@ -59,19 +60,28 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
   }
 
   public create() {
-    this.createMap()
+    this.initializeMap()
   }
 
   private regenerateMap() {
-    this.updateMap()
+    this.world.mapSystem.mapInfo.seed = Date.now()
+    this.initializeMap()
   }
 
-  private createMap() {}
-
-  private updateMap() {
-    const tileSetInfo = this.world.mapSystem.tileSetInfo
-    if (!tileSetInfo) {
-      return
+  private initializeMap() {
+    if (!this.world.mapSystem.tileSetInfo) {
+      throw new Error('No tileSetInfo, it should have been loaded by preload()')
     }
+
+    this.world.mapSystem.biomeMap = createBiomeMap(this.world.mapSystem.mapInfo.seed)
+    this.world.mapSystem.colorMap = createColorMapper(
+      this.world.mapSystem.tileSetInfo,
+      this.world.mapSystem.biomeMap,
+    )
+
+    Events.emit('miniMapUpdated', {
+      colorMap: this.world.mapSystem.colorMap,
+      rect: new AABB(0, 0, 200, 200),
+    })
   }
 }

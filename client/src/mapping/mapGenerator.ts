@@ -1,12 +1,11 @@
 import { groupBy } from 'src/utils/groupBy'
-import { Biome, BiomeCell, createBiomeMap } from './biome'
+import { Biome, BiomeCell } from './biome'
 import { MultiLayerTile, TileLayer } from './multiLayerTile'
 import { TileSetInfo } from './tiledJsonParser'
 
 export type MapInfo = {
   width: number
   height: number
-  biomeMap: BiomeCell[][]
   multiLayerMap: MultiLayerTile[][]
 }
 
@@ -14,18 +13,13 @@ export const generateMapDataUsingNoise = (
   width: number,
   height: number,
   tileSetInfo: TileSetInfo,
-  offsetTileX: number = 0,
-  offsetTileY: number = 0,
-  seedFnOrValue: number | (() => number) = () => Date.now(),
+  colorMap: (r: number, c: number) => WangColor,
 ): MapInfo => {
-  // Add +1 to width & height for marching squares
-  const biomeMap = createBiomeMap(width + 1, height + 1, offsetTileX, offsetTileY, seedFnOrValue)
-
   // convert height map to "WangColor" map
-  const colorMapper = createColorMapper(tileSetInfo)
-  const colorMap = biomeMap.map((row) => {
-    return row.map(colorMapper)
-  })
+
+  // const colorMap = biomeMap.map((row) => {
+  //   return row.map(colorMapper)
+  // })
 
   // From the color map, we use marching squares to find the correct tiles for each layer
   const wangTileMapper = createWangTileMapper(tileSetInfo)
@@ -33,10 +27,10 @@ export const generateMapDataUsingNoise = (
   for (let r = 0; r < height; r++) {
     const row: MultiLayerTile[] = []
     for (let c = 0; c < width; c++) {
-      const tl = colorMap[r][c]
-      const tr = colorMap[r][c + 1]
-      const bl = colorMap[r + 1][c]
-      const br = colorMap[r + 1][c + 1]
+      const tl = colorMap(r, c)
+      const tr = colorMap(r, c + 1)
+      const bl = colorMap(r + 1, c)
+      const br = colorMap(r + 1, c + 1)
 
       row.push(wangTileMapper(tr, br, bl, tl))
     }
@@ -44,7 +38,6 @@ export const generateMapDataUsingNoise = (
   }
 
   return {
-    biomeMap,
     multiLayerMap: mlTileMap,
     width,
     height,
@@ -62,8 +55,12 @@ export type WangColor = {
   biomes: Biome[]
 }
 
-const createColorMapper = (tilesetInfo: TileSetInfo) => {
-  return (biomeCell: BiomeCell): WangColor => {
+export const createColorMapper = (
+  tilesetInfo: TileSetInfo,
+  biomeMap: (r: number, c: number) => BiomeCell,
+) => {
+  return (r: number, c: number): WangColor => {
+    const biomeCell = biomeMap(r, c)
     const rankInfo = tilesetInfo.colorInfo.getRankForHeightAndBiome(
       biomeCell.height,
       biomeCell.biome,

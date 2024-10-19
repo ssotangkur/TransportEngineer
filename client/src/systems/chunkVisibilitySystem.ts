@@ -6,7 +6,6 @@ import { CHUNK_SIZE } from 'src/constants'
 import _ from 'lodash'
 import { ChunkComponent } from 'src/components/chunkComponent'
 import { MapInfo } from 'src/utils/mapInfo'
-import { C } from 'vitest/dist/chunks/environment.C5eAp3K6'
 import { Events } from 'src/events/events'
 
 const chunkQuery = defineQuery([ChunkComponent])

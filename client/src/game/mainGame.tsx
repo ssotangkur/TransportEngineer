@@ -1,17 +1,15 @@
 import 'phaser'
 import { ModifiedGameConfig, PhaserAdapter } from 'src/reactComponents/phaserAdapter'
 import React from 'react'
-import { BootScene } from '../editor/scenes/sceneOrchestrator'
-import { MainMapScene } from '../editor/scenes/mainMapScene'
+import { MainMapScene } from '../scenes/mainMap/mainMapScene'
 import { PauseScene } from 'src/scenes/pauseScene'
 import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin'
-import { MapUIScene } from 'src/scenes/mapUI/mapUIScene'
 
 const editorConfig: ModifiedGameConfig = {
   title: 'TransportEngineer',
   url: 'https://github.com/ssotangkur/TransportEngineer',
   type: Phaser.AUTO,
-  scene: [MainMapScene, BootScene, PauseScene],
+  scene: [MainMapScene, PauseScene],
   input: {
     keyboard: true,
   },

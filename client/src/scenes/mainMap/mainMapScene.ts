@@ -1,7 +1,7 @@
 import 'phaser'
 // Tilesheets need to be extruded to avoid bleeding around the edges issue
 import tilesheetUrl from '/assets/tiles/tilesheet_complete_2X_extruded.png'
-import { OrchestratableScene } from './orchestratableScene'
+import { OrchestratableScene } from '../orchestratableScene'
 import { MapControl } from 'src/systems/mapControlSystem'
 import { MapSystem } from 'src/systems/mapSystem'
 import { createWorld } from 'bitecs'
@@ -32,7 +32,8 @@ import { DebugMapSystem } from 'src/systems/debugMapSystem'
 import { ChunkVisibilitySystem } from 'src/systems/chunkVisibilitySystem'
 import { ChunkRenderingSystem } from 'src/systems/chunkRenderingSystem'
 import { UpdateTimerSystem } from 'src/systems/updateTimerSystem'
-import { MapUIScene } from 'src/scenes/mapUI/mapUIScene'
+import { MapUIScene } from 'src/scenes/mainMap/mapUI/mapUIScene'
+import { MiniMapScene } from './miniMap/miniMapScene'
 
 export const editorSceneName = 'EditorScene'
 export const SPRITE_SPEED = 0.5
@@ -43,7 +44,7 @@ export class MainMapScene extends OrchestratableScene {
   private systems
 
   constructor() {
-    super('editor', [MapUIScene]) // Add dependent scenes here
+    super('editor', [MapUIScene, MiniMapScene]) // Add dependent scenes here
 
     this.world = createWorld({
       time: 0,

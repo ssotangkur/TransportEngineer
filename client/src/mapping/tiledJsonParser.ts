@@ -1,11 +1,10 @@
 import { ASSETS_PATH } from 'src/constants'
-import { OrchestratableScene } from 'src/editor/scenes/orchestratableScene'
+import { OrchestratableScene } from 'src/scenes/orchestratableScene'
 import { EquilavencyGroups } from './equilavencyGroup'
 import { TiledTileSetJson, TiledWangColorJson, TiledWangSetJson } from './tiledTypes'
 import _ from 'lodash'
 import { groupBy } from 'src/utils/groupBy'
-import { MapWorld } from 'src/systems/mapSystem'
-import { generateMapDataUsingNoise, WangColor } from './mapGenerator'
+import { WangColor } from './mapGenerator'
 import { ALL_BIOMES, Biome, isBiome } from './biome'
 import { MultiLayerTile } from './multiLayerTile'
 
@@ -81,7 +80,7 @@ export type TiledData = {
  */
 export const loadTiledTileSetJson = async (
   tiledTileSetJsonFile: string,
-  scene: OrchestratableScene,
+  scene: Phaser.Scene,
 ): Promise<TileSetInfo> => {
   const resp = await fetch(TILES_PATH + '/' + tiledTileSetJsonFile)
   const tileSet: TiledTileSetJson = await resp.json()
@@ -246,7 +245,7 @@ const createGetColorForBiome = (colorsInRank: WangColor[]) => {
   return getColor
 }
 
-const loadImages = (tileSetInfo: TileSetInfo, scene: OrchestratableScene) => {
+const loadImages = (tileSetInfo: TileSetInfo, scene: Phaser.Scene) => {
   tileSetInfo.tiledTileSetJson.tiles?.forEach((tile) => {
     if (tile.image) {
       scene.load.image(tile.image, TILES_PATH + '/' + tile.image)
@@ -350,7 +349,7 @@ export const initializePhaserTileMap = (
   width: number,
   height: number,
   tileSetInfo: TileSetInfo,
-  scene: OrchestratableScene,
+  scene: Phaser.Scene,
   offsetWorldX: number = 0,
   offsetWorldY: number = 0,
 ) => {
