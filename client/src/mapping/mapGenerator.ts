@@ -15,12 +15,6 @@ export const generateMapDataUsingNoise = (
   tileSetInfo: TileSetInfo,
   colorMap: (r: number, c: number) => WangColor,
 ): MapInfo => {
-  // convert height map to "WangColor" map
-
-  // const colorMap = biomeMap.map((row) => {
-  //   return row.map(colorMapper)
-  // })
-
   // From the color map, we use marching squares to find the correct tiles for each layer
   const wangTileMapper = createWangTileMapper(tileSetInfo)
   const mlTileMap: MultiLayerTile[][] = []

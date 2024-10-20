@@ -9,7 +9,7 @@ import {
 } from 'src/components/positionComponent'
 import { AccelVizComponent } from 'src/components/debugComponent'
 import { MapWorld } from './mapSystem'
-import { newVec2FromComp } from 'src/utils/vectors'
+import { newVec2FromComp, setVec2FromComp } from 'src/utils/vectors'
 
 const debugQuery = defineQuery([PlayerComponent, TileTargetComponent])
 
@@ -43,6 +43,10 @@ export class AccelVizSystem<WorldIn extends MapWorld> extends BaseSystem<
   private accelVizEnter = enterQuery(this.accelVizQuery)
   private accelVizExit = exitQuery(this.accelVizQuery)
 
+  // Temp Vec2's to avoid GC
+  private start = new Phaser.Math.Vector2()
+  private accel = new Phaser.Math.Vector2()
+
   createWorld(_worldIn: IWorld): AccelVizWorld {
     return {
       accelVizWorld: {
@@ -57,15 +61,17 @@ export class AccelVizSystem<WorldIn extends MapWorld> extends BaseSystem<
       this.world.accelVizWorld.lines.set(eid, line)
     })
 
+    // Temp Vec2's so we don't 
+
     this.forEidIn(this.accelVizQuery, (eid) => {
-      let start = newVec2FromComp(TilePositionComponent, eid)
-      let accel = newVec2FromComp(VelocityComponent, eid)
-      let end = accel.add(start)
-      this.world.mapSystem.mapInfo.tileToWorldXY(start.x, start.y, start)
+      setVec2FromComp(this.start, TilePositionComponent, eid)
+      setVec2FromComp(this.accel, VelocityComponent, eid)
+      let end = this.accel.add(this.start)
+      this.world.mapSystem.mapInfo.tileToWorldXY(this.start.x, this.start.y, this.start)
       this.world.mapSystem.mapInfo.tileToWorldXY(end.x, end.y, end)
       const line = this.world.accelVizWorld.lines.get(eid)
       line?.setOrigin(0, 0)
-      line?.setTo(start.x, start.y, end.x, end.y)
+      line?.setTo(this.start.x, this.start.y, end.x, end.y)
     })
 
     this.forEidIn(this.accelVizExit, (eid) => {

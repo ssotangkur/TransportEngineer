@@ -242,6 +242,9 @@ export class BoidSystem<WorldIn extends SpatialWorld & MapWorld> extends BaseSys
     return steering
   }
 
+  // Temp Vec2 to avoid gc
+  private otherPos = new Phaser.Math.Vector2()
+
   _findOthersInRange(eid: number, pos: Vector2, range: number): Client[] {
     const foundEids = new Set<number>()
 
@@ -258,8 +261,8 @@ export class BoidSystem<WorldIn extends SpatialWorld & MapWorld> extends BaseSys
         if (eid === foundEid) {
           return false
         }
-        const otherPos = newVec2FromComp(TilePositionComponent, foundEid)
-        return pos.distance(otherPos) < range
+        setVec2FromComp(this.otherPos, TilePositionComponent, foundEid)
+        return pos.distance(this.otherPos) < range
       })
       .map((foundEid) => {
         return {

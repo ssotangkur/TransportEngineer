@@ -61,7 +61,7 @@ export class ChunkRenderingSystem<WorldIn extends MapWorld & SingletonWorld> ext
       this.chunkKeyToMapMap.set(key, map)
 
       // Translate coordinates of biomeMap by offset
-      const translatedBiomeMap = (r: number, c: number) => {
+      const translatedColorMap = (r: number, c: number) => {
         return colorMap(r + offsetTileY, c + offsetTileX)
       }
 
@@ -69,7 +69,7 @@ export class ChunkRenderingSystem<WorldIn extends MapWorld & SingletonWorld> ext
         CHUNK_SIZE,
         CHUNK_SIZE,
         tileSetInfo,
-        translatedBiomeMap,
+        translatedColorMap,
       )
 
       updateMapDataFromMultiLayerMap(CHUNK_SIZE, CHUNK_SIZE, map, multiLayerMap)
