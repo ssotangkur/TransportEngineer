@@ -104,21 +104,6 @@ export const createBiomeMap = (
     return biomeCell
   }
   return getBiome
-
-  // const result: BiomeCell[][] = []
-  // for (let r = 0; r < height; r++) {
-  //   const row: BiomeCell[] = []
-  //   for (let c = 0; c < width; c++) {
-  //     const height = heightMap(c, r)
-  //     const temperature = temperatureMap(c, r)
-  //     const precipitation = precipitationMap(c, r)
-  //     const biomeCell = getBiomeCell(height, temperature, precipitation)
-  //     row.push(biomeCell)
-  //   }
-  //   result.push(row)
-  // }
-
-  // return result
 }
 
 /**
