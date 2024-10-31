@@ -1,11 +1,12 @@
 import { subUnsub } from 'src/utils/subUnsub'
 
-const MINI_MAP_WIDTH = 256
-const MINI_MAP_HEIGHT = 256
+const MINI_MAP_WIDTH = 400
+const MINI_MAP_HEIGHT = 400
 
 export class MiniMapScene extends Phaser.Scene {
   private renderTexture: Phaser.GameObjects.RenderTexture | undefined
   private created: boolean = false
+  private texture: Phaser.Textures.Texture | undefined | null
 
   constructor() {
     super({
@@ -28,12 +29,30 @@ export class MiniMapScene extends Phaser.Scene {
         // Exit if we haven't initialized yet
         return
       }
+
+      const pixels = new Uint8Array(MINI_MAP_WIDTH * MINI_MAP_HEIGHT * 4)
       for (let r = data.rect.y; r < MINI_MAP_HEIGHT; r++) {
         for (let c = data.rect.x; c < MINI_MAP_WIDTH; c++) {
-          const color = Phaser.Display.Color.HexStringToColor(data.colorMap(r, c).color).color
-          this.renderTexture.fill(color, undefined, c, r, 1, 1)
+          const color = Phaser.Display.Color.HexStringToColor(data.colorMap(r, c).color)
+          const colorIdx = (r * MINI_MAP_WIDTH + c) * 4
+          pixels[colorIdx] = color.red
+          pixels[colorIdx + 1] = color.green
+          pixels[colorIdx + 2] = color.blue
+          pixels[colorIdx + 3] = 192
         }
       }
+
+      this.texture?.source[0]?.glTexture?.update(
+        pixels,
+        MINI_MAP_WIDTH,
+        MINI_MAP_HEIGHT,
+        false,
+        WebGL2RenderingContext.CLAMP_TO_EDGE,
+        WebGL2RenderingContext.CLAMP_TO_EDGE,
+        WebGL2RenderingContext.NEAREST,
+        WebGL2RenderingContext.NEAREST,
+        WebGL2RenderingContext.RGBA,
+      )
     })
   }
 
@@ -41,21 +60,27 @@ export class MiniMapScene extends Phaser.Scene {
     if (this.created) {
       return
     }
+    this.created = true
+
     this.cameras.main
-      .setViewport(0, 0, MINI_MAP_WIDTH, MINI_MAP_HEIGHT)
+      .setViewport(300, 0, MINI_MAP_WIDTH, MINI_MAP_HEIGHT)
       .setScroll(-MINI_MAP_WIDTH / 2, -MINI_MAP_HEIGHT / 2)
       .setVisible(true)
-    // Object.values(DebugMapMode).forEach((mode) => {
-    //   if (mode === DebugMapMode.Off) {
-    //     return
-    //   }
-    //   this.renderTextures[mode] = this.add.renderTexture(0, 0).setVisible(false).setDepth(10000)
-    // })
     this.renderTexture = this.add
       .renderTexture(0, 0)
       .setSize(MINI_MAP_WIDTH, MINI_MAP_HEIGHT)
       .setVisible(true)
       .setDepth(10000)
-    this.created = true
+
+    this.texture = this.textures.addUint8Array(
+      'miniMap',
+      new Uint8Array(MINI_MAP_WIDTH * MINI_MAP_HEIGHT * 4),
+      MINI_MAP_WIDTH,
+      MINI_MAP_HEIGHT,
+    )
+    if (this.texture === null) {
+      throw new Error('Could not create texture')
+    }
+    this.renderTexture?.setTexture('miniMap')
   }
 }

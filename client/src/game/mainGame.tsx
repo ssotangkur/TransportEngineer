@@ -8,7 +8,7 @@ import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin'
 const editorConfig: ModifiedGameConfig = {
   title: 'TransportEngineer',
   url: 'https://github.com/ssotangkur/TransportEngineer',
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   scene: [MainMapScene, PauseScene],
   input: {
     keyboard: true,
