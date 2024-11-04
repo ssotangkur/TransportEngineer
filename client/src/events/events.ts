@@ -2,9 +2,9 @@ import { ComponentType } from 'common/src/entities/componentType'
 import { EntityType } from 'common/src/entities/entityType'
 import { createEventEmitter } from './eventEmitter'
 import { MapInfo } from 'src/utils/mapInfo'
-import { ChunkInfo } from 'src/systems/chunkVisibilitySystem'
 import { AABB } from 'src/utils/aabb'
 import { WangColor } from 'src/mapping/mapGenerator'
+import { MapWorld } from 'src/systems/mapSystem'
 
 export interface EventCallbacks {
   reloadCatalog: () => void
@@ -13,8 +13,8 @@ export interface EventCallbacks {
   pause: () => void
   boot: () => void
   regenerateMap: () => void
+  mapRegenerated: (mapWorld: MapWorld) => void
   mapInfoUpdated: (mapInfo: MapInfo) => void
-  chunkInfoUpdated: (chunkInfo: ChunkInfo) => void
   'EntityTypeList:EntitySelected': (entityType: EntityType) => void
   addComponentTypeToEntityType: (componentType: ComponentType, entityType: EntityType) => void
   removeComponentTypeFromEntityType: (componentType: ComponentType, entityType: EntityType) => void

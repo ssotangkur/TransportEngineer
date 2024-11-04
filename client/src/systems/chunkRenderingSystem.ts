@@ -9,7 +9,6 @@ import {
 } from 'src/mapping/tiledJsonParser'
 import { CHUNK_SIZE } from 'src/constants'
 import { chunkKey } from './chunkVisibilitySystem'
-import { generateMapDataUsingNoise } from 'src/mapping/mapGenerator'
 
 const chunkQuery = defineQuery([ChunkComponent])
 const chunkEnter = enterQuery(chunkQuery)
@@ -34,10 +33,22 @@ export class ChunkRenderingSystem<WorldIn extends MapWorld & SingletonWorld> ext
 
   update(_time: number, _delta: number): void {
     const tileSetInfo = this.world.mapSystem.tileSetInfo
-    const colorMap = this.world.mapSystem.colorMap
-    if (!tileSetInfo || !colorMap) {
+    const multiLayerMap = this.world.mapSystem.multiLayerMap
+    if (!tileSetInfo || !multiLayerMap) {
       return
     }
+
+    // Deletes need to run first for map regeneration to work correctly
+    this.forEidIn(chunkExit, (eid) => {
+      const key = chunkKey(ChunkComponent.x[eid], ChunkComponent.y[eid])
+
+      const map = this.chunkKeyToMapMap.get(key)
+      if (!map) {
+        return
+      }
+      this.chunkKeyToMapMap.delete(key)
+      map.destroy()
+    })
 
     this.forEidIn(chunkEnter, (eid) => {
       const chunkX = ChunkComponent.x[eid]
@@ -61,29 +72,11 @@ export class ChunkRenderingSystem<WorldIn extends MapWorld & SingletonWorld> ext
       this.chunkKeyToMapMap.set(key, map)
 
       // Translate coordinates of biomeMap by offset
-      const translatedColorMap = (r: number, c: number) => {
-        return colorMap(r + offsetTileY, c + offsetTileX)
+      const translatedMultiLayerMap = (r: number, c: number) => {
+        return multiLayerMap(r + offsetTileY, c + offsetTileX)
       }
 
-      const { multiLayerMap } = generateMapDataUsingNoise(
-        CHUNK_SIZE,
-        CHUNK_SIZE,
-        tileSetInfo,
-        translatedColorMap,
-      )
-
-      updateMapDataFromMultiLayerMap(CHUNK_SIZE, CHUNK_SIZE, map, multiLayerMap)
-    })
-
-    this.forEidIn(chunkExit, (eid) => {
-      const key = chunkKey(ChunkComponent.x[eid], ChunkComponent.y[eid])
-
-      const map = this.chunkKeyToMapMap.get(key)
-      if (!map) {
-        return
-      }
-      this.chunkKeyToMapMap.delete(key)
-      map.destroy()
+      updateMapDataFromMultiLayerMap(CHUNK_SIZE, CHUNK_SIZE, map, translatedMultiLayerMap)
     })
   }
 }

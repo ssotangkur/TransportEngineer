@@ -5,21 +5,8 @@ import { SingletonWorld } from './singletonSystem'
 import { CHUNK_SIZE } from 'src/constants'
 import _ from 'lodash'
 import { ChunkComponent } from 'src/components/chunkComponent'
-import { MapInfo } from 'src/utils/mapInfo'
-import { Events } from 'src/events/events'
 
 const chunkQuery = defineQuery([ChunkComponent])
-
-export type ChunkInfo = {
-  getChunkForWorldPosition: (x: number, y: number) => Phaser.Math.Vector2
-  chunkKey: (x: number, y: number) => string
-}
-
-export type ChunkWorld = {
-  chunkSystem: {
-    chunkInfo: ChunkInfo
-  }
-}
 
 /**
  * Monitors the camera's view and creates or removes chunk entities based on what is visible
@@ -28,39 +15,22 @@ export type ChunkWorld = {
 export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> extends BaseSystem<
   MapWorld & SingletonWorld,
   WorldIn,
-  ChunkWorld
+  IWorld
 > {
   public prevCameraRect: Phaser.Geom.Rectangle | undefined
 
-  createWorld(_: MapWorld & SingletonWorld): ChunkWorld {
-    return {
-      chunkSystem: {
-        chunkInfo: {
-          getChunkForWorldPosition: () => {
-            throw new Error(`Initialize TilesetInfo before calling this.`)
-          },
-          chunkKey: (x: number, y: number) => {
-            return `${x},${y}`
-          },
-        },
-      },
-    }
+  private refreshAll = false
+
+  createWorld(_: MapWorld & SingletonWorld): IWorld {
+    return {}
   }
 
   create(): void {
-    // Update functions when mapinfo changes
-    this.subUnsub('mapInfoUpdated', (mapInfo) => {
-      this.onMapInfoUpdated(mapInfo)
+    // When map is regenerated, we can trigger all downstream systems
+    // to regenerate chunks by removing and re-adding them
+    this.subUnsub('mapRegenerated', () => {
+      this.refreshAll = true
     })
-  }
-
-  onMapInfoUpdated(mapInfo: MapInfo) {
-    this.world.chunkSystem.chunkInfo.getChunkForWorldPosition = (x: number, y: number) => {
-      const chunkX = Math.floor(x / (CHUNK_SIZE * mapInfo.tileSetInfo!.tileWidth))
-      const chunkY = Math.floor(y / (CHUNK_SIZE * mapInfo.tileSetInfo!.tileHeight))
-      return new Phaser.Math.Vector2(chunkX, chunkY)
-    }
-    Events.emit('chunkInfoUpdated', this.world.chunkSystem.chunkInfo)
   }
 
   update(_time: number, _delta: number): void {
@@ -68,7 +38,7 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
     const cameraViewChanged = !_.isEqual(this.prevCameraRect, cameraRect)
 
     const tileSetInfo = this.world.mapSystem.tileSetInfo
-    if (!cameraViewChanged || !tileSetInfo) {
+    if (!tileSetInfo || (!cameraViewChanged && !this.refreshAll)) {
       return // No need to update
     }
 
@@ -106,6 +76,14 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
       const chunkX = ChunkComponent.x[eid]
       const chunkY = ChunkComponent.y[eid]
 
+      // If refreshAll is true, all chunks will be removed
+      // They will get re-added at the end
+      if (this.refreshAll) {
+        this.debug(`(refreshAll) Removing chunk ${chunkKey(chunkX, chunkY)}`)
+        removeEntity(this.world, eid)
+        return
+      }
+
       // Remove chunks that are no longer visible
       if (!visibleChunkRect.contains(chunkX, chunkY)) {
         this.debug(`Removing chunk ${chunkKey(chunkX, chunkY)}`)
@@ -126,6 +104,9 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
       ChunkComponent.x[eid] = x
       ChunkComponent.y[eid] = y
     })
+
+    // Reset refreshAll flag
+    this.refreshAll = false
   }
 }
 

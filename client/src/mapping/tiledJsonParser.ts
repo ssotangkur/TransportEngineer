@@ -321,13 +321,13 @@ export const updateMapDataFromMultiLayerMap = (
   width: number,
   height: number,
   map: Phaser.Tilemaps.Tilemap,
-  multiLayerMap: MultiLayerTile[][],
+  multiLayerMap: (r: number, c: number) => MultiLayerTile,
 ) => {
   clearMap(width, height, map)
 
   for (let r = 0; r < height; r++) {
     for (let c = 0; c < width; c++) {
-      const mlTile = multiLayerMap[r][c]
+      const mlTile = multiLayerMap(r, c)
       mlTile.layers.forEach((layer) => {
         map.putTileAt(layer.tileId, c, r, false, layer.color.name)
       })

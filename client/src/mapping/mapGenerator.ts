@@ -38,6 +38,24 @@ export const generateMapDataUsingNoise = (
   }
 }
 
+export const createMultiLayerMap = (
+  tileSetInfo: TileSetInfo,
+  colorMap: (r: number, c: number) => WangColor,
+): ((r: number, c: number) => MultiLayerTile) => {
+  // From the color map, we use marching squares to find the correct tiles for each layer
+  const wangTileMapper = createWangTileMapper(tileSetInfo)
+
+  const mapper = (r: number, c: number): MultiLayerTile => {
+    const tl = colorMap(r, c)
+    const tr = colorMap(r, c + 1)
+    const bl = colorMap(r + 1, c)
+    const br = colorMap(r + 1, c + 1)
+    return wangTileMapper(tr, br, bl, tl)
+  }
+
+  return mapper
+}
+
 export type WangColor = {
   color: string
   name: string

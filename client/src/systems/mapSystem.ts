@@ -3,9 +3,10 @@ import { BaseSystem } from './baseSystem'
 import { BiomeCell, createBiomeMap } from 'src/mapping/biome'
 import { IWorld } from 'bitecs'
 import { addTileSetInfo, emptyMapInfo, MapInfo } from 'src/utils/mapInfo'
-import { createColorMapper, WangColor } from 'src/mapping/mapGenerator'
+import { createColorMapper, createMultiLayerMap, WangColor } from 'src/mapping/mapGenerator'
 import { Events } from 'src/events/events'
 import { AABB } from 'src/utils/aabb'
+import { MultiLayerTile } from 'src/mapping/multiLayerTile'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
 
@@ -15,6 +16,7 @@ export type MapWorld = {
     tileSetInfo?: TileSetInfo
     biomeMap?: (r: number, c: number) => BiomeCell
     colorMap?: (r: number, c: number) => WangColor
+    multiLayerMap?: (r: number, c: number) => MultiLayerTile
     mapInfo: MapInfo
   }
 }
@@ -78,6 +80,12 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
       this.world.mapSystem.tileSetInfo,
       this.world.mapSystem.biomeMap,
     )
+    this.world.mapSystem.multiLayerMap = createMultiLayerMap(
+      this.world.mapSystem.tileSetInfo,
+      this.world.mapSystem.colorMap,
+    )
+
+    Events.emit('mapRegenerated', this.world)
 
     Events.emit('miniMapUpdated', {
       colorMap: this.world.mapSystem.colorMap,
