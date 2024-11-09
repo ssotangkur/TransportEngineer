@@ -86,10 +86,5 @@ export class MapSystem<WorldIn extends IWorld> extends BaseSystem<IWorld, WorldI
     )
 
     Events.emit('mapRegenerated', this.world)
-
-    Events.emit('miniMapUpdated', {
-      colorMap: this.world.mapSystem.colorMap,
-      rect: new AABB(0, 0, 256, 256),
-    })
   }
 }

@@ -5,6 +5,8 @@ import { SingletonWorld } from './singletonSystem'
 import { CHUNK_SIZE } from 'src/constants'
 import _ from 'lodash'
 import { ChunkComponent } from 'src/components/chunkComponent'
+import { Events } from 'src/events/events'
+import { AABB, transformWorldAABBToTile } from 'src/utils/aabb'
 
 const chunkQuery = defineQuery([ChunkComponent])
 
@@ -40,6 +42,16 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
     const tileSetInfo = this.world.mapSystem.tileSetInfo
     if (!tileSetInfo || (!cameraViewChanged && !this.refreshAll)) {
       return // No need to update
+    }
+
+    if (this.world.mapSystem.colorMap) {
+      // Get rect for mini map in tile units
+      const rect = new AABB(cameraRect.x, cameraRect.y, cameraRect.width, cameraRect.height)
+      transformWorldAABBToTile(rect, this.world.mapSystem.mapInfo)
+      Events.emit('miniMapUpdated', {
+        colorMap: this.world.mapSystem.colorMap,
+        rect,
+      })
     }
 
     // Update state for next frame

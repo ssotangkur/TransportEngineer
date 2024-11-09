@@ -1,5 +1,6 @@
 import { WorldPositionComponent } from 'src/components/positionComponent'
 import { SpriteComponent } from 'src/components/spriteComponent'
+import { MapInfo } from './mapInfo'
 
 /**
  * Axis Aligned Bounding Box
@@ -49,4 +50,30 @@ export const getAabbFromEntity = (eid: number) => {
   const width = SpriteComponent.width[eid]
   const height = SpriteComponent.height[eid]
   return aabbByCenter(x, y, width, height)
+}
+
+/**
+ * Modifies an AABB (in place) using the x & y transform functions
+ * @param aabb
+ * @param xTransform
+ * @param yTransform
+ */
+export const transformAABB = (
+  aabb: AABB,
+  xTransform: (x: number) => number,
+  yTransform: (y: number) => number,
+) => {
+  aabb.x = xTransform(aabb.x)
+  aabb.y = yTransform(aabb.y)
+  aabb.width = xTransform(aabb.width)
+  aabb.height = yTransform(aabb.height)
+}
+
+/**
+ * Transforms an AABB (in place) in world coordinates into an AABB in tile coordinates
+ * @param aabb
+ * @param mapInfo
+ */
+export const transformWorldAABBToTile = (aabb: AABB, mapInfo: MapInfo) => {
+  transformAABB(aabb, mapInfo.worldToTileX, mapInfo.worldToTileY)
 }

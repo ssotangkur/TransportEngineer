@@ -49,8 +49,12 @@ export const addTileSetInfo = (mapInfo: MapInfo, tileSetInfo: TileSetInfo): MapI
       return result
     },
 
-    worldToTileX: (x: number) => Math.floor(x / tileSetInfo.tileWidth),
-    worldToTileY: (y: number) => Math.floor(y / tileSetInfo.tileHeight),
+    worldToTileX: (x: number, snapToFloor = true) => {
+      return snapToFloor ? Math.floor(x / tileSetInfo.tileWidth) : x / tileSetInfo.tileWidth
+    },
+    worldToTileY: (y: number, snapToFloor = true) => {
+      return snapToFloor ? Math.floor(y / tileSetInfo.tileHeight) : y / tileSetInfo.tileHeight
+    },
 
     worldToTileXY: (x: number, y: number, snapToFloor?: boolean, result?: Phaser.Math.Vector2) => {
       if (!result) {

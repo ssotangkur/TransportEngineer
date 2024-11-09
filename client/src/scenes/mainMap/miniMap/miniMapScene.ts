@@ -30,15 +30,23 @@ export class MiniMapScene extends Phaser.Scene {
         return
       }
 
+      const { rect, colorMap } = data
+      const center = rect.centerPoint()
+      const xStart = Math.floor(center.x - MINI_MAP_WIDTH / 2)
+      const yStart = Math.floor(center.y - MINI_MAP_HEIGHT / 2)
+      const xEnd = Math.floor(center.x + MINI_MAP_WIDTH / 2)
+      const yEnd = Math.floor(center.y + MINI_MAP_HEIGHT / 2)
+
       const pixels = new Uint8Array(MINI_MAP_WIDTH * MINI_MAP_HEIGHT * 4)
-      for (let r = data.rect.y; r < MINI_MAP_HEIGHT; r++) {
-        for (let c = data.rect.x; c < MINI_MAP_WIDTH; c++) {
-          const color = Phaser.Display.Color.HexStringToColor(data.colorMap(r, c).color)
-          const colorIdx = (r * MINI_MAP_WIDTH + c) * 4
-          pixels[colorIdx] = color.red
-          pixels[colorIdx + 1] = color.green
-          pixels[colorIdx + 2] = color.blue
-          pixels[colorIdx + 3] = 192
+      let colorIdx = 0
+      for (let r = yStart; r < yEnd; r++) {
+        for (let c = xStart; c < xEnd; c++) {
+          const color = Phaser.Display.Color.HexStringToColor(colorMap(r, c).color)
+          //const colorIdx = (r * MINI_MAP_WIDTH + c) * 4
+          pixels[colorIdx++] = color.red
+          pixels[colorIdx++] = color.green
+          pixels[colorIdx++] = color.blue
+          pixels[colorIdx++] = 192
         }
       }
 
