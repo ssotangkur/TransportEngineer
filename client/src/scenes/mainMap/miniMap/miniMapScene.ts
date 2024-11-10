@@ -7,6 +7,7 @@ export class MiniMapScene extends Phaser.Scene {
   private renderTexture: Phaser.GameObjects.RenderTexture | undefined
   private created: boolean = false
   private texture: Phaser.Textures.Texture | undefined | null
+  private rectangle: Phaser.GameObjects.Rectangle | undefined
 
   constructor() {
     super({
@@ -61,6 +62,9 @@ export class MiniMapScene extends Phaser.Scene {
         WebGL2RenderingContext.NEAREST,
         WebGL2RenderingContext.RGBA,
       )
+
+      this.rectangle?.setPosition(center.x, center.y)
+      this.rectangle?.setSize(rect.width, rect.height)
     })
   }
 
@@ -90,5 +94,8 @@ export class MiniMapScene extends Phaser.Scene {
       throw new Error('Could not create texture')
     }
     this.renderTexture?.setTexture('miniMap')
+
+    this.rectangle = this.add.rectangle(0,0, 0, 0, undefined, 0)
+    this.rectangle.setStrokeStyle(2, 0xffffff)
   }
 }
