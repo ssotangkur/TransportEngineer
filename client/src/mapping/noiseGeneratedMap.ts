@@ -64,31 +64,3 @@ export const createOctaveNoiseFn = (
     return _.clamp((sum + offset) * rangeInv, 0, 1)
   }
 }
-
-/**
- * This mutates the array
- * @param data
- */
-export const normalize2DArray = (data: number[][]) => {
-  let min = data[0][0] ?? 0
-  let max = data[0][0] ?? 0
-
-  const height = data.length
-  if (!height) {
-    return
-  }
-
-  const width = data[0].length
-
-  for (let r = 0; r < height; r++) {
-    min = Math.min(min, ...data[r])
-    max = Math.max(max, ...data[r])
-  }
-  const scale = 1 / (max - min)
-
-  for (let r = 0; r < height; r++) {
-    for (let c = 0; c < width; c++) {
-      data[r][c] = (data[r][c] - min) * scale
-    }
-  }
-}

@@ -120,9 +120,9 @@ export class PossibleTilesMap {
     // initialize possibleTiles so every cell has every possible tile
     this.possibleTiles = []
     const usedTileNumbers = Array.from(this.adjacency.getUsedTileNumbers())
-    for (let r = 0; r < this.height; r++) {
+    for (let y = 0; y < this.height; y++) {
       let row: CollapsibleCell[] = []
-      for (let c = 0; c < this.width; c++) {
+      for (let x = 0; x < this.width; x++) {
         row.push({
           possibleNumbers: _.cloneDeep(usedTileNumbers),
           collapsed: false, // assume it's not collapsed yet
@@ -133,33 +133,33 @@ export class PossibleTilesMap {
 
     const cellsToCheck = new UniqueArray<string>()
     // collapse border tiles since only some tiles can be on the border
-    for (let c = 0; c < this.width; c++) {
+    for (let x = 0; x < this.width; x++) {
       // top row
-      const upFiltered = this.possibleTiles[0][c].possibleNumbers.filter((num) =>
+      const upFiltered = this.possibleTiles[0][x].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'up', BORDER_TILE_NUMBER),
       )
-      this.updateCellPossibilities(0, c, upFiltered)
-      cellsToCheck.push(rowColKey(0, c))
+      this.updateCellPossibilities(0, x, upFiltered)
+      cellsToCheck.push(rowColKey(0, x))
       // bottom row
-      const bottomFiltered = this.possibleTiles[this.height - 1][c].possibleNumbers.filter((num) =>
+      const bottomFiltered = this.possibleTiles[this.height - 1][x].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'down', BORDER_TILE_NUMBER),
       )
-      this.updateCellPossibilities(this.height - 1, c, bottomFiltered)
-      cellsToCheck.push(rowColKey(this.height - 1, c))
+      this.updateCellPossibilities(this.height - 1, x, bottomFiltered)
+      cellsToCheck.push(rowColKey(this.height - 1, x))
     }
-    for (let r = 0; r < this.height; r++) {
+    for (let y = 0; y < this.height; y++) {
       // left column
-      const leftFiltered = this.possibleTiles[r][0].possibleNumbers.filter((num) =>
+      const leftFiltered = this.possibleTiles[y][0].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'left', BORDER_TILE_NUMBER),
       )
-      this.updateCellPossibilities(r, 0, leftFiltered)
-      cellsToCheck.push(rowColKey(r, 0))
+      this.updateCellPossibilities(y, 0, leftFiltered)
+      cellsToCheck.push(rowColKey(y, 0))
       // right column
-      const rightFiltered = this.possibleTiles[r][this.width - 1].possibleNumbers.filter((num) =>
+      const rightFiltered = this.possibleTiles[y][this.width - 1].possibleNumbers.filter((num) =>
         this.adjacency.testDirection(num, 'right', BORDER_TILE_NUMBER),
       )
-      this.updateCellPossibilities(r, this.width - 1, rightFiltered)
-      cellsToCheck.push(rowColKey(r, this.width - 1))
+      this.updateCellPossibilities(y, this.width - 1, rightFiltered)
+      cellsToCheck.push(rowColKey(y, this.width - 1))
     }
     cellsToCheck.toArray().forEach((cellKey) => {
       const coord = cellKey.split(',').map(Number) as [number, number]
@@ -173,10 +173,10 @@ export class PossibleTilesMap {
 
   print() {
     console.log('Possible Tiles Map')
-    for (let r = 0; r < this.height; r++) {
+    for (let y = 0; y < this.height; y++) {
       let row = ''
-      for (let c = 0; c < this.width; c++) {
-        const cell = this.possibleTiles[r][c]
+      for (let x = 0; x < this.width; x++) {
+        const cell = this.possibleTiles[y][x]
         row += `[${cell.collapsed ? '' : '?'}${Array.from(cell.possibleNumbers).join(', ')}] `
       }
       console.log(row)

@@ -1,7 +1,7 @@
 import { subUnsub } from 'src/utils/subUnsub'
 
-const MINI_MAP_WIDTH = 400
-const MINI_MAP_HEIGHT = 400
+const MINI_MAP_WIDTH = 50
+const MINI_MAP_HEIGHT = 50
 
 export class MiniMapScene extends Phaser.Scene {
   private renderTexture: Phaser.GameObjects.RenderTexture | undefined
@@ -40,9 +40,9 @@ export class MiniMapScene extends Phaser.Scene {
 
       const pixels = new Uint8Array(MINI_MAP_WIDTH * MINI_MAP_HEIGHT * 4)
       let colorIdx = 0
-      for (let r = yStart; r < yEnd; r++) {
-        for (let c = xStart; c < xEnd; c++) {
-          const color = Phaser.Display.Color.HexStringToColor(colorMap(r, c).color)
+      for (let y = yStart; y < yEnd; y++) {
+        for (let x = xStart; x < xEnd; x++) {
+          const color = Phaser.Display.Color.HexStringToColor(colorMap(x, y).color)
           //const colorIdx = (r * MINI_MAP_WIDTH + c) * 4
           pixels[colorIdx++] = color.red
           pixels[colorIdx++] = color.green
@@ -63,8 +63,14 @@ export class MiniMapScene extends Phaser.Scene {
         WebGL2RenderingContext.RGBA,
       )
 
-      this.rectangle?.setPosition(center.x, center.y)
-      this.rectangle?.setSize(rect.width, rect.height)
+      if (!this.rectangle) {
+        this.rectangle = this.add.rectangle(0, 0, rect.width, rect.height, undefined, 0)
+        this.rectangle.setStrokeStyle(1.55, 0xffffff, 1)
+        this.rectangle.setDepth(2)
+      }
+
+      // this.rectangle?.setPosition(0, 0)
+      // this.rectangle?.setSize(rect.width, rect.height)
     })
   }
 
@@ -82,7 +88,7 @@ export class MiniMapScene extends Phaser.Scene {
       .renderTexture(0, 0)
       .setSize(MINI_MAP_WIDTH, MINI_MAP_HEIGHT)
       .setVisible(true)
-      .setDepth(10000)
+      .setDepth(1)
 
     this.texture = this.textures.addUint8Array(
       'miniMap',
@@ -94,8 +100,5 @@ export class MiniMapScene extends Phaser.Scene {
       throw new Error('Could not create texture')
     }
     this.renderTexture?.setTexture('miniMap')
-
-    this.rectangle = this.add.rectangle(0,0, 0, 0, undefined, 0)
-    this.rectangle.setStrokeStyle(2, 0xffffff)
   }
 }

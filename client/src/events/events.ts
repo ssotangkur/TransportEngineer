@@ -33,6 +33,6 @@ export type EventName = keyof EventCallbacks
 export const Events = createEventEmitter()
 
 export type MiniMapUpdate = {
-  colorMap: (r: number, c: number) => WangColor
+  colorMap: (x: number, y: number) => WangColor
   rect: AABB // This should be in tiles, not pixels
 }

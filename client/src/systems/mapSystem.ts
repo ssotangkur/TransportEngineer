@@ -5,7 +5,6 @@ import { IWorld } from 'bitecs'
 import { addTileSetInfo, emptyMapInfo, MapInfo } from 'src/utils/mapInfo'
 import { createColorMapper, createMultiLayerMap, WangColor } from 'src/mapping/mapGenerator'
 import { Events } from 'src/events/events'
-import { AABB } from 'src/utils/aabb'
 import { MultiLayerTile } from 'src/mapping/multiLayerTile'
 
 const TILED_TILESET_JSON_FILE = 'terrain-v7.json'
@@ -14,9 +13,9 @@ export type MapWorld = {
   mapSystem: {
     map?: Phaser.Tilemaps.Tilemap
     tileSetInfo?: TileSetInfo
-    biomeMap?: (r: number, c: number) => BiomeCell
-    colorMap?: (r: number, c: number) => WangColor
-    multiLayerMap?: (r: number, c: number) => MultiLayerTile
+    biomeMap?: (x: number, y: number) => BiomeCell
+    colorMap?: (x: number, y: number) => WangColor
+    multiLayerMap?: (x: number, y: number) => MultiLayerTile
     mapInfo: MapInfo
   }
 }

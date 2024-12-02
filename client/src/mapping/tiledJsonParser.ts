@@ -321,15 +321,15 @@ export const updateMapDataFromMultiLayerMap = (
   width: number,
   height: number,
   map: Phaser.Tilemaps.Tilemap,
-  multiLayerMap: (r: number, c: number) => MultiLayerTile,
+  multiLayerMap: (x: number, y: number) => MultiLayerTile,
 ) => {
   clearMap(width, height, map)
 
-  for (let r = 0; r < height; r++) {
-    for (let c = 0; c < width; c++) {
-      const mlTile = multiLayerMap(r, c)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const mlTile = multiLayerMap(x, y)
       mlTile.layers.forEach((layer) => {
-        map.putTileAt(layer.tileId, c, r, false, layer.color.name)
+        map.putTileAt(layer.tileId, x, y, false, layer.color.name)
       })
     }
   }
@@ -337,9 +337,9 @@ export const updateMapDataFromMultiLayerMap = (
 
 export const clearMap = (width: number, height: number, map: Phaser.Tilemaps.Tilemap) => {
   map.layers.forEach((layer) => {
-    for (let r = 0; r < height; r++) {
-      for (let c = 0; c < width; c++) {
-        layer.tilemapLayer.removeTileAt(c, r)
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        layer.tilemapLayer.removeTileAt(x, y)
       }
     }
   })

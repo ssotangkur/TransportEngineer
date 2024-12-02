@@ -6,7 +6,6 @@
  * https://www.nature.com/scitable/knowledge/library/terrestrial-biomes-13236757/
  */
 
-import { get } from 'lodash'
 import { createNoiseMap, NoiseMapConfig } from './noiseGeneratedMap'
 
 const HEIGHT_MAP_CONFIG: NoiseMapConfig = {
@@ -91,15 +90,15 @@ export type BiomeCell = {
 
 export const createBiomeMap = (
   seedFnOrValue: number | (() => number) = () => Date.now(),
-): ((r: number, c: number) => BiomeCell) => {
+): ((x: number, y: number) => BiomeCell) => {
   const heightMap = createHeightMap(seedFnOrValue)
   const temperatureMap = createTemperatureMap(seedFnOrValue)
   const precipitationMap = createPrecipitationMap(seedFnOrValue)
 
-  const getBiome = (r: number, c: number) => {
-    const height = heightMap(c, r)
-    const temperature = temperatureMap(c, r)
-    const precipitation = precipitationMap(c, r)
+  const getBiome = (x: number, y: number) => {
+    const height = heightMap(x, y)
+    const temperature = temperatureMap(x, y)
+    const precipitation = precipitationMap(x, y)
     const biomeCell = getBiomeCell(height, temperature, precipitation)
     return biomeCell
   }
