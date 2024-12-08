@@ -13,7 +13,7 @@ export const generateMapDataUsingNoise = (
   width: number,
   height: number,
   tileSetInfo: TileSetInfo,
-  colorMap: (x: number, y: number) => WangColor,
+  colorMap: ColorMapper,
 ): MapInfo => {
   // From the color map, we use marching squares to find the correct tiles for each layer
   const wangTileMapper = createWangTileMapper(tileSetInfo)
@@ -40,7 +40,7 @@ export const generateMapDataUsingNoise = (
 
 export const createMultiLayerMap = (
   tileSetInfo: TileSetInfo,
-  colorMap: (x: number, y: number) => WangColor,
+  colorMap: ColorMapper,
 ): ((x: number, y: number) => MultiLayerTile) => {
   // From the color map, we use marching squares to find the correct tiles for each layer
   const wangTileMapper = createWangTileMapper(tileSetInfo)
@@ -55,6 +55,8 @@ export const createMultiLayerMap = (
 
   return mapper
 }
+
+export type ColorMapper = (x: number, y: number) => WangColor
 
 export type WangColor = {
   color: string

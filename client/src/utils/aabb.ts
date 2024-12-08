@@ -18,6 +18,16 @@ export class AABB {
     return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height
   }
 
+  /**
+   * Does a left-top inclusive and right-bottom inclusive check
+   * @param x
+   * @param y
+   * @returns
+   */
+  containsInclusive(x: number, y: number) {
+    return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height
+  }
+
   centerPoint(ptToUpdate?: Phaser.Math.Vector2): Phaser.Math.Vector2 {
     if (!ptToUpdate) {
       return new Phaser.Math.Vector2(this.x + this.width / 2, this.y + this.height / 2)
@@ -38,6 +48,35 @@ export class AABB {
     ptToUpdate.y = this.y + this.height * Math.random()
     return ptToUpdate
   }
+
+  /**
+   * Modifies the AABB using the x & y transform functions
+   * @param aabb
+   * @param xTransform
+   * @param yTransform
+   */
+  transform = (xTransform: (x: number) => number, yTransform: (y: number) => number) => {
+    this.x = xTransform(this.x)
+    this.y = yTransform(this.y)
+    this.width = xTransform(this.width)
+    this.height = yTransform(this.height)
+  }
+
+  clone = () => {
+    return new AABB(this.x, this.y, this.width, this.height)
+  }
+
+  /**
+   * Iterates over all integer points in the AABB and calls the provided function
+   * @param func
+   */
+  forEach(func: (x: number, y: number) => void) {
+    for (let x = this.x; x <= this.x + this.width; x++) {
+      for (let y = this.y; y <= this.y + this.height; y++) {
+        func(x, y)
+      }
+    }
+  }
 }
 
 export const aabbByCenter = (centerX: number, centerY: number, width: number, height: number) => {
@@ -53,27 +92,10 @@ export const getAabbFromEntity = (eid: number) => {
 }
 
 /**
- * Modifies an AABB (in place) using the x & y transform functions
- * @param aabb
- * @param xTransform
- * @param yTransform
- */
-export const transformAABB = (
-  aabb: AABB,
-  xTransform: (x: number) => number,
-  yTransform: (y: number) => number,
-) => {
-  aabb.x = xTransform(aabb.x)
-  aabb.y = yTransform(aabb.y)
-  aabb.width = xTransform(aabb.width)
-  aabb.height = yTransform(aabb.height)
-}
-
-/**
  * Transforms an AABB (in place) in world coordinates into an AABB in tile coordinates
  * @param aabb
  * @param mapInfo
  */
 export const transformWorldAABBToTile = (aabb: AABB, mapInfo: MapInfo) => {
-  transformAABB(aabb, mapInfo.worldToTileX, mapInfo.worldToTileY)
+  aabb.transform(mapInfo.worldToTileX, mapInfo.worldToTileY)
 }

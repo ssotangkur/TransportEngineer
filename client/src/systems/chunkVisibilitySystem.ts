@@ -98,7 +98,7 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
 
       // Remove chunks that are no longer visible
       if (!visibleChunkRect.contains(chunkX, chunkY)) {
-        this.debug(`Removing chunk ${chunkKey(chunkX, chunkY)}`)
+        // this.debug(`Removing chunk ${chunkKey(chunkX, chunkY)}`)
         removeEntity(this.world, eid)
         return
       }
@@ -109,7 +109,7 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
 
     // Add new chunks
     chunksToAdd.forEach((key) => {
-      this.debug(`Adding chunk ${key}`)
+      // this.debug(`Adding chunk ${key}`)
       const [x, y] = key.split(',').map(Number)
       const eid = addEntity(this.world)
       addComponent(this.world, ChunkComponent, eid)

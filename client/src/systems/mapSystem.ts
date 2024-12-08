@@ -3,7 +3,7 @@ import { BaseSystem } from './baseSystem'
 import { BiomeCell, createBiomeMap } from 'src/mapping/biome'
 import { IWorld } from 'bitecs'
 import { addTileSetInfo, emptyMapInfo, MapInfo } from 'src/utils/mapInfo'
-import { createColorMapper, createMultiLayerMap, WangColor } from 'src/mapping/mapGenerator'
+import { ColorMapper, createColorMapper, createMultiLayerMap } from 'src/mapping/mapGenerator'
 import { Events } from 'src/events/events'
 import { MultiLayerTile } from 'src/mapping/multiLayerTile'
 
@@ -14,7 +14,7 @@ export type MapWorld = {
     map?: Phaser.Tilemaps.Tilemap
     tileSetInfo?: TileSetInfo
     biomeMap?: (x: number, y: number) => BiomeCell
-    colorMap?: (x: number, y: number) => WangColor
+    colorMap?: ColorMapper
     multiLayerMap?: (x: number, y: number) => MultiLayerTile
     mapInfo: MapInfo
   }
