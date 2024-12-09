@@ -21,9 +21,17 @@ export class MiniMapChunkRenderer {
     colorMap: ColorMapper,
   ) {
     newlyVisibleTiles.forEach((key) => {
-      const tile = this.tileManager.createChunk(key, colorMap)
-      const { x, y } = parseKey(key)
-      const image = this.scene.add.image(x * this.chunkSize, y * this.chunkSize, tile.texture)
+      const { x: chunkX, y: chunkY } = parseKey(key)
+
+      // ColorMapper coordinates need to be translated relative to the chunk
+      // they belong in.
+      const translatedColorMap = (x: number, y: number) =>
+        colorMap(x + chunkX * this.chunkSize, y + chunkY * this.chunkSize)
+      const tile = this.tileManager.createChunk(key, translatedColorMap)
+
+      const image = this.scene.add
+        .image(chunkX * this.chunkSize, chunkY * this.chunkSize, tile.texture)
+        .setOrigin(0, 0)
       this.images.set(key, image)
     })
 
