@@ -36,6 +36,7 @@ export class ChunkVisibilitySystem<WorldIn extends MapWorld & SingletonWorld> ex
   }
 
   update(_time: number, _delta: number): void {
+    this.scene.scale.canvas.width
     const cameraRect = this.scene.cameras.main.worldView
     const cameraViewChanged = !_.isEqual(this.prevCameraRect, cameraRect)
 

@@ -3,11 +3,20 @@ import { MiniMapChunkManager } from './miniMapChunkManager'
 import { MiniMapVisibilityManager } from './miniMapVisibilityManager'
 import { MiniMapChunkRenderer } from './miniMapChunkRenderer'
 import { AABB } from 'src/utils/aabb'
+import { Events } from 'phaser'
 
 const MINI_MAP_WIDTH = 256
 const MINI_MAP_HEIGHT = 256
 
 const TILE_SIZE = 16
+
+type PhaserResizeEventData = {
+  gameSize: Phaser.Structs.Size
+  baseSize: Phaser.Structs.Size
+  displaySize: Phaser.Structs.Size
+  previousWidth: number
+  previousHeight: number
+}
 
 export class MiniMapScene extends Phaser.Scene {
   private renderTexture: Phaser.GameObjects.RenderTexture | undefined
@@ -26,6 +35,12 @@ export class MiniMapScene extends Phaser.Scene {
   }
 
   init() {
+    // Update minimap position on resize
+    this.scale.on(Phaser.Scale.Events.RESIZE, () => {
+      const x = this.scale.canvas.width - MINI_MAP_WIDTH
+      this.cameras.main.setViewport(x, 0, MINI_MAP_WIDTH, MINI_MAP_HEIGHT)
+    })
+
     subUnsub(this, 'miniMapUpdated', ({ rect, colorMap }) => {
       if (!this.renderTexture || !this.miniMapVisibilityManager) {
         // Exit if we haven't initialized yet
